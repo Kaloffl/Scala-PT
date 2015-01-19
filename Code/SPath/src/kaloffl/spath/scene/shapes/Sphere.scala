@@ -15,7 +15,7 @@ class Sphere(val position: Vec3f, val radius: Float) extends Shape {
       (point.z - position.z) / radius)
   }
 
-  def getIntersectionDepth(ray: Ray): Float = {
+  override def getIntersectionDepth(ray: Ray): Float = {
     val start = ray.start
     val dx = position.x - start.x
     val dy = position.y - start.y
