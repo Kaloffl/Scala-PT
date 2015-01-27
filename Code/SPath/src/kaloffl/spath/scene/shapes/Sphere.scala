@@ -1,21 +1,35 @@
 package kaloffl.spath.scene.shapes
 
-import kaloffl.spath.math.Vec3f
+import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Ray
-import kaloffl.spath.math.Vec2f
 
-class Sphere(val position: Vec3f, val radius: Float) extends Shape {
+/**
+ * A sphere shape consisting of a location and a radius.
+ * 
+ * @author Lars Donner
+ */
+class Sphere(val position: Vec3d, val radius: Float) extends Shape {
 
   val radiusSq = radius * radius
 
-  def getNormal(point: Vec3f): Vec3f = {
-    Vec3f(
+  override def getNormal(point: Vec3d): Vec3d = {
+    Vec3d(
       (point.x - position.x) / radius,
       (point.y - position.y) / radius,
       (point.z - position.z) / radius)
   }
 
-  override def getIntersectionDepth(ray: Ray): Float = {
+  override def getRandomInnerPoint(random: () ⇒ Float): Vec3d = {
+    val dir =
+      if (random.apply >= 0.5f) {
+        Vec3d.UP
+      } else {
+        Vec3d.DOWN
+      }.randomHemisphere(random)
+    return dir * (random.apply * radius)
+  }
+
+  override def getIntersectionDepth(ray: Ray): Double = {
     val start = ray.start
     val dx = position.x - start.x
     val dy = position.y - start.y
@@ -27,8 +41,8 @@ class Sphere(val position: Vec3f, val radius: Float) extends Shape {
 
     if (disc < 0.0f) return Float.PositiveInfinity
 
-    val depth = b - Math.sqrt(disc).toFloat
-    if (depth > 0.0001f) return depth
+    val depth = b - Math.sqrt(disc)
+    if (depth > 0.0001) return depth
 
     return Float.PositiveInfinity
   }

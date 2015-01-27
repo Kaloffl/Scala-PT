@@ -7,28 +7,36 @@ import javafx.scene.chart.NumberAxis
 import javafx.stage.Stage
 import javafx.scene.chart.XYChart
 import javafx.scene.layout.GridPane
-import kaloffl.spath.math.Vec3f
+import kaloffl.spath.math.Vec3d
 import java.util.concurrent.ThreadLocalRandom
 
+/**
+ * This class was created to test the even distribution of points by the 
+ * randomHemisphere operation on the Vec3d class. The distribution used to
+ * be denser around the equator compared to the pole. That was fixed thanks to
+ * this class.
+ * 
+ * @author Lars Donner
+ */
 class HemisphereDistribution extends Application {
 
   override def start(primaryStage: Stage): Unit = {
 
     val gridPane = new GridPane
 
-    gridPane.add(createChart(Vec3f.UP, "Up"), 0, 0)
-    gridPane.add(createChart(Vec3f.DOWN, "Down"), 0, 1)
-    gridPane.add(createChart(Vec3f.LEFT, "Left"), 1, 0)
-    gridPane.add(createChart(Vec3f.RIGHT, "Right"), 1, 1)
-    gridPane.add(createChart(Vec3f.FRONT, "Front"), 2, 0)
-    gridPane.add(createChart(Vec3f.BACK, "Back"), 2, 1)
+    gridPane.add(createChart(Vec3d.UP, "Up"), 0, 0)
+    gridPane.add(createChart(Vec3d.DOWN, "Down"), 0, 1)
+    gridPane.add(createChart(Vec3d.LEFT, "Left"), 1, 0)
+    gridPane.add(createChart(Vec3d.RIGHT, "Right"), 1, 1)
+    gridPane.add(createChart(Vec3d.FRONT, "Front"), 2, 0)
+    gridPane.add(createChart(Vec3d.BACK, "Back"), 2, 1)
 
     val scene = new Scene(gridPane, 800, 600)
     primaryStage.setScene(scene)
     primaryStage.show
   }
 
-  def createChart(startVector: Vec3f, name: String): XYChart[_, _] = {
+  def createChart(startVector: Vec3d, name: String): XYChart[_, _] = {
     val rnd = () ⇒ ThreadLocalRandom.current.nextFloat
     val xAxis = new NumberAxis
     val yAxis = new NumberAxis

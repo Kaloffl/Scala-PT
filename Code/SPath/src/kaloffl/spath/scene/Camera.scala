@@ -1,12 +1,19 @@
 package kaloffl.spath.scene
 
-import kaloffl.spath.math.Vec3f
 import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Vec3d
 
+/**
+ * A camera that has a position and orientation in space and can be used to
+ * create rays for the path tracing. It can also create a depth of field effect
+ * if the aperture is a value greater than 1.
+ * 
+ * @author Lars Donner
+ */
 class Camera(
-    val position: Vec3f,
-    val forward: Vec3f,
-    val up: Vec3f,
+    val position: Vec3d,
+    val forward: Vec3d,
+    val up: Vec3d,
     val aperture: Float,
     val focalLength: Float) {
 
@@ -34,7 +41,7 @@ class Camera(
     val pX = right.x * poX + up.x * poY + forward.x
     val pY = right.y * poX + up.y * poY + forward.y
     val pZ = right.z * poX + up.z * poY + forward.z
-    val pixelPosition = Vec3f(pX + position.x, pY + position.y, pZ + position.z)
+    val pixelPosition = Vec3d(pX + position.x, pY + position.y, pZ + position.z)
 
     // the position of the focus point of this pixel relative to the 
     // ray starting point
@@ -43,7 +50,7 @@ class Camera(
     val fpY = fY * len - pY
     val fpZ = fZ * len - pZ
     val fpLength = Math.sqrt(fpX * fpX + fpY * fpY + fpZ * fpZ).toFloat
-    val direction = Vec3f(fpX / fpLength, fpY / fpLength, fpZ / fpLength)
+    val direction = Vec3d(fpX / fpLength, fpY / fpLength, fpZ / fpLength)
 
     return new Ray(pixelPosition, direction)
   }

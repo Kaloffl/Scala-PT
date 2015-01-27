@@ -7,6 +7,14 @@ import java.awt.image.DataBufferInt
 import java.awt.Dimension
 import javax.swing.WindowConstants
 
+/**
+ * When instantiated, this class creates a new window with a canvas of the given 
+ * size.<br>
+ * Individual pixels on said canvas can be modified. To display the changes, 
+ * redraw must be called.
+ *
+ * @author Lars Donner
+ */
 class Display(val width: Int, val height: Int) {
 
   private val window = new JFrame("Scala Path Tracer")
@@ -25,6 +33,9 @@ class Display(val width: Int, val height: Int) {
 
   private val strategy = canvas.getBufferStrategy
 
+  /**
+   * Displays the current image to the screen
+   */
   def redraw: Unit = {
     val graphicsContext = strategy.getDrawGraphics
 
@@ -34,6 +45,10 @@ class Display(val width: Int, val height: Int) {
     strategy.show
   }
 
+  /**
+   * Sets the pixel on the given position to the given color value. Does not 
+   * check bounds, so bad positions may cause ArrayIndexOutOfBoundsExceptions.
+   */
   def drawPixel(x: Int, y: Int, color: Int): Unit = {
     raster(x + y * width) = color
   }

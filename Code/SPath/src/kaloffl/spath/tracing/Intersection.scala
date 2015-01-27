@@ -1,8 +1,13 @@
 package kaloffl.spath.tracing
 
-import kaloffl.spath.math.Vec3f
 import kaloffl.spath.scene.SceneObject
 
-class Intersection(val depth: Float, val hitObject: SceneObject) {
+/**
+ * The intersection stores the depth measured from the start of a ray and the
+ * object that was hit by the ray.
+ *
+ * @author Lars Donner
+ */
+class Intersection(val depth: Double, val hitObject: SceneObject) {
 
 }
