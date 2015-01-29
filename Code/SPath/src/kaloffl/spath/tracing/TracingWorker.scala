@@ -87,16 +87,21 @@ class TracingWorker(
    * Tries to find direct lighting of a point in space by targeting random
    * points in the lights of the scene and tracing to them.
    */
-  def directLight(pos: Vec3d): Vec3d = {
+  def directLight(pos: Vec3d, normal: Vec3d): Vec3d = {
     val lights = scene.lights
 
     var i = 0
     var light = Vec3d.BLACK
     while (i < lights.length) {
       val point = lights(i).shape.getRandomInnerPoint(random)
-      val intersection = scene.getIntersection(new Ray(pos, (point - pos).normalize))
-      if (null != intersection) {
-        light += intersection.hitObject.material.emittance
+      val dir = (point - pos).normalize
+      // Checking the normal against the direction to the light to prevent rays 
+      // going through the surface of the object the point sits on
+      if (normal.dot(dir) >= 0) {
+        val intersection = scene.getIntersection(new Ray(pos, dir))
+        if (null != intersection) {
+          light += intersection.hitObject.material.emittance
+        }
       }
       i += 1
     }
@@ -124,9 +129,8 @@ class TracingWorker(
     // The more bounces the ray went the higher the chance is that we will just
     // calculate the direct light and stop it. This way we reduce rendering time
     // and create a brighter image.
-    if (random.apply() > bounce / 16.0) return directLight(point) * material.reflectance
-
     val normal = hitObject.shape.getNormal(point)
+    if (random.apply() > bounce / 16.0) return directLight(point, normal)
 
     // Depending on the material, we randomly choose to reflect, refract or diffuse bounce the next ray.
     val sum = material.reflectivity + material.refractivity + (if (material.reflectance.lengthSq > 0.0f) 1 else 0)

@@ -76,30 +76,21 @@ case class Vec3d(x: Double, y: Double, z: Double) {
 
   def randomHemisphere(random: () ⇒ Float): Vec3d = {
     val angle = random() * 2.0 * Math.PI
-    val distSq = random()
-    val dist = Math.sqrt(distSq)
+    val rnd = random()
+    val dist = Math.sqrt(1.0 - rnd * rnd)
+    val distSq = dist * dist
 
     // components of a normalized vector on the surface on a hemisphere where z >= 0
-    val nx = dist * Math.cos(angle) // random number from -1 to 1
-    val ny = dist * Math.sin(angle) // random number from -1 to 1
-    val nz = Math.sqrt(1.0 - distSq) // random number from 0 to 1
+    val nx = dist * Math.cos(angle)
+    val ny = dist * Math.sin(angle)
+    val nz = 1.0 - rnd
 
     // plotting of nx, ny and nz values where x and y are the two random values:
-    // http://www.wolframalpha.com/input/?i=plot%28sqrt%28y%29*cos%28x*Pi*2%29%2C+sqrt%28y%29*sin%28x*Pi*2%29%2C+sqrt%281+-+y%29%2C+x+%3D+0+to+1%2C+y+%3D+0+to+1%29
+    // http://www.wolframalpha.com/input/?i=plot%28sqrt%281-%28y-1%29%5E2%29*cos%28x*Pi*2%29%2C+sqrt%281-%28y-1%29%5E2%29*sin%28x*Pi*2%29%2C+1-y%2C+x+%3D+0+to+1%2C+y+%3D+0+to+1%29
 
-    // http://math.stackexchange.com/questions/61547/rotation-of-a-vector-distribution-to-align-with-a-normal-vector
-    // the matrix rotation doesn't work near (0, 0, -1), so for that case we fall back on a simpler but slower method
-    if (z < 0.0) {
-      if (x * nx + y * ny + z * nz < 0.0) return Vec3d(-nx, -ny, -nz)
-      return Vec3d(nx, ny, nz)
-    }
-    return ((Mat3d(
-      z, 0, x,
-      0, z, y,
-      -x, -y, z) + Mat3d(
-        y * y, -x * y, 0,
-        -x * y, x * x, 0,
-        0, 0, 0) * (1.0 / (1.0 + z))) * Vec3d(nx, ny, nz))
+    // if the angle between the original and the new vector is more than 90°, we just turn it 180°
+    if (x * nx + y * ny + z * nz < 0.0) return Vec3d(-nx, -ny, -nz)
+    return Vec3d(nx, ny, nz)
   }
 }
 

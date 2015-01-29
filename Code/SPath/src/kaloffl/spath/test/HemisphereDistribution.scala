@@ -2,20 +2,25 @@ package kaloffl.spath.test
 
 import javafx.application.Application
 import javafx.scene.Scene
+import javafx.scene.Node
 import javafx.scene.chart.LineChart
 import javafx.scene.chart.NumberAxis
 import javafx.stage.Stage
 import javafx.scene.chart.XYChart
 import javafx.scene.layout.GridPane
+import javafx.scene.layout.Pane
+import javafx.scene.shape.Sphere
 import kaloffl.spath.math.Vec3d
 import java.util.concurrent.ThreadLocalRandom
+import javafx.scene.paint.PhongMaterial
+import javafx.scene.paint.Color
 
 /**
- * This class was created to test the even distribution of points by the 
+ * This class was created to test the even distribution of points by the
  * randomHemisphere operation on the Vec3d class. The distribution used to
  * be denser around the equator compared to the pole. That was fixed thanks to
  * this class.
- * 
+ *
  * @author Lars Donner
  */
 class HemisphereDistribution extends Application {
@@ -24,35 +29,42 @@ class HemisphereDistribution extends Application {
 
     val gridPane = new GridPane
 
-    gridPane.add(createChart(Vec3d.UP, "Up"), 0, 0)
-    gridPane.add(createChart(Vec3d.DOWN, "Down"), 0, 1)
-    gridPane.add(createChart(Vec3d.LEFT, "Left"), 1, 0)
-    gridPane.add(createChart(Vec3d.RIGHT, "Right"), 1, 1)
-    gridPane.add(createChart(Vec3d.FRONT, "Front"), 2, 0)
-    gridPane.add(createChart(Vec3d.BACK, "Back"), 2, 1)
+    gridPane.add(createChart(Vec3d.UP, 0, 0), 0, 0)
+    gridPane.add(createChart(Vec3d.DOWN, 0, 1), 0, 1)
+    gridPane.add(createChart(Vec3d.LEFT, 1, 0), 1, 0)
+    gridPane.add(createChart(Vec3d.RIGHT, 1, 1), 1, 1)
+    gridPane.add(createChart(Vec3d.FRONT, 2, 0), 2, 0)
+    gridPane.add(createChart(Vec3d.BACK, 2, 1), 2, 1)
 
-    val scene = new Scene(gridPane, 800, 600)
+    val scene = new Scene(gridPane, 900, 600)
     primaryStage.setScene(scene)
     primaryStage.show
   }
 
-  def createChart(startVector: Vec3d, name: String): XYChart[_, _] = {
+  def createChart(startVector: Vec3d, x: Int, y: Int): Node = {
     val rnd = () ⇒ ThreadLocalRandom.current.nextFloat
-    val xAxis = new NumberAxis
-    val yAxis = new NumberAxis
-    val chart = new LineChart[Number, Number](xAxis, yAxis)
-    val series = new XYChart.Series[Number, Number]
-    chart.getData.add(series)
-    chart.setLegendVisible(false)
-    chart.setTitle(name)
 
-    val vectors = for (i ← 0 until 10000) yield startVector.randomHemisphere(rnd)
-    val distances = for (v ← vectors) yield Math.sin((v - startVector).length)
-    val rounded = distances.map { x ⇒ Math.round(x * 100) }
-    rounded.distinct.sorted.map { x ⇒ (x, rounded.count { y ⇒ x == y }) }.foreach { pair ⇒
-      series.getData.add(new XYChart.Data[Number, Number](pair._1 / 100.0, pair._2))
+    val pane = new Pane()
+
+    val mat = new PhongMaterial(
+      new Color(
+        0.5 + 0.5 * y,
+        0.5 + 0.5 * (x % 2),
+        0.5 + 0.5 * (x / 2),
+        1.0))
+
+    val size = Vec3d(150, 150, 150)
+    for (i ← 0 until 10000) {
+      val vec = startVector.randomHemisphere(rnd) * size + size
+      val sphere = new Sphere(1)
+      sphere.setMaterial(mat)
+      sphere.setTranslateX(vec.x + (x * 300))
+      sphere.setTranslateY(vec.y + (y * 300))
+      sphere.setTranslateZ(vec.z)
+      pane.getChildren.add(sphere)
     }
-    return chart
+
+    return pane
   }
 }
 
