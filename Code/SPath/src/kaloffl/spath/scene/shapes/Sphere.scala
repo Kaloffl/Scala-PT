@@ -5,8 +5,6 @@ import kaloffl.spath.tracing.Ray
 
 /**
  * A sphere shape consisting of a location and a radius.
- * 
- * @author Lars Donner
  */
 class Sphere(val position: Vec3d, val radius: Float) extends Shape {
 

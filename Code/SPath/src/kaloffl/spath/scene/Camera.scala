@@ -7,8 +7,6 @@ import kaloffl.spath.math.Vec3d
  * A camera that has a position and orientation in space and can be used to
  * create rays for the path tracing. It can also create a depth of field effect
  * if the aperture is a value greater than 1.
- * 
- * @author Lars Donner
  */
 class Camera(
     val position: Vec3d,
@@ -19,39 +17,48 @@ class Camera(
 
   val right = forward.cross(up).normalize
 
-  def createRay(random: () ⇒ Float, x: Int, y: Int, w: Int, h: Int): Ray = {
+  /**
+   * Creates a Ray object starting on the "lens" and pointing into a direction
+   * derived from the requested x and y position on the lens.
+   * 
+   * @param random - a source of random numbers used for anti-aliasing and DOF
+   * @param x - the horizontal position on the lens for the requested Ray
+   * @param y - the vertical position on the lens for the requested Ray
+   */
+  def createRay(random: () ⇒ Float, x: Float, y: Float): Ray = {
+    // This method is called for every pixel for every sample which is a lot.
+    // Because of that all the vector calculations here were inlined by hand
+    // to avoid a lot of object creation.
 
-    // offset of the pixel we want to create the ray for
-    // with a little randomness for cheap anti aliasing
-    val foX = (x - w * 0.5f + random() * 2.0f - 1.0f) / h
-    val foY = (h * 0.5f - y + random() * 2.0f - 1.0f) / h
-
-    // the position of said pixel
-    val fX = right.x * foX + up.x * foY + forward.x
-    val fY = right.y * foX + up.y * foY + forward.y
-    val fZ = right.z * foX + up.z * foY + forward.z
+    // Calculate the point on the "lens" the ray is requested for relative to
+    // the camera position.
+    val fX = right.x * x + up.x * y + forward.x
+    val fY = right.y * x + up.y * y + forward.y
+    val fZ = right.z * x + up.z * y + forward.z
     val fLength = Math.sqrt(fX * fX + fY * fY + fZ * fZ).toFloat
 
-    // the offset the ray will start at. With a bigger aperture it
-    // can lay further away from the pixel we want to render.
-    val poX = foX + (random() * 2.0f - 1.0f) * aperture / h
-    val poY = foY + (random() * 2.0f - 1.0f) * aperture / h
+    // The random amount the actual ray will be offset by.
+    // With a bigger aperture the offset can get bigger.
+    // TODO this is currently a box around the pixel, make it a circle.
+    val poX = x + (random() * 2.0f - 1.0f) * aperture
+    val poY = y + (random() * 2.0f - 1.0f) * aperture
 
-    // the position where the ray starts at
+    // Calculate the position in space where the ray will start at.
     val pX = right.x * poX + up.x * poY + forward.x
     val pY = right.y * poX + up.y * poY + forward.y
     val pZ = right.z * poX + up.z * poY + forward.z
-    val pixelPosition = Vec3d(pX + position.x, pY + position.y, pZ + position.z)
+    val rayStart = Vec3d(pX + position.x, pY + position.y, pZ + position.z)
 
-    // the position of the focus point of this pixel relative to the 
-    // ray starting point
+    // The position of the focus point for the requested pixel relative to the 
+    // ray starting point on the lens.
     val len = focalLength / fLength
     val fpX = fX * len - pX
     val fpY = fY * len - pY
     val fpZ = fZ * len - pZ
+    // Normalizing to make it correct for the Ray direction.
     val fpLength = Math.sqrt(fpX * fpX + fpY * fpY + fpZ * fpZ).toFloat
     val direction = Vec3d(fpX / fpLength, fpY / fpLength, fpZ / fpLength)
 
-    return new Ray(pixelPosition, direction)
+    return new Ray(rayStart, direction)
   }
 }

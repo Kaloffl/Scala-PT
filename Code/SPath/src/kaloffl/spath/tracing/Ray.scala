@@ -4,8 +4,5 @@ import kaloffl.spath.math.Vec3d
 
 /**
  * A ray consists of a staring point and a direction.
- *
- * @author Lars Donner
  */
-class Ray(val start: Vec3d, val normal: Vec3d) {
-}
+class Ray(val start: Vec3d, val normal: Vec3d)

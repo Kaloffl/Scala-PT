@@ -1,14 +1,12 @@
 package kaloffl.spath.math
 
 /**
- * A 3 dimensional mathematical vector of ddouble precision floating point
+ * A 3 dimensional mathematical vector of double precision floating point
  * numbers. It implements the usual operations like addition and scaling but
  * also reflection, refraction and generation of random normal vectors centered
  * around the original vector.
  * These vectors are immutable and each operation creates a new instance with
  * the new values.
- *
- * @author Lars Donner
  */
 case class Vec3d(x: Double, y: Double, z: Double) {
 
@@ -31,6 +29,10 @@ case class Vec3d(x: Double, y: Double, z: Double) {
   def sum(): Double = x + y + z
   def lengthSq: Double = x * x + y * y + z * z
   def length: Double = Math.sqrt(x * x + y * y + z * z)
+  
+  def min = Math.min(x, Math.min(y, z))
+  def max = Math.max(x, Math.max(y, z))
+  def abs = Vec3d(Math.abs(x), Math.abs(y), Math.abs(z))
 
   def cross(v: Vec3d): Vec3d = {
     Vec3d(
@@ -80,15 +82,14 @@ case class Vec3d(x: Double, y: Double, z: Double) {
     val dist = Math.sqrt(1.0 - rnd * rnd)
     val distSq = dist * dist
 
-    // components of a normalized vector on the surface on a hemisphere where z >= 0
+    // components of a normalized vector on the surface of a hemisphere 
+    // where z > 0
     val nx = dist * Math.cos(angle)
     val ny = dist * Math.sin(angle)
     val nz = 1.0 - rnd
 
-    // plotting of nx, ny and nz values where x and y are the two random values:
-    // http://www.wolframalpha.com/input/?i=plot%28sqrt%281-%28y-1%29%5E2%29*cos%28x*Pi*2%29%2C+sqrt%281-%28y-1%29%5E2%29*sin%28x*Pi*2%29%2C+1-y%2C+x+%3D+0+to+1%2C+y+%3D+0+to+1%29
-
-    // if the angle between the original and the new vector is more than 90°, we just turn it 180°
+    // if the angle between the original and the new vector is more than 90°, 
+    // we just turn it 180°
     if (x * nx + y * ny + z * nz < 0.0) return Vec3d(-nx, -ny, -nz)
     return Vec3d(nx, ny, nz)
   }

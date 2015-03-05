@@ -12,8 +12,6 @@ import javax.swing.WindowConstants
  * size.<br>
  * Individual pixels on said canvas can be modified. To display the changes, 
  * redraw must be called.
- *
- * @author Lars Donner
  */
 class Display(val width: Int, val height: Int) {
 

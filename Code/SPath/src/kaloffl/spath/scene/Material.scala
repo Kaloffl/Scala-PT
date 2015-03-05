@@ -11,8 +11,6 @@ import kaloffl.spath.math.Vec3d
  * @param refractivity How many rays are refracted through the object
  * @param refractivityIndex how distorted will the refracted rays be
  * @param glossiness How much randomness is used for reflected and refracted rays
- *
- * @author Lars Donner
  */
 class Material(val emittance: Vec3d,
                val reflectance: Vec3d,
@@ -21,4 +19,34 @@ class Material(val emittance: Vec3d,
                val refractivityIndex: Float,
                val glossiness: Float) {
 
+  def reflectedNormal(surfaceNormal: Vec3d, incomingNormal: Vec3d, random: () ⇒ Float): Vec3d = {
+    val randomHs = surfaceNormal.randomHemisphere(random)
+
+    if (1.0f == glossiness) {
+      return randomHs
+    }
+
+    val rnd = random() * (reflectivity + refractivity)
+    if (rnd < refractivity) {
+      val refracted = incomingNormal.refract(surfaceNormal, 1.0f, refractivityIndex)
+      if (0.0f < glossiness) {
+        val direction = refracted + randomHs * glossiness
+        if (direction.dot(surfaceNormal) < 0) {
+          return (refracted + randomHs.reflect(refracted) * glossiness).normalize
+        }
+        return direction.normalize
+      }
+      return refracted
+    }
+
+    val reflected = incomingNormal.reflect(surfaceNormal)
+    if (0.0f < glossiness) {
+      val direction = reflected + randomHs * glossiness
+      if (direction.dot(surfaceNormal) < 0) {
+        return (reflected + randomHs.reflect(reflected) * glossiness).normalize
+      }
+      return direction.normalize
+    }
+    return reflected
+  }
 }

@@ -6,8 +6,6 @@ import kaloffl.spath.tracing.Ray
 /**
  * A plane of infinite size with some orientation and a distance to the origin 
  * point of the scene.
- * 
- * @author Lars Donner
  */
 class Plane(val normal: Vec3d, val distance: Float) extends Shape {
 

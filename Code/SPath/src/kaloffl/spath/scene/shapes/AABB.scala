@@ -4,12 +4,10 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Ray
 
 /**
- * AABB stands for Axis Aligned Bounding Box and is a very simple and 
+ * AABB stands for Axis Aligned Bounding Box and is a very simple and
  * computationally fast shape to test for intersection. However as the name
  * suggests, it is not possible to rotate this shape since the sides are aligned
  * along the three axis.
- * 
- * @author Lars Donner
  */
 class AABB(center: Vec3d, size: Vec3d) extends Shape {
 
@@ -17,19 +15,15 @@ class AABB(center: Vec3d, size: Vec3d) extends Shape {
   val max = center + size / 2
 
   override def getNormal(point: Vec3d): Vec3d = {
-    if (point.x > max.x) {
-      return Vec3d.LEFT;
-    } else if (point.x < min.x) {
-      return Vec3d.RIGHT;
-    } else if (point.y > max.y) {
-      return Vec3d.UP;
-    } else if (point.y < min.y) {
-      return Vec3d.DOWN;
-    } else if (point.z > max.z) {
-      return Vec3d.FRONT;
-    } else if (point.z < min.z) {
-      return Vec3d.BACK;
-    }
+    val dist1 = (point - max).abs
+    val dist2 = (point - min).abs
+    val minDst = Math.min(dist1.min, dist2.min)
+    if (minDst == dist1.x) return Vec3d.LEFT;
+    if (minDst == dist2.x) return Vec3d.RIGHT;
+    if (minDst == dist1.y) return Vec3d.UP;
+    if (minDst == dist2.y) return Vec3d.DOWN;
+    if (minDst == dist1.z) return Vec3d.FRONT;
+    if (minDst == dist2.z) return Vec3d.BACK;
     return Vec3d.UP;
   }
 

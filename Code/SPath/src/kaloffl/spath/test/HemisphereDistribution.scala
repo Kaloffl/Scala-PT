@@ -20,8 +20,6 @@ import javafx.scene.paint.Color
  * randomHemisphere operation on the Vec3d class. The distribution used to
  * be denser around the equator compared to the pole. That was fixed thanks to
  * this class.
- *
- * @author Lars Donner
  */
 class HemisphereDistribution extends Application {
 

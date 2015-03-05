@@ -7,8 +7,6 @@ import kaloffl.spath.tracing.Intersection
 /**
  * A scene holds all the objects that might be displayed, as well as the camera
  * from that the image is rendered.
- *
- * @author Lars Donner
  */
 class Scene(objectsSeq: Seq[SceneObject], val camera: Camera) {
   val objects: Array[SceneObject] = objectsSeq.toArray

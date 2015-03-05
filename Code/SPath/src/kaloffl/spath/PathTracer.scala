@@ -10,8 +10,6 @@ import java.util.concurrent.ThreadLocalRandom
  * The PathTracer that can render an image of a given scene. This class handles
  * the distribution of work on multiple workers that can do the rendering in
  * parallel.
- *
- * @author Lars Donner
  */
 class PathTracer {
 
@@ -37,10 +35,11 @@ class PathTracer {
    * off of.
    *
    * @param display Display to render the resulting pixels onto
-   * @param passes Number of rays that are simulated per pixel
    * @param scene The objects and camera for the rendering
+   * @param passes Number of rays that are simulated per pixel (default 3000)
+   * @param bounces Maximal number of bounces that are simulated per pixel per pass (default 8)
    */
-  def render(display: Display, passes: Int, scene: Scene) {
+  def render(display: Display, scene: Scene, passes: Int = 3000, bounces: Int = 8) {
     val tracingWorkers = new Array[TracingWorker](numberOfWorkers)
     val width = display.width / cols
     val height = display.height / rows
@@ -65,7 +64,7 @@ class PathTracer {
       // supported by Scala.
       Arrays.stream(tracingWorkers).parallel.forEach(new Consumer[TracingWorker] {
         override def accept(worker: TracingWorker): Unit = {
-          worker.render(16, display.width, display.height)
+          worker.render(bounces, display.width, display.height)
           worker.draw(display)
         }
       })

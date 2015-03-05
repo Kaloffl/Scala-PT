@@ -8,8 +8,6 @@ import kaloffl.spath.math.Vec3d
  * It must be able to supply the normal vector of a point on its surface, a
  * random point inside the shape and tell the length a ray must travel in order
  * to intersect the shape.
- *
- * @author Lars Donner
  */
 trait Shape {
 

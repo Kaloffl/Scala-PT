@@ -18,8 +18,6 @@ import kaloffl.spath.scene.shapes.Shape
  *
  * @param scene the scene that is rendered
  * @param random a provider of random values
- *
- * * @author Lars Donner
  */
 class TracingWorker(
     val left: Int,
@@ -42,19 +40,16 @@ class TracingWorker(
   def render(maxBounces: Int, dWidth: Int, dHeight: Int): Unit = {
     samplesTaken += 1
 
+    val displayOffsetX = dWidth * 0.5f + random() * 2.0f - 1.0f - left
+    val displayOffsetY = dHeight * 0.5f + random() * 2.0f - 1.0f - top
+
     val maxIndex = width * height
     for (index ← 0 until maxIndex) {
-      val x: Int = index % width + left
-      val y: Int = index / width + top
+      val x = (index % width - displayOffsetX) / dHeight
+      val y = (displayOffsetY - index / width) / dHeight
+      val ray = camera.createRay(random, x, y)
 
-      val ray = camera.createRay(random, x, y, dWidth, dHeight)
-
-      val result = pathTrace(ray, maxBounces)
-      // gamma correction:
-      val color = Vec3d(
-        Math.pow(result.x, 0.45),
-        Math.pow(result.y, 0.45),
-        Math.pow(result.z, 0.45))
+      val color = pathTrace(ray, maxBounces)
 
       val sampleIndex = index * 3
       samples(sampleIndex) += color.x
@@ -67,16 +62,19 @@ class TracingWorker(
    * Draws the current samples to the display
    */
   def draw(display: Display) {
-    val scaling: Float = 255f / samplesTaken
     val maxIndex = width * height
     for (index ← 0 until maxIndex) {
       val x = index % width + left
       val y = index / width + top
       val i3 = index * 3
 
-      val red = Math.min((samples(i3) * scaling).toInt, 0xff)
-      val green = Math.min((samples(i3 + 1) * scaling).toInt, 0xff)
-      val blue = Math.min((samples(i3 + 2) * scaling).toInt, 0xff)
+      def toColorChannelInt(value: Double): Int = {
+        (Math.min(Math.pow(value / samplesTaken, 0.45), 1) * 0xff).toInt
+      }
+
+      val red = toColorChannelInt(samples(i3))
+      val green = toColorChannelInt(samples(i3 + 1))
+      val blue = toColorChannelInt(samples(i3 + 2))
       val color = red << 16 | green << 8 | blue
 
       display.drawPixel(x, y, color)
@@ -95,7 +93,7 @@ class TracingWorker(
     while (i < lights.length) {
       val point = lights(i).shape.getRandomInnerPoint(random)
       val dir = (point - pos).normalize
-      // Checking the normal against the direction to the light to prevent rays 
+      // Checking the normal against the direction to the light to prevent rays
       // going through the surface of the object the point sits on
       if (normal.dot(dir) >= 0) {
         val intersection = scene.getIntersection(new Ray(pos, dir))
@@ -112,52 +110,39 @@ class TracingWorker(
    * Traces a ray in the scene and reacts to intersections depending on the
    * material that was hit.
    */
-  def pathTrace(ray: Ray, bounce: Int): Vec3d = {
+  def pathTrace(startRay: Ray, bounces: Int): Vec3d = {
+    var bounce = 0
+    var color = Vec3d.WHITE
+    var ray = startRay
+    val rouletThreshold = bounces * 0.9f
+    val killThreshold = 1.0f / Math.max((bounces * 0.1f).toInt, 1)
+    while (bounce < bounces) {
+      bounce += 1
 
-    val intersection = scene.getIntersection(ray)
-    if (null == intersection) return Vec3d.BLACK
+      val intersection = scene.getIntersection(ray)
+      if (null == intersection) return Vec3d.BLACK
 
-    val hitObject = intersection.hitObject
-    val material = hitObject.material
-    val emittance = material.emittance
-    if (emittance.lengthSq > 0.0) return emittance
+      val hitObject = intersection.hitObject
+      val material = hitObject.material
+      val emittance = material.emittance
+      if (emittance.lengthSq > 0.0) return emittance * color
 
-    if (bounce <= 0) return Vec3d.BLACK
+      if (bounce == bounces) return Vec3d.BLACK
 
-    val point = ray.normal * intersection.depth + ray.start
+      val point = ray.normal * intersection.depth + ray.start
+      val surfaceNormal = hitObject.shape.getNormal(point)
 
-    // The more bounces the ray went the higher the chance is that we will just
-    // calculate the direct light and stop it. This way we reduce rendering time
-    // and create a brighter image.
-    val normal = hitObject.shape.getNormal(point)
-    if (random.apply() > bounce / 16.0) return directLight(point, normal)
+      // The more bounces the ray went the higher the chance is that we will just
+      // calculate the direct light and stop it. This way we reduce rendering time
+      // and create a brighter image.
+      if (bounce > rouletThreshold && random.apply() < killThreshold)
+        return directLight(point, surfaceNormal) * material.reflectance
 
-    // Depending on the material, we randomly choose to reflect, refract or diffuse bounce the next ray.
-    val sum = material.reflectivity + material.refractivity + (if (material.reflectance.lengthSq > 0.0f) 1 else 0)
-    val indirectLight = (random() * sum) match {
-      case f if (f < material.reflectivity) ⇒ {
-        val dir =
-          if (material.glossiness > 0.0f) {
-            (ray.normal.reflect(normal) + normal.randomHemisphere(random) * material.glossiness).normalize
-          } else {
-            ray.normal.reflect(normal)
-          }
-        pathTrace(new Ray(point, dir), bounce - 1)
-      }
-      case f if (f < material.reflectivity + material.refractivity) ⇒ {
-        val dir =
-          if (material.glossiness > 0.0f) {
-            (ray.normal.refract(normal, 1.0f, material.refractivityIndex) + normal.randomHemisphere(random) * material.glossiness).normalize
-          } else {
-            ray.normal.refract(normal, 1.0f, material.refractivityIndex)
-          }
-        pathTrace(new Ray(point, dir), bounce - 1)
-      }
-      case _ ⇒ {
-        val dir = normal.randomHemisphere(random)
-        pathTrace(new Ray(point, dir), bounce - 1) * material.reflectance * Math.abs(normal.dot(dir))
-      }
+      val newDir = material.reflectedNormal(surfaceNormal, ray.normal, random)
+      ray = new Ray(point, newDir)
+
+      color = color * material.reflectance
     }
-    return indirectLight
+    Vec3d.BLACK
   }
 }
