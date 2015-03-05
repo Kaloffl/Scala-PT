@@ -11,7 +11,7 @@ import kaloffl.spath.tracing.Intersection
 class Scene(objectsSeq: Seq[SceneObject], val camera: Camera) {
   val objects: Array[SceneObject] = objectsSeq.toArray
   val shapes: Array[Shape] = objects.map { _.shape }
-  val lights: Array[SceneObject] = objects.filter { _.material.emittance.lengthSq > 0 }
+  val lights: Array[SceneObject] = objects.filter { _.material.terminatesPath }
 
   /**
    * Tries to find an Intersection of the given ray with the objects in the 

@@ -85,25 +85,26 @@ class TracingWorker(
    * Tries to find direct lighting of a point in space by targeting random
    * points in the lights of the scene and tracing to them.
    */
-  def directLight(pos: Vec3d, normal: Vec3d): Vec3d = {
+  def directLight(pos: Vec3d, normal: Vec3d, random: () ⇒ Float): Vec3d = {
     val lights = scene.lights
+    if (0 == lights.length) return Vec3d.BLACK
 
-    var i = 0
-    var light = Vec3d.BLACK
-    while (i < lights.length) {
-      val point = lights(i).shape.getRandomInnerPoint(random)
-      val dir = (point - pos).normalize
-      // Checking the normal against the direction to the light to prevent rays
-      // going through the surface of the object the point sits on
-      if (normal.dot(dir) >= 0) {
-        val intersection = scene.getIntersection(new Ray(pos, dir))
-        if (null != intersection) {
-          light += intersection.hitObject.material.emittance
-        }
+    val index = (lights.length * random()).toInt
+
+    val light = lights(index)
+    val point = light.shape.getRandomInnerPoint(random)
+    val dir = (point - pos).normalize
+    // Checking the normal against the direction to the light to prevent rays
+    // going through the surface of the object the point sits on
+    if (normal.dot(dir) >= 0) {
+      val intersection = scene.getIntersection(new Ray(pos, dir))
+      if (null != intersection && intersection.hitObject == light) {
+        val worldPos = pos + dir * intersection.depth
+        val surfaceNormal = light.shape.getNormal(worldPos)
+        return light.material.reflectanceAt(worldPos, surfaceNormal)
       }
-      i += 1
     }
-    return light
+    return Vec3d.BLACK
   }
 
   /**
@@ -124,24 +125,22 @@ class TracingWorker(
 
       val hitObject = intersection.hitObject
       val material = hitObject.material
-      val emittance = material.emittance
-      if (emittance.lengthSq > 0.0) return emittance * color
-
-      if (bounce == bounces) return Vec3d.BLACK
 
       val point = ray.normal * intersection.depth + ray.start
       val surfaceNormal = hitObject.shape.getNormal(point)
+      color = color * material.reflectanceAt(point, surfaceNormal)
+      if (material.terminatesPath) return color
+
+      if (bounce == bounces) return Vec3d.BLACK
 
       // The more bounces the ray went the higher the chance is that we will just
       // calculate the direct light and stop it. This way we reduce rendering time
       // and create a brighter image.
       if (bounce > rouletThreshold && random.apply() < killThreshold)
-        return directLight(point, surfaceNormal) * material.reflectance
+        return directLight(point, surfaceNormal, random) * color
 
       val newDir = material.reflectedNormal(surfaceNormal, ray.normal, random)
       ray = new Ray(point, newDir)
-
-      color = color * material.reflectance
     }
     Vec3d.BLACK
   }
