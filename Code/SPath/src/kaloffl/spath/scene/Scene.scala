@@ -10,19 +10,19 @@ import kaloffl.spath.tracing.Intersection
  */
 class Scene(objectsSeq: Seq[SceneObject], val camera: Camera) {
   val objects: Array[SceneObject] = objectsSeq.toArray
-  val shapes: Array[Shape] = objects.map { o ⇒ o.shape }
-  val lights: Array[SceneObject] = objects.filter { o ⇒ o.material.emittance.lengthSq > 0 }
+  val shapes: Array[Shape] = objects.map { _.shape }
+  val lights: Array[SceneObject] = objects.filter { _.material.emittance.lengthSq > 0 }
 
   /**
    * Tries to find an Intersection of the given ray with the objects in the 
    * scene. If none is found, null is returned.
    */
   def getIntersection(ray: Ray): Intersection = {
-    var minDepth = Double.PositiveInfinity
+    var minDepth: Double = Double.PositiveInfinity
     var hitIndex: Int = -1
 
     {
-      var i = 0
+      var i: Int = 0
       while (i < shapes.length) {
         val s = shapes(i)
         val depth = s.getIntersectionDepth(ray)
