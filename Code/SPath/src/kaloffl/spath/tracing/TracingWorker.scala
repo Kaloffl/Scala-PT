@@ -108,6 +108,13 @@ class TracingWorker(
   }
 
   /**
+   * @return a color that might depend on the incoming normal
+   */
+  def skyColor(normal: Vec3d): Vec3d = {
+    return Vec3d.BLACK
+  }
+
+  /**
    * Traces a ray in the scene and reacts to intersections depending on the
    * material that was hit.
    */
@@ -117,11 +124,13 @@ class TracingWorker(
     var ray = startRay
     val rouletThreshold = bounces * 0.9f
     val killThreshold = 1.0f / Math.max((bounces * 0.1f).toInt, 1)
+    val minColor = Vec3d(1.0 / 255.0) / scene.maxEmittance
+
     while (bounce < bounces) {
       bounce += 1
 
       val intersection = scene.getIntersection(ray)
-      if (null == intersection) return Vec3d.BLACK
+      if (null == intersection) return color * skyColor(ray.normal)
 
       val hitObject = intersection.hitObject
       val material = hitObject.material
@@ -129,9 +138,10 @@ class TracingWorker(
       val point = ray.normal * intersection.depth + ray.start
       val surfaceNormal = hitObject.shape.getNormal(point)
       color = color * material.reflectanceAt(point, surfaceNormal)
-      if (material.terminatesPath) return color
 
+      if (material.terminatesPath) return color
       if (bounce == bounces) return Vec3d.BLACK
+      if (minColor.x > color.x && minColor.y > color.y && minColor.z > color.z) return Vec3d.BLACK
 
       // The more bounces the ray went the higher the chance is that we will just
       // calculate the direct light and stop it. This way we reduce rendering time

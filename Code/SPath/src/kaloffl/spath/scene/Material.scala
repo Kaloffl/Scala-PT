@@ -16,30 +16,10 @@ trait Material {
 
   def terminatesPath: Boolean = false
   
+  def maxEmittance: Vec3d = Vec3d.BLACK
+  
   def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Vec3d
   
   def reflectedNormal(surfaceNormal: Vec3d, incomingNormal: Vec3d, random: () ⇒ Float): Vec3d
-//  = {
-//    val randomHs = surfaceNormal.randomHemisphere(random) * glossiness
-//
-//    if (1.0f == glossiness) return randomHs
-//
-//    if (random() * (reflectivity + refractivity) < refractivity) {
-//      val refracted = incomingNormal.refract(surfaceNormal, 1.0f, refractivityIndex)
-//      if (0.0f < glossiness) {
-//        return (refracted + randomHs).normalize
-//      }
-//      return refracted
-//    }
-//
-//    val reflected = incomingNormal.reflect(surfaceNormal)
-//    if (0.0f < glossiness) {
-//      val direction = reflected + randomHs
-//      if (direction.dot(surfaceNormal) < 0) {
-//        return (reflected + randomHs.reflect(reflected)).normalize
-//      }
-//      return direction.normalize
-//    }
-//    return reflected
-//  }
+
 }

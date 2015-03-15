@@ -6,6 +6,8 @@ class LightMaterial(val color: Vec3d) extends Material {
 
   override def terminatesPath: Boolean = true
   
+  override def maxEmittance = color
+  
   override def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Vec3d = {
     return color
   }

@@ -29,7 +29,7 @@ case class Vec3d(x: Double, y: Double, z: Double) {
   def sum(): Double = x + y + z
   def lengthSq: Double = x * x + y * y + z * z
   def length: Double = Math.sqrt(x * x + y * y + z * z)
-  
+
   def min = Math.min(x, Math.min(y, z))
   def max = Math.max(x, Math.max(y, z))
   def abs = Vec3d(Math.abs(x), Math.abs(y), Math.abs(z))
@@ -117,4 +117,7 @@ object Vec3d {
   val BLUE: Vec3d = FRONT
   val BLACK: Vec3d = ORIGIN
   val WHITE: Vec3d = UNIT
+
+  def apply(): Vec3d = BLACK
+  def apply(d: Double): Vec3d = Vec3d(d, d, d)
 }

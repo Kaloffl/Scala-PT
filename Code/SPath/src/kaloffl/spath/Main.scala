@@ -12,6 +12,8 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.DiffuseMaterial
 import kaloffl.spath.scene.LightMaterial
 import kaloffl.spath.scene.AllroundMaterial
+import kaloffl.spath.scene.ReflectiveMaterial
+import kaloffl.spath.scene.CheckeredMaterial
 
 /**
  * Entry 'class' to the program.
@@ -35,20 +37,20 @@ object Main {
     val colorPink = Vec3d(0.9, 0.1, 0.9)
 
     val matWhiteDiffuse = new DiffuseMaterial(colorWhite)
-    val matWhiteLight = new LightMaterial(Vec3d.WHITE)
+    val matWhiteLight = new LightMaterial(Vec3d.WHITE * 3)
     val matWhiteDiffuseReflective = new AllroundMaterial(Vec3d.BLACK, colorWhite, 1.0f, 0.0f, 0.0f, 0.9f)
 
     val matWhiteGlass = new AllroundMaterial(Vec3d.BLACK, Vec3d.WHITE, 0.25f, 1.0f, 1.52f, 0.0f)
     val matWhiteMirror = new AllroundMaterial(Vec3d.BLACK, Vec3d.WHITE, 1.0f, 0.0f, 0.0f, 0.0f)
     val matWhiteGlassMirror = new AllroundMaterial(Vec3d.BLACK, Vec3d.WHITE, 1.0f, 1.0f, 1.52f, 0.0f)
 
-    val matBlackDiffuse = new DiffuseMaterial(colorBlack)
+    val matBlackDiffuse = new CheckeredMaterial(colorBlack, colorBlue)
 
     val matRedDiffuse = new DiffuseMaterial(colorRed)
     val matGreenDiffuse = new DiffuseMaterial(colorGreen)
     val matBlueDiffuse = new DiffuseMaterial(colorBlue)
 
-    val matYellowDiffuse = new DiffuseMaterial(colorYellow)
+    val matYellowDiffuse = new ReflectiveMaterial(colorYellow, 0.0)
     val matCyanDiffuse = new DiffuseMaterial(colorCyan)
     val matPinkDiffuse = new DiffuseMaterial(colorPink)
 
@@ -134,6 +136,10 @@ object Main {
       new SceneObject(
         new AABB(Vec3d(0, 9, 4), Vec3d(16, 2, 24)),
         matWhiteLight),
+      new SceneObject(
+        new AABB(Vec3d(-1, 1, -1), Vec3d(2, 0.5, 2)),
+        matRedDiffuse),
+          
       new SceneObject(
         new Plane(Vec3d.LEFT, 8.0f),
         matRedDiffuse),
