@@ -44,4 +44,8 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
 
     return Float.PositiveInfinity
   }
+
+  override def enclosingAABB: AABB = {
+    new AABB(position, Vec3d(radius * 2))
+  }
 }

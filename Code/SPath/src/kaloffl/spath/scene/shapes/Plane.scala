@@ -4,7 +4,7 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Ray
 
 /**
- * A plane of infinite size with some orientation and a distance to the origin 
+ * A plane of infinite size with some orientation and a distance to the origin
  * point of the scene.
  */
 class Plane(val normal: Vec3d, val distance: Float) extends Shape {
@@ -23,4 +23,7 @@ class Plane(val normal: Vec3d, val distance: Float) extends Shape {
     if (0.0001f < t) return t
     return Float.PositiveInfinity
   }
+
+  // TODO make planes a finite size so they can fit into the BVH
+  override def enclosingAABB: AABB = ???
 }

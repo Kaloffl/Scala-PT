@@ -29,4 +29,6 @@ trait Shape {
    * returned.
    */
   def getIntersectionDepth(ray: Ray): Double
+
+  def enclosingAABB: AABB
 }

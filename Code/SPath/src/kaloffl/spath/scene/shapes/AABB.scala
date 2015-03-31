@@ -9,11 +9,14 @@ import kaloffl.spath.tracing.Ray
  * suggests, it is not possible to rotate this shape since the sides are aligned
  * along the three axis.
  */
-class AABB(center: Vec3d, size: Vec3d) extends Shape {
+class AABB(centerArg: Vec3d, sizeArg: Vec3d) extends Shape {
 
-  val min = center - size / 2
-  val max = center + size / 2
+  val min = centerArg - sizeArg / 2
+  val max = centerArg + sizeArg / 2
 
+  def size: Vec3d = max - min
+  def center: Vec3d = (min + max) / 2
+  
   override def getNormal(point: Vec3d): Vec3d = {
     val dist1 = (point - max).abs
     val dist2 = (point - min).abs
@@ -24,14 +27,15 @@ class AABB(center: Vec3d, size: Vec3d) extends Shape {
     if (minDst == dist2.y) return Vec3d.DOWN;
     if (minDst == dist1.z) return Vec3d.FRONT;
     if (minDst == dist2.z) return Vec3d.BACK;
-    return Vec3d.UP;
+    throw new RuntimeException(
+      "Could not determine AABB normal for point: " + point + ". AABB bounds are max: " + max + ", min: " + min + ".")
   }
 
   override def getRandomInnerPoint(random: () ⇒ Float): Vec3d = {
     return Vec3d(
-      min.x + (max.x - min.x) * random.apply(),
-      min.y + (max.y - min.y) * random.apply(),
-      min.z + (max.z - min.z) * random.apply())
+      min.x + (size.x) * random.apply(),
+      min.y + (size.y) * random.apply(),
+      min.z + (size.z) * random.apply())
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {
@@ -57,4 +61,27 @@ class AABB(center: Vec3d, size: Vec3d) extends Shape {
 
     return tmin
   }
+
+  def enclose(other: AABB): AABB = {
+    val sharedMin = Vec3d(
+      Math.min(min.x, other.min.x),
+      Math.min(min.y, other.min.y),
+      Math.min(min.z, other.min.z))
+    val sharedMax = Vec3d(
+      Math.max(max.x, other.max.x),
+      Math.max(max.y, other.max.y),
+      Math.max(max.z, other.max.z))
+    val sharedSize = (sharedMax - sharedMin)
+    return new AABB(sharedMin + sharedSize / 2, sharedSize)
+  }
+
+  def surfaceArea: Double = {
+    return (size.x * (size.y + size.z) + size.y * size.z) * 2
+  }
+
+  def contains(v: Vec3d): Boolean = {
+    return min.x <= v.x && v.x <= max.x && min.y <= v.y && v.y <= max.y && min.z <= v.z && v.z <= max.z
+  }
+
+  override def enclosingAABB: AABB = this
 }

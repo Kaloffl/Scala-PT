@@ -1,0 +1,21 @@
+pathtracer TODOs
+
+- controllable camera
+- switchable render mode
+	- raytracer
+	- path tracing
+	- surface normals
+	- reflected normal
+	- depth
+- post processing
+	- whitebalance
+	- HDR
+	- color correction
+- settable sky in the scene (normal -> color function?)
+- textured objects
+- normalmaps for obects
+- spectral tracing
+- penetratable objects & penetration effects (fog, better colored glass)
+- life scene editing
+- portals
+- camera shutter shape

@@ -14,6 +14,9 @@ import kaloffl.spath.scene.LightMaterial
 import kaloffl.spath.scene.AllroundMaterial
 import kaloffl.spath.scene.ReflectiveMaterial
 import kaloffl.spath.scene.CheckeredMaterial
+import kaloffl.spath.scene.shapes.Triangle
+import kaloffl.spath.importer.PlyImporter
+import kaloffl.spath.scene.DiffuseMaterial
 
 /**
  * Entry 'class' to the program.
@@ -23,7 +26,9 @@ object Main {
   def main(args: Array[String]): Unit = {
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer
-    val camera = new Camera(Vec3d(0, 2.5, 13), Vec3d.BACK, Vec3d.UP, 0, 13f)
+    val front = Vec3d(0, -2.5, -13).normalize
+    val up = front.cross(Vec3d.RIGHT).normalize
+    val camera = new Camera(Vec3d(0, 5, 13), front, up, 0.1f, 13f)
 
     val colorWhite = Vec3d(0.9, 0.9, 0.9)
     val colorBlack = Vec3d(0.1, 0.1, 0.1)
@@ -37,7 +42,7 @@ object Main {
     val colorPink = Vec3d(0.9, 0.1, 0.9)
 
     val matWhiteDiffuse = new DiffuseMaterial(colorWhite)
-    val matWhiteLight = new LightMaterial(Vec3d.WHITE * 3)
+    val matWhiteLight = new LightMaterial(Vec3d.WHITE * 2)
     val matWhiteDiffuseReflective = new AllroundMaterial(Vec3d.BLACK, colorWhite, 1.0f, 0.0f, 0.0f, 0.9f)
 
     val matWhiteGlass = new AllroundMaterial(Vec3d.BLACK, Vec3d.WHITE, 0.25f, 1.0f, 1.52f, 0.0f)
@@ -50,7 +55,7 @@ object Main {
     val matGreenDiffuse = new DiffuseMaterial(colorGreen)
     val matBlueDiffuse = new DiffuseMaterial(colorBlue)
 
-    val matYellowDiffuse = new ReflectiveMaterial(colorYellow, 0.0)
+    val matYellowDiffuse = new ReflectiveMaterial(colorYellow, 0.05)
     val matCyanDiffuse = new DiffuseMaterial(colorCyan)
     val matPinkDiffuse = new DiffuseMaterial(colorPink)
 
@@ -64,7 +69,9 @@ object Main {
 
     val matCyanLight = new LightMaterial(Vec3d(4.0f, 8.0f, 16.0f))
 
-    val objects = Seq(
+    val matGrayDiffuse = new DiffuseMaterial(Vec3d(0.5))
+    
+    val objects = Array(
 
       //      new SceneObject(
       //        new Sphere(Vec3d(0.0f, 8.0f, 0.0f), 1.25f),
@@ -109,7 +116,9 @@ object Main {
         new Plane(Vec3d.BACK, 16.0f),
         matBlackDiffuse))
 
-    val allDiffuse = Seq(
+    val dragon = PlyImporter.load("D:/temp/dragon.ply", Vec3d(40), Vec3d(-0.5, -2, 0)).map { f ⇒ new SceneObject(f, matYellowDiffuse) }
+
+    val allDiffuse = Array(
 
       new SceneObject(
         new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f),
@@ -128,43 +137,35 @@ object Main {
         matBlackDiffuse),
 
       new SceneObject(
-        new Plane(Vec3d.UP, 0.0f),
+        new AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
         matWhiteDiffuse),
-      // new SceneObject(
-      //   new Plane(Vec3d.DOWN, 8.0f),
-      //   matWhiteLight),
       new SceneObject(
-        new AABB(Vec3d(0, 9, 4), Vec3d(16, 2, 24)),
+        new AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
         matWhiteLight),
       new SceneObject(
-        new AABB(Vec3d(-1, 1, -1), Vec3d(2, 0.5, 2)),
-        matRedDiffuse),
-          
-      new SceneObject(
-        new Plane(Vec3d.LEFT, 8.0f),
+        new AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
         matRedDiffuse),
       new SceneObject(
-        new Plane(Vec3d.RIGHT, 8.0f),
+        new AABB(Vec3d(-8.5f, 4, 4), Vec3d(1, 8, 24)),
         matBlueDiffuse),
       new SceneObject(
-        new Plane(Vec3d.FRONT, 8.0f),
+        new AABB(Vec3d(0, 4, -8.5f), Vec3d(16, 8, 1)),
         matGreenDiffuse),
       new SceneObject(
-        new Plane(Vec3d.BACK, 16.0f),
+        new AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
         matBlackDiffuse))
-        
-    val mirrored = Seq(
-        new SceneObject(new Plane(Vec3d.UP, 0), matBlackDiffuse),
-        new SceneObject(new Plane(Vec3d.DOWN, 8), matWhiteLight),
-        new SceneObject(new Plane(Vec3d.LEFT, 8), matWhiteMirror),
-        new SceneObject(new Plane(Vec3d.RIGHT, 8), matWhiteMirror),
-        new SceneObject(new Plane(Vec3d.FRONT, 8), matWhiteMirror),
-        new SceneObject(new Plane(Vec3d.BACK, 16), matWhiteMirror),
-        
-        new SceneObject(new Sphere(Vec3d(0, 2, 0), 2), matRedDiffuse)
-    )
 
-    val scene = new Scene(allDiffuse, camera)
+    val mirrored = Array(
+      new SceneObject(new Plane(Vec3d.UP, 0), matBlackDiffuse),
+      new SceneObject(new Plane(Vec3d.DOWN, 8), matWhiteLight),
+      new SceneObject(new Plane(Vec3d.LEFT, 8), matWhiteMirror),
+      new SceneObject(new Plane(Vec3d.RIGHT, 8), matWhiteMirror),
+      new SceneObject(new Plane(Vec3d.FRONT, 8), matWhiteMirror),
+      new SceneObject(new Plane(Vec3d.BACK, 16), matWhiteMirror),
+
+      new SceneObject(new Sphere(Vec3d(0, 2, 0), 2), matRedDiffuse))
+
+    val scene = new Scene(allDiffuse ++ dragon, camera)
     pathTracer.render(display, scene, bounces = 32)
   }
 }
