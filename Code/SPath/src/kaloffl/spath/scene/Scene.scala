@@ -12,10 +12,9 @@ import kaloffl.spath.bvh.Bvh
  */
 class Scene(objects: Array[SceneObject], val camera: Camera) {
   val lights: Array[SceneObject] = objects.filter { _.material.terminatesPath }
-  val bvh = createBvh
-
-  def createBvh: Bvh = {
-    printf("Building BVH for %d primitives.\n", objects.length)
+  val bvh = {
+    val primitives = objects.foldLeft(0)((num, obj) ⇒ num + obj.shapes.length)
+    printf("Building BVH for %d primitives.\n", primitives)
 
     val start = System.nanoTime
     val bvh = new Bvh(objects)
@@ -28,7 +27,7 @@ class Scene(objects: Array[SceneObject], val camera: Camera) {
       println("buildtime: " + Math.floor(duration / 10000.0) / 100.0 + "ms")
     }
 
-    return bvh
+    bvh
   }
 
   /**

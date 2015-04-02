@@ -8,4 +8,9 @@ import kaloffl.spath.math.Vec3d
  * separation of SceneObject and Shape is of little use, other that the
  * separation of the concerns of a displayable object and a geometric construct
  */
-class SceneObject(val shape: Shape, val material: Material)
+class SceneObject(val shapes: Array[Shape], val material: Material) {
+  
+  def this(shape: Shape, material: Material) {
+    this(Array(shape), material)
+  }
+}

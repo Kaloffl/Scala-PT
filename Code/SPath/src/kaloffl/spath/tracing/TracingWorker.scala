@@ -92,17 +92,18 @@ class TracingWorker(
 
     val index = (lights.length * random()).toInt
 
-    val light = lights(index)
-    val point = light.shape.getRandomInnerPoint(random)
+    val obj = lights(index)
+    val light = obj.shapes((obj.shapes.length * random()).toInt)
+    val point = light.getRandomInnerPoint(random)
     val dir = (point - pos).normalize
     // Checking the normal against the direction to the light to prevent rays
     // going through the surface of the object the point sits on
     if (normal.dot(dir) >= 0) {
       val intersection = scene.getIntersection(new Ray(pos, dir))
-      if (null != intersection && intersection.hitObject == light) {
+      if (null != intersection && intersection.hitShape == light) {
         val worldPos = pos + dir * intersection.depth
-        val surfaceNormal = light.shape.getNormal(worldPos)
-        return light.material.reflectanceAt(worldPos, surfaceNormal)
+        val surfaceNormal = light.getNormal(worldPos)
+        return lights(index).material.reflectanceAt(worldPos, surfaceNormal)
       }
     }
     return Color.BLACK
@@ -130,13 +131,13 @@ class TracingWorker(
       bounce += 1
 
       val intersection = scene.getIntersection(ray)
-      val hitObject = intersection.hitObject
-      if (null == hitObject) return color * skyColor(ray.normal)
+      val hitShape = intersection.hitShape
+      if (null == hitShape) return color * skyColor(ray.normal)
 
-      val material = hitObject.material
+      val material = intersection.material
 
       val point = ray.normal * intersection.depth + ray.start
-      val surfaceNormal = hitObject.shape.getNormal(point)
+      val surfaceNormal = hitShape.getNormal(point)
       // return (surfaceNormal + Vec3d.UNIT) / 2
       color = color * material.reflectanceAt(point, surfaceNormal)
 

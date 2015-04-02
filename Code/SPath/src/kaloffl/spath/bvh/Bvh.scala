@@ -14,20 +14,37 @@ import java.util.concurrent.Callable
 import java.util.Arrays
 import java.util.concurrent.ForkJoinTask
 import java.util.concurrent.RecursiveTask
+import java.util.function.Function
+import java.util.stream.Stream
 import kaloffl.spath.scene.LightMaterial
 import java.util.Comparator
+import kaloffl.spath.scene.Material
+import java.util.stream.Collectors
+import java.util.function.IntFunction
 
 class Bvh(objects: Array[SceneObject]) {
 
   val root: BvhNode = ForkJoinPool.commonPool().invoke(new NodeCreationTask(boxObjects(objects), 0))
 
-  private def boxObjects(objects: Array[SceneObject]): SubArray[BoxedObject] = {
-    val boxed = new Array[BoxedObject](objects.length)
-    var i = 0
-    while (i < boxed.length) {
-      boxed(i) = new BoxedObject(objects(i), objects(i).shape.enclosingAABB)
-      i += 1
-    }
+  private def boxObjects(objects: Array[SceneObject]): SubArray[BoxedShape] = {
+    val boxed = Arrays.stream(objects).parallel.flatMap(
+      new Function[SceneObject, Stream[BoxedShape]] {
+        override def apply(obj: SceneObject): Stream[BoxedShape] = {
+
+          Arrays.stream(obj.shapes).parallel.map(
+            new Function[Shape, BoxedShape] {
+              override def apply(shape: Shape): BoxedShape = {
+                new BoxedShape(shape, obj.material, shape.enclosingAABB)
+              }
+            })
+
+        }
+      }).toArray(new IntFunction[Array[BoxedShape]] {
+        override def apply(length: Int): Array[BoxedShape] = {
+          new Array[BoxedShape](length)
+        }
+      })
+
     return new SubArray(boxed, 0, boxed.length)
   }
 
@@ -37,14 +54,14 @@ class Bvh(objects: Array[SceneObject]) {
     // need to figure out the max size. possibly tree-max-depth * 2?
     val stack: SortedStack[NodeIntersection] = new SortedStack(_.depth < _.depth)
     stack add new NodeIntersection(root.depth(ray), root)
-    var closest = new Intersection(Double.PositiveInfinity, null)
+    var closest = new Intersection(Double.PositiveInfinity, null, null)
     while (!stack.empty) {
       val head = stack.pop
       if (head.depth >= closest.depth) {
         return closest
       }
       val headNode = head.node
-      if (null != headNode.objects) {
+      if (null == headNode.childA) {
         val intersection = headNode.intersectObjects(ray)
         if (null != intersection && closest.depth > intersection.depth) {
           closest = intersection
@@ -64,72 +81,22 @@ class Bvh(objects: Array[SceneObject]) {
     }
     return closest
   }
-
-  override def toString: String = {
-    def nodeToString(builder: StringBuilder, level: Int, node: BvhNode): String = {
-      if (0 < level) {
-        for (i ← 0 until level - 1) {
-          builder.append('|')
-        }
-        builder.append("+->")
-      }
-      builder.append("Node(")
-      builder.append("AABB(").append("min = ").append(node.aabb.min)
-      builder.append(", size = ").append(node.aabb.size).append(")")
-      builder.append(", objects: ")
-      if (null == node.objects) {
-        builder.append(0)
-      } else {
-        builder.append(node.objects.length)
-      }
-      builder.append(")\n")
-      if (null != node.childA) {
-        nodeToString(builder, level + 1, node.childA)
-      }
-      if (null != node.childB) {
-        nodeToString(builder, level + 1, node.childB)
-      }
-      builder.toString
-    }
-    val builder = new StringBuilder
-    return nodeToString(builder, 0, root)
-  }
 }
 
-class BvhNode(
-    val childA: BvhNode,
-    val childB: BvhNode,
-    val objects: Array[SceneObject],
-    val aabb: AABB,
-    val level: Int) {
-
-  def depth(ray: Ray): Double = if (aabb.contains(ray.start)) 0.0 else aabb.getIntersectionDepth(ray)
-
-  def intersectObjects(ray: Ray): Intersection = {
-    var minDepth: Double = Double.PositiveInfinity
-    var hitIndex: Int = -1
-    var i = 0
-    while (i < objects.length) {
-      val depth = objects(i).shape.getIntersectionDepth(ray)
-      if (depth < minDepth) {
-        minDepth = depth
-        hitIndex = i
-      }
-      i += 1
-    }
-    if (0 > hitIndex) return null
-    return new Intersection(minDepth, objects(hitIndex))
-  }
-}
-
-class NodeCreationTask(objects: SubArray[BoxedObject], level: Int) extends RecursiveTask[BvhNode] {
+class NodeCreationTask(objects: SubArray[BoxedShape], level: Int) extends RecursiveTask[BvhNode] {
 
   //  printf("Created NodeTask, objects: %d, level: %d\n", objects.length, level)
 
   override def compute: BvhNode = {
     if (objects.length <= 24) {
       val nodeBB = calculateBB(objects)
-      return new BvhNode(null, null, objects.map { _.obj }.toArray, nodeBB, level)
+      return new BvhNode(
+        null,
+        null,
+        objects.map { _.shape }.toArray,
+        objects.map { _.material }.toArray,
+        nodeBB,
+        level)
     }
 
     val maxChildSize = objects.length - 1
@@ -138,89 +105,10 @@ class NodeCreationTask(objects: SubArray[BoxedObject], level: Int) extends Recur
     var ordIndex = 0
     var index = -1
 
-    val orderings: Array[Comparator[BoxedObject]] = Array(
-      // TODO move implementations out into objects
-      new Comparator[BoxedObject]() {
-        override def compare(o1: BoxedObject, o2: BoxedObject): Int = {
-          val x1 = o1.box.center.x
-          val x2 = o2.box.center.x
-          if (x1 < x2) return -1
-          if (x1 > x2) return 1
-          return 0
-        }
-      },
-      new Comparator[BoxedObject]() {
-        override def compare(o1: BoxedObject, o2: BoxedObject): Int = {
-          val x1 = o1.box.min.x
-          val x2 = o2.box.min.x
-          if (x1 < x2) return -1
-          if (x1 > x2) return 1
-          return 0
-        }
-      },
-      new Comparator[BoxedObject]() {
-        override def compare(o1: BoxedObject, o2: BoxedObject): Int = {
-          val x1 = o1.box.max.x
-          val x2 = o2.box.max.x
-          if (x1 < x2) return -1
-          if (x1 > x2) return 1
-          return 0
-        }
-      },
-      new Comparator[BoxedObject]() {
-        override def compare(o1: BoxedObject, o2: BoxedObject): Int = {
-          val y1 = o1.box.center.y
-          val y2 = o2.box.center.y
-          if (y1 < y2) return -1
-          if (y1 > y2) return 1
-          return 0
-        }
-      },
-      new Comparator[BoxedObject]() {
-        override def compare(o1: BoxedObject, o2: BoxedObject): Int = {
-          val y1 = o1.box.min.y
-          val y2 = o2.box.min.y
-          if (y1 < y2) return -1
-          if (y1 > y2) return 1
-          return 0
-        }
-      },
-      new Comparator[BoxedObject]() {
-        override def compare(o1: BoxedObject, o2: BoxedObject): Int = {
-          val y1 = o1.box.max.y
-          val y2 = o2.box.max.y
-          if (y1 < y2) return -1
-          if (y1 > y2) return 1
-          return 0
-        }
-      },
-      new Comparator[BoxedObject]() {
-        override def compare(o1: BoxedObject, o2: BoxedObject): Int = {
-          val z1 = o1.box.center.z
-          val z2 = o2.box.center.z
-          if (z1 < z2) return -1
-          if (z1 > z2) return 1
-          return 0
-        }
-      },
-      new Comparator[BoxedObject]() {
-        override def compare(o1: BoxedObject, o2: BoxedObject): Int = {
-          val z1 = o1.box.min.z
-          val z2 = o2.box.min.z
-          if (z1 < z2) return -1
-          if (z1 > z2) return 1
-          return 0
-        }
-      },
-      new Comparator[BoxedObject]() {
-        override def compare(o1: BoxedObject, o2: BoxedObject): Int = {
-          val z1 = o1.box.max.z
-          val z2 = o2.box.max.z
-          if (z1 < z2) return -1
-          if (z1 > z2) return 1
-          return 0
-        }
-      })
+    val orderings: Array[Comparator[BoxedShape]] = Array(
+      BoxMinXOrder, BoxCenterXOrder, BoxMaxXOrder,
+      BoxMinYOrder, BoxCenterYOrder, BoxMaxYOrder,
+      BoxMinZOrder, BoxCenterZOrder, BoxMaxZOrder)
     while (ordIndex < orderings.length) {
       objects.sort(orderings(ordIndex))
       val taskA = new SurfaceAreaAccumulator(objects, 0, maxChildSize, 1).fork
@@ -256,10 +144,10 @@ class NodeCreationTask(objects: SubArray[BoxedObject], level: Int) extends Recur
     val childA = taskA.join
     val childB = taskB.join
 
-    new BvhNode(childA, childB, null, childA.aabb.enclose(childB.aabb), level)
+    new BvhNode(childA, childB, null, null, childA.aabb.enclose(childB.aabb), level)
   }
 
-  def calculateBB(objects: SubArray[BoxedObject]): AABB = {
+  def calculateBB(objects: SubArray[BoxedShape]): AABB = {
     var i = 0
     var minX = Double.MaxValue
     var minY = Double.MaxValue
@@ -283,7 +171,7 @@ class NodeCreationTask(objects: SubArray[BoxedObject], level: Int) extends Recur
   }
 
   class SurfaceAreaAccumulator(
-      val source: SubArray[BoxedObject],
+      val source: SubArray[BoxedShape],
       val from: Int,
       val until: Int,
       val step: Int) extends RecursiveTask[Array[Double]] {
@@ -305,4 +193,86 @@ class NodeCreationTask(objects: SubArray[BoxedObject], level: Int) extends Recur
   }
 }
 
-class BoxedObject(val obj: SceneObject, val box: AABB)
+class BoxedShape(val shape: Shape, val material: Material, val box: AABB)
+
+object BoxCenterXOrder extends Comparator[BoxedShape] {
+  override def compare(o1: BoxedShape, o2: BoxedShape): Int = {
+    val x1 = o1.box.center.x
+    val x2 = o2.box.center.x
+    if (x1 < x2) return -1
+    if (x1 > x2) return 1
+    return 0
+  }
+}
+object BoxMinXOrder extends Comparator[BoxedShape] {
+  override def compare(o1: BoxedShape, o2: BoxedShape): Int = {
+    val x1 = o1.box.min.x
+    val x2 = o2.box.min.x
+    if (x1 < x2) return -1
+    if (x1 > x2) return 1
+    return 0
+  }
+}
+object BoxMaxXOrder extends Comparator[BoxedShape] {
+  override def compare(o1: BoxedShape, o2: BoxedShape): Int = {
+    val x1 = o1.box.max.x
+    val x2 = o2.box.max.x
+    if (x1 < x2) return -1
+    if (x1 > x2) return 1
+    return 0
+  }
+}
+object BoxCenterYOrder extends Comparator[BoxedShape] {
+  override def compare(o1: BoxedShape, o2: BoxedShape): Int = {
+    val y1 = o1.box.center.y
+    val y2 = o2.box.center.y
+    if (y1 < y2) return -1
+    if (y1 > y2) return 1
+    return 0
+  }
+}
+object BoxMinYOrder extends Comparator[BoxedShape] {
+  override def compare(o1: BoxedShape, o2: BoxedShape): Int = {
+    val y1 = o1.box.min.y
+    val y2 = o2.box.min.y
+    if (y1 < y2) return -1
+    if (y1 > y2) return 1
+    return 0
+  }
+}
+object BoxMaxYOrder extends Comparator[BoxedShape] {
+  override def compare(o1: BoxedShape, o2: BoxedShape): Int = {
+    val y1 = o1.box.max.y
+    val y2 = o2.box.max.y
+    if (y1 < y2) return -1
+    if (y1 > y2) return 1
+    return 0
+  }
+}
+object BoxCenterZOrder extends Comparator[BoxedShape] {
+  override def compare(o1: BoxedShape, o2: BoxedShape): Int = {
+    val z1 = o1.box.center.z
+    val z2 = o2.box.center.z
+    if (z1 < z2) return -1
+    if (z1 > z2) return 1
+    return 0
+  }
+}
+object BoxMinZOrder extends Comparator[BoxedShape] {
+  override def compare(o1: BoxedShape, o2: BoxedShape): Int = {
+    val z1 = o1.box.min.z
+    val z2 = o2.box.min.z
+    if (z1 < z2) return -1
+    if (z1 > z2) return 1
+    return 0
+  }
+}
+object BoxMaxZOrder extends Comparator[BoxedShape] {
+  override def compare(o1: BoxedShape, o2: BoxedShape): Int = {
+    val z1 = o1.box.max.z
+    val z2 = o2.box.max.z
+    if (z1 < z2) return -1
+    if (z1 > z2) return 1
+    return 0
+  }
+}

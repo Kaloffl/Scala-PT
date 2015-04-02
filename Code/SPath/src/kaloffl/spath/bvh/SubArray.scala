@@ -51,10 +51,18 @@ class SubArray[T](
   }
 
   def sort(ord: Comparator[T]): Unit = {
-    Arrays.sort(
-      array.asInstanceOf[Array[Object]],
-      from,
-      until,
-      ord.asInstanceOf[Comparator[Object]])
+//    if (length > 32) {
+//      Arrays.parallelSort(
+//        array.asInstanceOf[Array[Object]],
+//        from,
+//        until,
+//        ord.asInstanceOf[Comparator[Object]])
+//    } else {
+      Arrays.sort(
+        array.asInstanceOf[Array[Object]],
+        from,
+        until,
+        ord.asInstanceOf[Comparator[Object]])
+//    }
   }
 }

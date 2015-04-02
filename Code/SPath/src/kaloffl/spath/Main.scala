@@ -71,7 +71,7 @@ object Main {
     val matCyanLight = new LightMaterial(Color(4.0f, 8.0f, 16.0f))
 
     val matGrayDiffuse = new DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
-    
+
     val objects = Array(
 
       //      new SceneObject(
@@ -117,7 +117,9 @@ object Main {
         new Plane(Vec3d.BACK, 16.0f),
         matBlackDiffuse))
 
-    val dragon = PlyImporter.load("D:/temp/dragon.ply", Vec3d(40), Vec3d(-0.5, -2, 0)).map { f ⇒ new SceneObject(f, matYellowDiffuse) }
+    val dragon = new SceneObject(
+      PlyImporter.load("D:/temp/dragon.ply", Vec3d(40), Vec3d(-0.5, -2, 0)),
+      matYellowDiffuse)
 
     val allDiffuse = Array(
 
@@ -136,6 +138,8 @@ object Main {
       new SceneObject(
         new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f),
         matBlackDiffuse),
+
+      dragon,
 
       new SceneObject(
         new AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
@@ -166,7 +170,7 @@ object Main {
 
       new SceneObject(new Sphere(Vec3d(0, 2, 0), 2), matRedDiffuse))
 
-    val scene = new Scene(allDiffuse ++ dragon, camera)
+    val scene = new Scene(allDiffuse, camera)
     pathTracer.render(display, scene, bounces = 32)
   }
 }
