@@ -17,6 +17,7 @@ import kaloffl.spath.scene.CheckeredMaterial
 import kaloffl.spath.scene.shapes.Triangle
 import kaloffl.spath.importer.PlyImporter
 import kaloffl.spath.scene.DiffuseMaterial
+import kaloffl.spath.math.Color
 
 /**
  * Entry 'class' to the program.
@@ -30,24 +31,24 @@ object Main {
     val up = front.cross(Vec3d.RIGHT).normalize
     val camera = new Camera(Vec3d(0, 5, 13), front, up, 0.1f, 13f)
 
-    val colorWhite = Vec3d(0.9, 0.9, 0.9)
-    val colorBlack = Vec3d(0.1, 0.1, 0.1)
+    val colorWhite = Color(0.9f, 0.9f, 0.9f)
+    val colorBlack = Color(0.1f, 0.1f, 0.1f)
 
-    val colorRed = Vec3d(0.9, 0.1, 0.1)
-    val colorGreen = Vec3d(0.1, 0.9, 0.1)
-    val colorBlue = Vec3d(0.1, 0.1, 0.9)
+    val colorRed = Color(0.9f, 0.1f, 0.1f)
+    val colorGreen = Color(0.1f, 0.9f, 0.1f)
+    val colorBlue = Color(0.1f, 0.1f, 0.9f)
 
-    val colorYellow = Vec3d(0.9, 0.9, 0.1)
-    val colorCyan = Vec3d(0.1, 0.9, 0.9)
-    val colorPink = Vec3d(0.9, 0.1, 0.9)
+    val colorYellow = Color(0.9f, 0.9f, 0.1f)
+    val colorCyan = Color(0.1f, 0.9f, 0.9f)
+    val colorPink = Color(0.9f, 0.1f, 0.9f)
 
     val matWhiteDiffuse = new DiffuseMaterial(colorWhite)
-    val matWhiteLight = new LightMaterial(Vec3d.WHITE * 2)
-    val matWhiteDiffuseReflective = new AllroundMaterial(Vec3d.BLACK, colorWhite, 1.0f, 0.0f, 0.0f, 0.9f)
+    val matWhiteLight = new LightMaterial(Color.WHITE * 2)
+    val matWhiteDiffuseReflective = new AllroundMaterial(Color.BLACK, colorWhite, 1.0f, 0.0f, 0.0f, 0.9f)
 
-    val matWhiteGlass = new AllroundMaterial(Vec3d.BLACK, Vec3d.WHITE, 0.25f, 1.0f, 1.52f, 0.0f)
-    val matWhiteMirror = new AllroundMaterial(Vec3d.BLACK, Vec3d.WHITE, 1.0f, 0.0f, 0.0f, 0.0f)
-    val matWhiteGlassMirror = new AllroundMaterial(Vec3d.BLACK, Vec3d.WHITE, 1.0f, 1.0f, 1.52f, 0.0f)
+    val matWhiteGlass = new AllroundMaterial(Color.BLACK, Color.WHITE, 0.25f, 1.0f, 1.52f, 0.0f)
+    val matWhiteMirror = new AllroundMaterial(Color.BLACK, Color.WHITE, 1.0f, 0.0f, 0.0f, 0.0f)
+    val matWhiteGlassMirror = new AllroundMaterial(Color.BLACK, Color.WHITE, 1.0f, 1.0f, 1.52f, 0.0f)
 
     val matBlackDiffuse = new CheckeredMaterial(colorBlack, colorBlue)
 
@@ -59,17 +60,17 @@ object Main {
     val matCyanDiffuse = new DiffuseMaterial(colorCyan)
     val matPinkDiffuse = new DiffuseMaterial(colorPink)
 
-    val matBlackGlass = new AllroundMaterial(Vec3d.BLACK, Vec3d.BLACK, 0.25f, 1.0f, 1.52f, 0.0f)
-    val matBlackMirror = new AllroundMaterial(Vec3d.BLACK, Vec3d.BLACK, 1.0f, 0.0f, 0.0f, 0.0f)
-    val matBlackGlassMirror = new AllroundMaterial(Vec3d.BLACK, Vec3d.BLACK, 1.0f, 1.0f, 1.52f, 0.0f)
+    val matBlackGlass = new AllroundMaterial(Color.BLACK, Color.BLACK, 0.25f, 1.0f, 1.52f, 0.0f)
+    val matBlackMirror = new AllroundMaterial(Color.BLACK, Color.BLACK, 1.0f, 0.0f, 0.0f, 0.0f)
+    val matBlackGlassMirror = new AllroundMaterial(Color.BLACK, Color.BLACK, 1.0f, 1.0f, 1.52f, 0.0f)
 
-    val matBlueMirror = new AllroundMaterial(Vec3d.BLACK, Vec3d.BLUE, 1.0f, 0.0f, 0.0f, 0.9f)
+    val matBlueMirror = new AllroundMaterial(Color.BLACK, Color.BLUE, 1.0f, 0.0f, 0.0f, 0.9f)
 
-    val matCyanGlass = new AllroundMaterial(Vec3d.BLACK, Vec3d(0.0f, 0.5f, 1.0f), 0.25f, 1.0f, 1.52f, 0.0f)
+    val matCyanGlass = new AllroundMaterial(Color.BLACK, Color(0.0f, 0.5f, 1.0f), 0.25f, 1.0f, 1.52f, 0.0f)
 
-    val matCyanLight = new LightMaterial(Vec3d(4.0f, 8.0f, 16.0f))
+    val matCyanLight = new LightMaterial(Color(4.0f, 8.0f, 16.0f))
 
-    val matGrayDiffuse = new DiffuseMaterial(Vec3d(0.5))
+    val matGrayDiffuse = new DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
     
     val objects = Array(
 

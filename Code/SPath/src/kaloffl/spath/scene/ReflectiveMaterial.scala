@@ -1,12 +1,13 @@
 package kaloffl.spath.scene
 
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.Color
 
 /**
  * @author Lars
  */
-class ReflectiveMaterial(val color: Vec3d, val glossiness: Double) extends Material {
-  def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Vec3d = color
+class ReflectiveMaterial(val color: Color, val glossiness: Double) extends Material {
+  def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Color = color
 
   def reflectedNormal(
     surfaceNormal: Vec3d,

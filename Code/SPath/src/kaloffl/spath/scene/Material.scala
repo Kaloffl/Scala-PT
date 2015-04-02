@@ -1,6 +1,7 @@
 package kaloffl.spath.scene
 
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.Color
 
 /**
  * The Material of an object in the scene.
@@ -16,9 +17,9 @@ trait Material {
 
   def terminatesPath: Boolean = false
   
-  def maxEmittance: Vec3d = Vec3d.BLACK
+  def maxEmittance: Color = Color.BLACK
   
-  def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Vec3d
+  def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Color
   
   def reflectedNormal(surfaceNormal: Vec3d, incomingNormal: Vec3d, random: () ⇒ Float): Vec3d
 

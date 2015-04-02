@@ -1,14 +1,15 @@
 package kaloffl.spath.scene
 
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.Color
 
-class CheckeredMaterial(val colorA: Vec3d, val colorB: Vec3d) extends Material {
+class CheckeredMaterial(val colorA: Color, val colorB: Color) extends Material {
 
   def directionValue(position: Double): Boolean = {
     (position * 5).toInt % 2 == 0
   }
 
-  def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Vec3d = {
+  def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Color = {
     if (directionValue(worldPos.x) ^ directionValue(worldPos.y) ^ directionValue(worldPos.z)) {
       colorA
     } else {

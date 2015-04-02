@@ -1,18 +1,21 @@
 package kaloffl.spath.scene
 
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.Color
 
 class AllroundMaterial(
-    emittance: Vec3d,
-    reflectance: Vec3d,
+    emittance: Color,
+    reflectance: Color,
     reflectivity: Float,
     refractivity: Float,
     refractivityIndex: Float,
     glossiness: Float) extends Material {
 
-  override def terminatesPath: Boolean = 0 < emittance.lengthSq
+  override def terminatesPath: Boolean = {
+    (0 == emittance.r) | (0 == emittance.g) | (0 == emittance.b)
+  }
 
-  override def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Vec3d = {
+  override def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Color = {
     if (terminatesPath) {
       return emittance
     }

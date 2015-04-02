@@ -6,6 +6,7 @@ import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.SceneObject
 import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.math.Color
 
 /**
  * A worker that renders a chink of the final image by shooting rays through
@@ -28,7 +29,7 @@ class TracingWorker(
     val random: () ⇒ Float) {
 
   // The sum of determined colors is stored in this array per-channel-per-pixel
-  val samples: Array[Double] = new Array[Double](width * height * 3)
+  val samples: Array[Float] = new Array[Float](width * height * 3)
   val camera: Camera = scene.camera
 
   // the number of passes that have been rendered
@@ -52,9 +53,9 @@ class TracingWorker(
       val color = pathTrace(ray, maxBounces)
 
       val sampleIndex = index * 3
-      samples(sampleIndex) += color.x
-      samples(sampleIndex + 1) += color.y
-      samples(sampleIndex + 2) += color.z
+      samples(sampleIndex) += color.r
+      samples(sampleIndex + 1) += color.g
+      samples(sampleIndex + 2) += color.b
     }
   }
 
@@ -85,9 +86,9 @@ class TracingWorker(
    * Tries to find direct lighting of a point in space by targeting random
    * points in the lights of the scene and tracing to them.
    */
-  def directLight(pos: Vec3d, normal: Vec3d, random: () ⇒ Float): Vec3d = {
+  def directLight(pos: Vec3d, normal: Vec3d, random: () ⇒ Float): Color = {
     val lights = scene.lights
-    if (0 == lights.length) return Vec3d.BLACK
+    if (0 == lights.length) return Color.BLACK
 
     val index = (lights.length * random()).toInt
 
@@ -104,23 +105,23 @@ class TracingWorker(
         return light.material.reflectanceAt(worldPos, surfaceNormal)
       }
     }
-    return Vec3d.BLACK
+    return Color.BLACK
   }
 
   /**
    * @return a color that might depend on the incoming normal
    */
-  def skyColor(normal: Vec3d): Vec3d = {
-    return Vec3d.BLACK
+  def skyColor(normal: Vec3d): Color = {
+    return Color.BLACK
   }
 
   /**
    * Traces a ray in the scene and reacts to intersections depending on the
    * material that was hit.
    */
-  def pathTrace(startRay: Ray, bounces: Int): Vec3d = {
+  def pathTrace(startRay: Ray, bounces: Int): Color = {
     var bounce = 0
-    var color = Vec3d.WHITE
+    var color = Color.WHITE
     var ray = startRay
     val rouletThreshold = bounces * 0.9f
     val killThreshold = 1.0f / Math.max((bounces * 0.1f).toInt, 1)
@@ -140,7 +141,7 @@ class TracingWorker(
       color = color * material.reflectanceAt(point, surfaceNormal)
 
       if (material.terminatesPath) return color
-      if (bounce == bounces) return Vec3d.BLACK
+      if (bounce == bounces) return Color.BLACK
 
       // The more bounces the ray went the higher the chance is that we will just
       // calculate the direct light and stop it. This way we reduce rendering time
@@ -151,6 +152,6 @@ class TracingWorker(
       val newDir = material.reflectedNormal(surfaceNormal, ray.normal, random)
       ray = new Ray(point, newDir)
     }
-    Vec3d.BLACK
+    return Color.BLACK
   }
 }

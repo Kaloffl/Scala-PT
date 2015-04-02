@@ -1,10 +1,11 @@
 package kaloffl.spath.scene
 
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.Color
 
-class DiffuseMaterial(val color: Vec3d) extends Material {
+class DiffuseMaterial(val color: Color) extends Material {
 
-  override def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Vec3d = {
+  override def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Color = {
     return color
   }
   
