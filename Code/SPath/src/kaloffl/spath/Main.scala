@@ -18,6 +18,8 @@ import kaloffl.spath.scene.shapes.Triangle
 import kaloffl.spath.importer.PlyImporter
 import kaloffl.spath.scene.DiffuseMaterial
 import kaloffl.spath.math.Color
+import kaloffl.spath.scene.RefractiveMaterial
+import kaloffl.spath.bvh.BvhToFile
 
 /**
  * Entry 'class' to the program.
@@ -29,7 +31,7 @@ object Main {
     val pathTracer = new PathTracer
     val front = Vec3d(0, -2.5, -13).normalize
     val up = front.cross(Vec3d.RIGHT).normalize
-    val camera = new Camera(Vec3d(0, 5, 13), front, up, 0.1f, 13f)
+    val camera = new Camera(Vec3d(0, 5, 13), front, up, 0.1f, Vec3d(0, -2.5, -13).length)
 
     val colorWhite = Color(0.9f, 0.9f, 0.9f)
     val colorBlack = Color(0.1f, 0.1f, 0.1f)
@@ -46,8 +48,8 @@ object Main {
     val matWhiteLight = new LightMaterial(Color.WHITE * 2)
     val matWhiteDiffuseReflective = new AllroundMaterial(Color.BLACK, colorWhite, 1.0f, 0.0f, 0.0f, 0.9f)
 
-    val matWhiteGlass = new AllroundMaterial(Color.BLACK, Color.WHITE, 0.25f, 1.0f, 1.52f, 0.0f)
-    val matWhiteMirror = new AllroundMaterial(Color.BLACK, Color.WHITE, 1.0f, 0.0f, 0.0f, 0.0f)
+    val matWhiteGlass = new RefractiveMaterial(Color.WHITE, 1.52, 0.0075)
+    val matWhiteMirror = new ReflectiveMaterial(Color.WHITE, 0.0f)
     val matWhiteGlassMirror = new AllroundMaterial(Color.BLACK, Color.WHITE, 1.0f, 1.0f, 1.52f, 0.0f)
 
     val matBlackDiffuse = new CheckeredMaterial(colorBlack, colorBlue)
@@ -69,6 +71,8 @@ object Main {
     val matCyanGlass = new AllroundMaterial(Color.BLACK, Color(0.0f, 0.5f, 1.0f), 0.25f, 1.0f, 1.52f, 0.0f)
 
     val matCyanLight = new LightMaterial(Color(4.0f, 8.0f, 16.0f))
+
+    val matRedGlass = new RefractiveMaterial(colorRed, 1.52, 0.0)
 
     val matGrayDiffuse = new DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
 
@@ -119,7 +123,7 @@ object Main {
 
     val dragon = new SceneObject(
       PlyImporter.load("D:/temp/dragon.ply", Vec3d(40), Vec3d(-0.5, -2, 0)),
-      matYellowDiffuse)
+      matWhiteGlass)
 
     val allDiffuse = Array(
 
@@ -171,6 +175,7 @@ object Main {
       new SceneObject(new Sphere(Vec3d(0, 2, 0), 2), matRedDiffuse))
 
     val scene = new Scene(allDiffuse, camera)
+//    BvhToFile.toFile(scene.bvh, "bvhCollapsed.txt")
     pathTracer.render(display, scene, bounces = 32)
   }
 }

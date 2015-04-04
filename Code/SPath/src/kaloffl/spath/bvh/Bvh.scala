@@ -22,6 +22,10 @@ import kaloffl.spath.scene.Material
 import java.util.stream.Collectors
 import java.util.function.IntFunction
 
+object Bvh {
+  val MAX_LEAF_SIZE = 24
+}
+
 class Bvh(objects: Array[SceneObject]) {
 
   val root: BvhNode = ForkJoinPool.commonPool().invoke(new NodeCreationTask(boxObjects(objects), 0))
@@ -61,21 +65,20 @@ class Bvh(objects: Array[SceneObject]) {
         return closest
       }
       val headNode = head.node
-      if (null == headNode.childA) {
+      if (null == headNode.children) {
         val intersection = headNode.intersectObjects(ray)
         if (null != intersection && closest.depth > intersection.depth) {
           closest = intersection
         }
       } else {
-        val childA = headNode.childA
-        val depthA = childA.depth(ray)
-        if (!depthA.isInfinite && depthA < closest.depth) {
-          stack add new NodeIntersection(depthA, childA)
-        }
-        val childB = headNode.childB
-        val depthB = childB.depth(ray)
-        if (!depthB.isInfinite && depthB < closest.depth) {
-          stack add new NodeIntersection(depthB, childB)
+        var i = 0
+        while (i < headNode.children.length) {
+          val child = headNode.children(i)
+          val depth = child.depth(ray)
+          if (!depth.isInfinite && depth < closest.depth) {
+            stack add new NodeIntersection(depth, child)
+          }
+          i += 1
         }
       }
     }
@@ -88,18 +91,19 @@ class NodeCreationTask(objects: SubArray[BoxedShape], level: Int) extends Recurs
   //  printf("Created NodeTask, objects: %d, level: %d\n", objects.length, level)
 
   override def compute: BvhNode = {
-    if (objects.length <= 24) {
-      val nodeBB = calculateBB(objects)
+    if (objects.length <= Bvh.MAX_LEAF_SIZE) {
+      val array = objects.toArray
+      val nodeBB = calculateBB[BoxedShape](array, shape ⇒ shape.box)
       return new BvhNode(
         null,
-        null,
-        objects.map { _.shape }.toArray,
-        objects.map { _.material }.toArray,
+        array.map { _.shape },
+        array.map { _.material },
         nodeBB,
         level)
     }
 
-    val maxChildSize = objects.length - 1
+    val padding = 1 //Bvh.MAX_LEAF_SIZE / 2
+    val maxChildSize = objects.length - padding
     var smallest = Double.MaxValue
     var bestOrder = 0
     var ordIndex = 0
@@ -112,14 +116,15 @@ class NodeCreationTask(objects: SubArray[BoxedShape], level: Int) extends Recurs
     while (ordIndex < orderings.length) {
       objects.sort(orderings(ordIndex))
       val taskA = new SurfaceAreaAccumulator(objects, 0, maxChildSize, 1).fork
-      val taskB = new SurfaceAreaAccumulator(objects, maxChildSize, 0, -1).fork
+      val taskB = new SurfaceAreaAccumulator(objects, objects.length - 1, padding - 1, -1).fork
       val surfaceAreasA = taskA.join
       val surfaceAreasB = taskB.join
 
-      var i = 0
+      var i = padding
       while (i < maxChildSize) {
         val scoreA = surfaceAreasA(i) * (i + 1)
-        val scoreB = surfaceAreasB(i) * (maxChildSize - i)
+        val i2 = i - padding
+        val scoreB = surfaceAreasB(i2) * (maxChildSize - i2)
         val score = scoreA + scoreB
         if (score < smallest) {
           smallest = score
@@ -131,23 +136,31 @@ class NodeCreationTask(objects: SubArray[BoxedShape], level: Int) extends Recurs
       ordIndex += 1
     }
 
-    if (bestOrder != orderings.length + 1) {
+    if (bestOrder != orderings.length - 1) {
       objects.sort(orderings(bestOrder))
     }
 
     val objectsA = objects.slice(0, index + 1)
-    val objectsB = objects.slice(index + 1, maxChildSize + 1)
+    val objectsB = objects.slice(index + 1, objects.length)
 
     val taskA = new NodeCreationTask(objectsA, level + 1).fork
     val taskB = new NodeCreationTask(objectsB, level + 1).fork
 
-    val childA = taskA.join
-    val childB = taskB.join
+    val children = Array(taskA.join, taskB.join)
+    val bb = calculateBB[BvhNode](children, node ⇒ node.aabb)
 
-    new BvhNode(childA, childB, null, null, childA.aabb.enclose(childB.aabb), level)
+    if (level % 2 == 0) {
+      val collapsed = children.flatMap { node ⇒
+        if (null != node.children) node.children
+        else Array(node)
+      }
+      new BvhNode(collapsed, null, null, bb, level)
+    } else {
+      new BvhNode(children, null, null, bb, level)
+    }
   }
 
-  def calculateBB(objects: SubArray[BoxedShape]): AABB = {
+  def calculateBB[T](objects: Array[T], unbox: T ⇒ AABB): AABB = {
     var i = 0
     var minX = Double.MaxValue
     var minY = Double.MaxValue
@@ -156,7 +169,7 @@ class NodeCreationTask(objects: SubArray[BoxedShape], level: Int) extends Recurs
     var maxY = Double.MinValue
     var maxZ = Double.MinValue
     while (i < objects.length) {
-      val objBB = objects(i).box
+      val objBB = unbox(objects(i))
       minX = Math.min(minX, objBB.min.x)
       minY = Math.min(minY, objBB.min.y)
       minZ = Math.min(minZ, objBB.min.z)

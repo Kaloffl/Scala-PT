@@ -8,8 +8,7 @@ import kaloffl.spath.scene.Material
 import kaloffl.spath.scene.shapes.Shape
 
 class BvhNode(
-    val childA: BvhNode,
-    val childB: BvhNode,
+    val children: Array[BvhNode],
     val shapes: Array[Shape],
     val materials: Array[Material],
     val aabb: AABB,

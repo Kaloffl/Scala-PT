@@ -12,7 +12,7 @@ class AllroundMaterial(
     glossiness: Float) extends Material {
 
   override def terminatesPath: Boolean = {
-    (0 == emittance.r) | (0 == emittance.g) | (0 == emittance.b)
+    (0 != emittance.r) | (0 != emittance.g) | (0 != emittance.b)
   }
 
   override def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Color = {
