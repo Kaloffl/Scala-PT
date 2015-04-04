@@ -6,7 +6,7 @@ import kaloffl.spath.math.Color
 class CheckeredMaterial(val colorA: Color, val colorB: Color) extends Material {
 
   def directionValue(position: Double): Boolean = {
-    (position * 5).toInt % 2 == 0
+    ((position * 2).toInt % 2 == 0) ^ position > 0
   }
 
   def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Color = {

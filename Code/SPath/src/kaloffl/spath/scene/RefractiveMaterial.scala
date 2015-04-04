@@ -18,10 +18,10 @@ class RefractiveMaterial(
     random: () ⇒ Float): Vec3d = {
 
     val randomness = surfaceNormal.randomHemisphere(random)
-    val refracted = incomingNormal.refract(surfaceNormal, 1.0f, refractivityIndex)
-      if (0.0f < glossiness) {
-        return (refracted + randomness).normalize
-      }
-      return refracted
+    val axis = surfaceNormal * (1 - glossiness) + randomness * glossiness
+    if (axis.dot(incomingNormal) > 0) {
+      return incomingNormal.refract(-axis, 1.0f, refractivityIndex)
+    }
+    return incomingNormal.refract(axis, 1.0f, refractivityIndex)
   }
 }

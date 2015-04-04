@@ -48,11 +48,13 @@ object Main {
     val matWhiteLight = new LightMaterial(Color.WHITE * 2)
     val matWhiteDiffuseReflective = new AllroundMaterial(Color.BLACK, colorWhite, 1.0f, 0.0f, 0.0f, 0.9f)
 
-    val matWhiteGlass = new RefractiveMaterial(Color.WHITE, 1.52, 0.0075)
+    val matWhiteGlass = new RefractiveMaterial(Color.WHITE, 1.52, 0.0)
     val matWhiteMirror = new ReflectiveMaterial(Color.WHITE, 0.0f)
     val matWhiteGlassMirror = new AllroundMaterial(Color.BLACK, Color.WHITE, 1.0f, 1.0f, 1.52f, 0.0f)
 
-    val matBlackDiffuse = new CheckeredMaterial(colorBlack, colorBlue)
+    val matBlackDiffuse = new DiffuseMaterial(colorBlack)
+    val matBlackBlueCheckered = new CheckeredMaterial(colorBlack, colorBlue)
+    val matBlackWhiteCheckered = new CheckeredMaterial(colorBlack, colorWhite)
 
     val matRedDiffuse = new DiffuseMaterial(colorRed)
     val matGreenDiffuse = new DiffuseMaterial(colorGreen)
@@ -123,8 +125,12 @@ object Main {
 
     val dragon = new SceneObject(
       PlyImporter.load("D:/temp/dragon.ply", Vec3d(40), Vec3d(-0.5, -2, 0)),
-      matWhiteGlass)
+      matYellowDiffuse)
 
+    val bunny = new SceneObject(
+      PlyImporter.load("D:/temp/bunny.ply", Vec3d(20), Vec3d(0, -0.5, 4)),
+      matWhiteGlass)
+    
     val allDiffuse = Array(
 
       new SceneObject(
@@ -144,10 +150,11 @@ object Main {
         matBlackDiffuse),
 
       dragon,
+      bunny,
 
       new SceneObject(
         new AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
-        matWhiteDiffuse),
+        matBlackWhiteCheckered),
       new SceneObject(
         new AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
         matWhiteLight),
@@ -176,6 +183,6 @@ object Main {
 
     val scene = new Scene(allDiffuse, camera)
 //    BvhToFile.toFile(scene.bvh, "bvhCollapsed.txt")
-    pathTracer.render(display, scene, bounces = 32)
+    pathTracer.render(display, scene, bounces = 16)
   }
 }

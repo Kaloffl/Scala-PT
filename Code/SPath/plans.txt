@@ -1,6 +1,9 @@
 pathtracer TODOs
 
-- controllable camera
+- camera
+	- controllable camera
+	- camera shutter shape
+	- camera movement for motion blur
 - switchable render mode
 	- raytracer
 	- path tracing
@@ -18,4 +21,4 @@ pathtracer TODOs
 - penetratable objects & penetration effects (fog, better colored glass)
 - life scene editing
 - portals
-- camera shutter shape
+- MaskedMaterial

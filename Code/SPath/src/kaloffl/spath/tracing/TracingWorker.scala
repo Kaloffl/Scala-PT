@@ -137,7 +137,14 @@ class TracingWorker(
       val material = intersection.material
 
       val point = ray.normal * intersection.depth + ray.start
-      val surfaceNormal = hitShape.getNormal(point)
+      val surfaceNormal = {
+        val normal = hitShape.getNormal(point)
+        if (normal.dot(ray.normal) > 0) {
+          -normal
+        } else {
+          normal
+        }
+      }
       // return (surfaceNormal + Vec3d.UNIT) / 2
       color = color * material.reflectanceAt(point, surfaceNormal)
 
