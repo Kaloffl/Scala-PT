@@ -1,10 +1,11 @@
 package kaloffl.spath
 
 import java.util.Arrays
+import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Consumer
+
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.tracing.TracingWorker
-import java.util.concurrent.ThreadLocalRandom
 
 /**
  * The PathTracer that can render an image of a given scene. This class handles
@@ -44,9 +45,7 @@ class PathTracer {
     val width = display.width / cols
     val height = display.height / rows
 
-    val random = () ⇒ {
-      ThreadLocalRandom.current().nextFloat
-    }
+    val random: () => Double = ThreadLocalRandom.current.nextDouble
 
     for (i ← 0 until numberOfWorkers) {
       val x = i % cols * width
@@ -64,7 +63,7 @@ class PathTracer {
       // supported by Scala.
       Arrays.stream(tracingWorkers).parallel.forEach(new Consumer[TracingWorker] {
         override def accept(worker: TracingWorker): Unit = {
-          worker.render(bounces, display.width, display.height)
+          worker.render(bounces, pass, display)
           worker.draw(display)
         }
       })

@@ -1,7 +1,8 @@
 package kaloffl.spath.scene
 
-import kaloffl.spath.math.Vec3d
 import kaloffl.spath.math.Color
+import kaloffl.spath.math.Vec3d
+import kaloffl.spath.tracing.Context
 
 class AllroundMaterial(
     emittance: Color,
@@ -12,26 +13,31 @@ class AllroundMaterial(
     glossiness: Float) extends Material {
 
   override def terminatesPath: Boolean = {
-    (0 != emittance.r) | (0 != emittance.g) | (0 != emittance.b)
+    (0 != emittance.r2) | (0 != emittance.g2) | (0 != emittance.b2)
   }
 
-  override def reflectanceAt(worldPos: Vec3d, normal: Vec3d): Color = {
+  override def reflectanceAt(
+    worldPos: Vec3d,
+    normal: Vec3d,
+    context: Context): Color = {
+
     if (terminatesPath) {
       return emittance
     }
     return reflectance
   }
 
-  override def reflectedNormal(
+  override def reflectNormal(
+    worldPos: Vec3d,
     surfaceNormal: Vec3d,
     incomingNormal: Vec3d,
-    random: () ⇒ Float): Vec3d = {
+    context: Context): Vec3d = {
 
-    val randomHs = surfaceNormal.randomHemisphere(random) * glossiness
+    val randomHs = surfaceNormal.randomHemisphere(context.random) * glossiness
 
     if (1.0f == glossiness) return randomHs
 
-    if (random() * (reflectivity + refractivity) < refractivity) {
+    if (context.random() * (reflectivity + refractivity) < refractivity) {
       val refracted = incomingNormal.refract(surfaceNormal, 1.0f, refractivityIndex)
       if (0.0f < glossiness) {
         return (refracted + randomHs).normalize

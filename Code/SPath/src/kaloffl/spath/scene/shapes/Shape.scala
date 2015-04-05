@@ -1,7 +1,7 @@
 package kaloffl.spath.scene.shapes
 
-import kaloffl.spath.tracing.Ray
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.tracing.Ray
 
 /**
  * The general contract of a shape that can be rendered by the path tracer.
@@ -21,7 +21,7 @@ trait Shape {
   /**
    * Returns a random point inside the shape.
    */
-  def getRandomInnerPoint(random: () ⇒ Float): Vec3d
+  def getRandomInnerPoint(random: () ⇒ Double): Vec3d
 
   /**
    * Tells the distance a ray must travel in order to intersect with the shape.

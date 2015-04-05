@@ -17,7 +17,7 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
       (point.z - position.z) / radius)
   }
 
-  override def getRandomInnerPoint(random: () ⇒ Float): Vec3d = {
+  override def getRandomInnerPoint(random: () ⇒ Double): Vec3d = {
     val dir =
       if (random.apply >= 0.5f) {
         Vec3d.UP

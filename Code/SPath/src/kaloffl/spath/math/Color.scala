@@ -1,18 +1,34 @@
 package kaloffl.spath.math
 
-class Color(val r: Float, val g: Float, val b: Float) {
+class Color(val r2: Float, val g2: Float, val b2: Float) {
 
-  def +(f: Float): Color = Color(r + f, g + f, b + f)
-  def +(c: Color): Color = Color(r + c.r, g + c.g, b + c.b)
+  def r: Float = Math.sqrt(r2).toFloat
+  def g: Float = Math.sqrt(g2).toFloat
+  def b: Float = Math.sqrt(b2).toFloat
 
-  def -(f: Float): Color = Color(r - f, g - f, b - f)
-  def -(c: Color): Color = Color(r - c.r, g - c.g, b - c.b)
+  def +(f: Float): Color = {
+    val f2 = f * f
+    new Color(r2 + f2, g2 + f2, b2 + f2)
+  }
+  def +(c: Color): Color = new Color(r2 + c.r2, g2 + c.g2, b2 + c.b2)
 
-  def *(f: Float): Color = Color(r * f, g * f, b * f)
-  def *(c: Color): Color = Color(r * c.r, g * c.g, b * c.b)
+  def -(f: Float): Color = {
+    val f2 = f * f
+    new Color(r2 - f2, g2 - f2, b2 - f2)
+  }
+  def -(c: Color): Color = new Color(r2 - c.r2, g2 - c.g2, b2 - c.b2)
 
-  def /(f: Float): Color = Color(r / f, g / f, b / f)
-  def /(c: Color): Color = Color(r / c.r, g / c.g, b / c.b)
+  def *(f: Float): Color = {
+    val f2 = f * f
+    new Color(r2 * f2, g2 * f2, b2 * f2)
+  }
+  def *(c: Color): Color = new Color(r2 * c.r2, g2 * c.g2, b2 * c.b2)
+
+  def /(f: Float): Color = {
+    val f2 = f * f
+    new Color(r2 / f2, g2 / f2, b2 / f2)
+  }
+  def /(c: Color): Color = new Color(r2 / c.r2, g2 / c.g2, b2 / c.b2)
 }
 
 object Color {
@@ -24,6 +40,6 @@ object Color {
   val GREEN = Color(0, 1, 0)
   val BLUE = Color(0, 0, 1)
 
-  def apply(r: Float, g: Float, b: Float) = new Color(r, g, b)
+  def apply(r: Float, g: Float, b: Float) = new Color(r * r, g * g, b * b)
   def apply(v: Vec3d) = new Color(v.x.toFloat, v.y.toFloat, v.z.toFloat)
 }

@@ -1,7 +1,7 @@
 package kaloffl.spath.scene
 
-import kaloffl.spath.tracing.Ray
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.tracing.Ray
 
 /**
  * A camera that has a position and orientation in space and can be used to
@@ -25,7 +25,7 @@ class Camera(
    * @param x - the horizontal position on the lens for the requested Ray
    * @param y - the vertical position on the lens for the requested Ray
    */
-  def createRay(random: () ⇒ Float, x: Float, y: Float): Ray = {
+  def createRay(random: () ⇒ Double, x: Double, y: Double): Ray = {
     // This method is called for every pixel for every sample which is a lot.
     // Because of that all the vector calculations here were inlined by hand
     // to avoid a lot of object creation.

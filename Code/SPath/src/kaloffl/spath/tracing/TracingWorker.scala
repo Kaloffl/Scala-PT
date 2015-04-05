@@ -1,12 +1,10 @@
 package kaloffl.spath.tracing
 
 import kaloffl.spath.Display
+import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.SceneObject
-import kaloffl.spath.scene.shapes.Shape
-import kaloffl.spath.math.Color
 
 /**
  * A worker that renders a chink of the final image by shooting rays through
@@ -26,7 +24,7 @@ class TracingWorker(
     val width: Int,
     val height: Int,
     val scene: Scene,
-    val random: () ⇒ Float) {
+    val random: () ⇒ Double) {
 
   // The sum of determined colors is stored in this array per-channel-per-pixel
   val samples: Array[Float] = new Array[Float](width * height * 3)
@@ -38,11 +36,14 @@ class TracingWorker(
   /**
    * Renders a pass and adds the color to the samples array
    */
-  def render(maxBounces: Int, dWidth: Int, dHeight: Int): Unit = {
+  def render(maxBounces: Int, pass: Int, display: Display): Unit = {
     samplesTaken += 1
 
+    val dWidth = display.width
+    val dHeight = display.height
     val displayOffsetX = dWidth * 0.5f + random() * 2.0f - 1.0f - left
     val displayOffsetY = dHeight * 0.5f + random() * 2.0f - 1.0f - top
+    val context = new Context(random, pass, maxBounces, display)
 
     val maxIndex = width * height
     for (index ← 0 until maxIndex) {
@@ -50,12 +51,12 @@ class TracingWorker(
       val y = (displayOffsetY - index / width) / dHeight
       val ray = camera.createRay(random, x, y)
 
-      val color = pathTrace(ray, maxBounces)
+      val color = pathTrace(ray, context)
 
       val sampleIndex = index * 3
-      samples(sampleIndex) += color.r
-      samples(sampleIndex + 1) += color.g
-      samples(sampleIndex + 2) += color.b
+      samples(sampleIndex) += color.r2
+      samples(sampleIndex + 1) += color.g2
+      samples(sampleIndex + 2) += color.b2
     }
   }
 
@@ -70,7 +71,7 @@ class TracingWorker(
       val i3 = index * 3
 
       def toColorChannelInt(value: Double): Int = {
-        (Math.min(Math.pow(value / samplesTaken, 0.45), 1) * 0xff).toInt
+        (Math.min(Math.sqrt(value / samplesTaken), 1) * 0xff).toInt
       }
 
       val red = toColorChannelInt(samples(i3))
@@ -86,7 +87,7 @@ class TracingWorker(
    * Tries to find direct lighting of a point in space by targeting random
    * points in the lights of the scene and tracing to them.
    */
-  def directLight(pos: Vec3d, normal: Vec3d, random: () ⇒ Float): Color = {
+  def directLight(pos: Vec3d, normal: Vec3d, context: Context): Color = {
     val lights = scene.lights
     if (0 == lights.length) return Color.BLACK
 
@@ -103,7 +104,7 @@ class TracingWorker(
       if (null != intersection && intersection.hitShape == light) {
         val worldPos = pos + dir * intersection.depth
         val surfaceNormal = light.getNormal(worldPos)
-        return lights(index).material.reflectanceAt(worldPos, surfaceNormal)
+        return lights(index).material.reflectanceAt(worldPos, surfaceNormal, context)
       }
     }
     return Color.BLACK
@@ -120,10 +121,11 @@ class TracingWorker(
    * Traces a ray in the scene and reacts to intersections depending on the
    * material that was hit.
    */
-  def pathTrace(startRay: Ray, bounces: Int): Color = {
+  def pathTrace(startRay: Ray, context: Context): Color = {
     var bounce = 0
     var color = Color.WHITE
     var ray = startRay
+    val bounces = context.maxBounces
     val rouletThreshold = bounces * 0.9f
     val killThreshold = 1.0f / Math.max((bounces * 0.1f).toInt, 1)
 
@@ -146,7 +148,7 @@ class TracingWorker(
         }
       }
       // return (surfaceNormal + Vec3d.UNIT) / 2
-      color = color * material.reflectanceAt(point, surfaceNormal)
+      color = color * material.reflectanceAt(point, surfaceNormal, context)
 
       if (material.terminatesPath) return color
       if (bounce == bounces) return Color.BLACK
@@ -154,10 +156,10 @@ class TracingWorker(
       // The more bounces the ray went the higher the chance is that we will just
       // calculate the direct light and stop it. This way we reduce rendering time
       // and create a brighter image.
-      if (bounce > rouletThreshold && random.apply() < killThreshold)
-        return directLight(point, surfaceNormal, random) * color
+      if (bounce > rouletThreshold && random() < killThreshold)
+        return directLight(point, surfaceNormal, context) * color
 
-      val newDir = material.reflectedNormal(surfaceNormal, ray.normal, random)
+      val newDir = material.reflectNormal(point, surfaceNormal, ray.normal, context)
       ray = new Ray(point, newDir)
     }
     return Color.BLACK

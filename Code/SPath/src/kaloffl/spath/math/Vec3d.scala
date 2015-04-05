@@ -76,7 +76,7 @@ case class Vec3d(x: Double, y: Double, z: Double) {
     return Vec3d(nx / length, ny / length, nz / length)
   }
 
-  def randomHemisphere(random: () ⇒ Float): Vec3d = {
+  def randomHemisphere(random: () ⇒ Double): Vec3d = {
     val angle = random() * 2.0 * Math.PI
     val rnd = random()
     val dist = Math.sqrt(1.0 - rnd * rnd)

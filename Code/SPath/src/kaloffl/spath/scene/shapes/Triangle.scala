@@ -56,7 +56,7 @@ class Triangle(val vertA: Vec3d, val vertB: Vec3d, val vertC: Vec3d) extends Sha
 
   override def getNormal(point: Vec3d): Vec3d = normal
 
-  override def getRandomInnerPoint(random: () ⇒ Float): Vec3d = {
+  override def getRandomInnerPoint(random: () ⇒ Double): Vec3d = {
     ???
   }
 }

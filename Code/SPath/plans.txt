@@ -21,4 +21,4 @@ pathtracer TODOs
 - penetratable objects & penetration effects (fog, better colored glass)
 - life scene editing
 - portals
-- MaskedMaterial
+- Better Random class
