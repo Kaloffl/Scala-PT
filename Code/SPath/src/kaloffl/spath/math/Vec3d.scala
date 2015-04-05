@@ -55,23 +55,22 @@ case class Vec3d(x: Double, y: Double, z: Double) {
   }
 
   def refract(v: Vec3d, i1: Double, i2: Double): Vec3d = {
-    val NdotI = dot(v)
+    val cosI = dot(v)
+    val n = if (cosI > 0.0) i2 / i1 else i1 / i2
+    val sinT2 = n * n * (1.0 - cosI * cosI)
 
-    val eta = if (NdotI > 0.0) i2 / i1 else i1 / i2
-    val k = eta * eta * (1.0 - NdotI * NdotI)
-
-    if (k > 1.0f) {
-      val a = (x * v.x + y * v.y + z * v.z) * 2.0f
+    if (sinT2 > 1.0f) {
+      val a = cosI * 2.0f
       return Vec3d(
         x - (v.x * a),
         y - (v.y * a),
         z - (v.z * a))
     }
 
-    val a = eta * NdotI - Math.sqrt(1.0 - k)
-    val nx = x * eta + v.x * a
-    val ny = y * eta + v.y * a
-    val nz = z * eta + v.z * a
+    val a = n * cosI + Math.sqrt(1.0 - sinT2)
+    val nx = x * n - v.x * a
+    val ny = y * n - v.y * a
+    val nz = z * n - v.z * a
     val length = Math.sqrt(nx * nx + ny * ny + nz * nz)
     return Vec3d(nx / length, ny / length, nz / length)
   }
@@ -79,8 +78,8 @@ case class Vec3d(x: Double, y: Double, z: Double) {
   def randomHemisphere(random: () ⇒ Double): Vec3d = {
     val angle = random() * 2.0 * Math.PI
     val rnd = random()
-    val dist = Math.sqrt(1.0 - rnd * rnd)
-    val distSq = dist * dist
+    val distSq = 1.0 - rnd * rnd
+    val dist = Math.sqrt(distSq)
 
     // components of a normalized vector on the surface of a hemisphere 
     // where z > 0

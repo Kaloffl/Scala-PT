@@ -39,9 +39,13 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
 
     if (disc < 0.0f) return Float.PositiveInfinity
 
-    val depth = b - Math.sqrt(disc)
+    val sqrt = Math.sqrt(disc)
+    val depth = b - sqrt
     if (depth > 0.0001) return depth
-
+    
+    val depth2 = b + sqrt
+    if (depth2 > 0.0001) return depth2
+    
     return Float.PositiveInfinity
   }
 

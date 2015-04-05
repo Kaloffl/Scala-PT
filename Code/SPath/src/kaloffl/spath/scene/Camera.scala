@@ -30,7 +30,7 @@ class Camera(
     // Because of that all the vector calculations here were inlined by hand
     // to avoid a lot of object creation.
 
-    // Calculate the point on the "lens" the ray is requested for relative to
+    // Calculate the point on the "lens" the ray is requested for, relative to
     // the camera position.
     val fX = right.x * x + up.x * y + forward.x
     val fY = right.y * x + up.y * y + forward.y
@@ -39,10 +39,11 @@ class Camera(
 
     // The random amount the actual ray will be offset by.
     // With a bigger aperture the offset can get bigger.
-    // TODO this is currently a box around the pixel, make it a circle.
-    val poX = x + (random() * 2.0f - 1.0f) * aperture
-    val poY = y + (random() * 2.0f - 1.0f) * aperture
-
+    val angle = random() * 2.0 * Math.PI
+    val dist = Math.sqrt(1.0 - random()) * aperture
+    val poX = dist * Math.cos(angle) + x
+    val poY = dist * Math.sin(angle) + y
+    
     // Calculate the position in space where the ray will start at.
     val pX = right.x * poX + up.x * poY + forward.x
     val pY = right.y * poX + up.y * poY + forward.y
@@ -51,7 +52,7 @@ class Camera(
 
     // The position of the focus point for the requested pixel relative to the 
     // ray starting point on the lens.
-    val len = focalLength / fLength
+    val len = focalLength - fLength
     val fpX = fX * len - pX
     val fpY = fY * len - pY
     val fpZ = fZ * len - pZ
