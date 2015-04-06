@@ -9,14 +9,17 @@ import kaloffl.spath.tracing.Ray
  * suggests, it is not possible to rotate this shape since the sides are aligned
  * along the three axis.
  */
-class AABB(centerArg: Vec3d, sizeArg: Vec3d) extends Shape {
+object AABB {
+  def apply(center: Vec3d, size: Vec3d): AABB = {
+    new AABB(center - size / 2, center + size / 2)
+  }
+}
 
-  val min = centerArg - sizeArg / 2
-  val max = centerArg + sizeArg / 2
+class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
 
   def size: Vec3d = max - min
   def center: Vec3d = (min + max) / 2
-  
+
   override def getNormal(point: Vec3d): Vec3d = {
     val dist1 = (point - max).abs
     val dist2 = (point - min).abs

@@ -22,9 +22,8 @@ class Triangle(val vertA: Vec3d, val vertB: Vec3d, val vertC: Vec3d) extends Sha
     val maxY = Math.max(vertA.y, Math.max(vertB.y, vertC.y))
     val maxZ = Math.max(vertA.z, Math.max(vertB.z, vertC.z))
     val max = Vec3d(maxX, maxY, maxZ)
-    val size = max - min
 
-    return new AABB(min + size / 2, size)
+    return new AABB(min, max)
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {

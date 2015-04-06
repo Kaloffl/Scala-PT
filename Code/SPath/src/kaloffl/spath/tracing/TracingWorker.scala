@@ -88,26 +88,28 @@ class TracingWorker(
    * points in the lights of the scene and tracing to them.
    */
   def directLight(pos: Vec3d, normal: Vec3d, context: Context): Color = {
-    val lights = scene.lights
-    if (0 == lights.length) return Color.BLACK
-
-    val index = (lights.length * random()).toInt
-
-    val obj = lights(index)
-    val light = obj.shapes((obj.shapes.length * random()).toInt)
-    val point = light.getRandomInnerPoint(random)
-    val dir = (point - pos).normalize
-    // Checking the normal against the direction to the light to prevent rays
-    // going through the surface of the object the point sits on
-    if (normal.dot(dir) >= 0) {
-      val intersection = scene.getIntersection(new Ray(pos, dir))
-      if (null != intersection && intersection.hitShape == light) {
-        val worldPos = pos + dir * intersection.depth
-        val surfaceNormal = light.getNormal(worldPos)
-        return lights(index).material.reflectanceAt(worldPos, surfaceNormal, context)
+    var light = Color.BLACK
+    var index = 0
+    val lightCount = scene.lightShapes.length
+    while (index < lightCount) {
+      val shape = scene.lightShapes(index)
+      val point = shape.getRandomInnerPoint(random)
+      val dir = (point - pos).normalize
+      // Checking the normal against the direction to the light to prevent rays
+      // going through the surface of the object the point sits on
+      val diffuse = normal.dot(dir)
+      if (diffuse >= 0) {
+        val intersection = scene.getIntersection(new Ray(pos, dir))
+        if (intersection.hitShape == shape) {
+          val worldPos = pos + dir * intersection.depth
+          val surfaceNormal = shape.getNormal(worldPos)
+          val emittance = intersection.material.reflectanceAt(worldPos, surfaceNormal, context)
+          light += emittance * diffuse.toFloat
+        }
       }
+      index += 1
     }
-    return Color.BLACK
+    return light / lightCount
   }
 
   /**

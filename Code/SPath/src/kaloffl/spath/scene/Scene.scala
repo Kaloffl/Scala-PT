@@ -5,13 +5,18 @@ import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.bvh.Bvh
+import java.util.Arrays
 
 /**
  * A scene holds all the objects that might be displayed, as well as the camera
  * from that the image is rendered.
  */
 class Scene(objects: Array[SceneObject], val camera: Camera) {
-  val lights: Array[SceneObject] = objects.filter { _.material.terminatesPath }
+
+  val lightShapes: Array[Shape] = {
+    objects.filter { _.material.terminatesPath }.flatMap { _.shapes }
+  }
+
   val bvh = {
     val primitives = objects.foldLeft(0)((num, obj) ⇒ num + obj.shapes.length)
     printf("Building BVH for %d primitives.\n", primitives)

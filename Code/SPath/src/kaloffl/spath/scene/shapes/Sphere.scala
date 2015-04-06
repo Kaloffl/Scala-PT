@@ -50,6 +50,6 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
   }
 
   override def enclosingAABB: AABB = {
-    new AABB(position, Vec3d(radius * 2))
+    AABB(position, Vec3d(radius * 2))
   }
 }

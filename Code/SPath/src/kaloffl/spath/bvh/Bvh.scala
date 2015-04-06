@@ -179,8 +179,8 @@ class NodeCreationTask(objects: SubArray[BoxedShape], level: Int) extends Recurs
       i += 1
     }
     val min = Vec3d(minX, minY, minZ)
-    val size = Vec3d(maxX, maxY, maxZ) - min
-    return new AABB(min + size / 2, size)
+    val max = Vec3d(maxX, maxY, maxZ)
+    return new AABB(min, max)
   }
 
   class SurfaceAreaAccumulator(

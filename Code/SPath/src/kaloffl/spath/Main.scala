@@ -127,22 +127,22 @@ object Main {
       //        matWhiteGlass),
 
       new SceneObject(
-        new AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
+        AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
         matGrayDiffuse),
       new SceneObject(
-        new AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
+        AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
         matWhiteLight),
       new SceneObject(
-        new AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
+        AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
         matRedDiffuse),
       new SceneObject(
-        new AABB(Vec3d(-8.5f, 4, 4), Vec3d(1, 8, 24)),
+        AABB(Vec3d(-8.5f, 4, 4), Vec3d(1, 8, 24)),
         matBlueDiffuse),
       new SceneObject(
-        new AABB(Vec3d(0, 4, -8.5f), Vec3d(16, 8, 1)),
+        AABB(Vec3d(0, 4, -8.5f), Vec3d(16, 8, 1)),
         matGreenDiffuse),
       new SceneObject(
-        new AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
+        AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
         matWhiteDiffuse))
 
     val glassTest = Array(
@@ -188,22 +188,22 @@ object Main {
       ),
         
       new SceneObject(
-        new AABB(Vec3d(0, -0.5, 4), Vec3d(20, 1, 24)),
+        AABB(Vec3d(0, -0.5, 4), Vec3d(20, 1, 24)),
         matBlackWhiteCheckered),
       new SceneObject(
-        new AABB(Vec3d(0, 8.5, 4), Vec3d(20, 1, 24)),
+        AABB(Vec3d(0, 8.5, 4), Vec3d(20, 1, 24)),
         matWhiteLight),
       new SceneObject(
-        new AABB(Vec3d(10.5f, 4, 4), Vec3d(1, 8, 24)),
+        AABB(Vec3d(10.5f, 4, 4), Vec3d(1, 8, 24)),
         matRedDiffuse),
       new SceneObject(
-        new AABB(Vec3d(-10.5f, 4, 4), Vec3d(1, 8, 24)),
+        AABB(Vec3d(-10.5f, 4, 4), Vec3d(1, 8, 24)),
         matBlueDiffuse),
       new SceneObject(
-        new AABB(Vec3d(0, 4, -8.5f), Vec3d(20, 8, 1)),
+        AABB(Vec3d(0, 4, -8.5f), Vec3d(20, 8, 1)),
         matGreenDiffuse),
       new SceneObject(
-        new AABB(Vec3d(0, 4, 16.5), Vec3d(20, 8, 1)),
+        AABB(Vec3d(0, 4, 16.5), Vec3d(20, 8, 1)),
         matWhiteDiffuse))
 
     val mirrored = Array(
