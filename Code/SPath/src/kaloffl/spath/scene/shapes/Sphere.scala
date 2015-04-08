@@ -22,11 +22,11 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
     var point: Vec3d = null
     do {
       point = Vec3d(
-          random.getAsDouble, 
-          random.getAsDouble, 
-          random.getAsDouble)
-    } while (point.length > radius)
-    return point + position
+        (random.getAsDouble * 2.0 - 1.0),
+        (random.getAsDouble * 2.0 - 1.0),
+        (random.getAsDouble * 2.0 - 1.0))
+    } while (point.length > 1)
+    return point * radius + position
     //    val w = random()
     //    val r = w * (2.0 - w) * radius
     //    val theta = 2.0 * Math.PI * random()
