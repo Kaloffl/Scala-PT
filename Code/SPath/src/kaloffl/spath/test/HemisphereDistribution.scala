@@ -1,7 +1,6 @@
 package kaloffl.spath.test
 
 import java.util.concurrent.ThreadLocalRandom
-
 import javafx.application.Application
 import javafx.scene.Node
 import javafx.scene.Scene
@@ -12,6 +11,8 @@ import javafx.scene.paint.PhongMaterial
 import javafx.scene.shape.Sphere
 import javafx.stage.Stage
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.Vec3d
+import java.util.function.DoubleSupplier
 
 /**
  * This class was created to test the even distribution of points by the
@@ -38,7 +39,9 @@ class HemisphereDistribution extends Application {
   }
 
   def createChart(startVector: Vec3d, x: Int, y: Int): Node = {
-    val rnd: () ⇒ Double = ThreadLocalRandom.current.nextDouble
+    val rnd = new DoubleSupplier {
+      override def getAsDouble = ThreadLocalRandom.current.nextDouble
+    }
 
     val pane = new Pane()
 

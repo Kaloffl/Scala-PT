@@ -1,11 +1,12 @@
 package kaloffl.spath.scene
 
-import kaloffl.spath.tracing.Ray
+import java.util.function.DoubleSupplier
+
+import kaloffl.spath.bvh.Bvh
+import kaloffl.spath.math.Color
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.tracing.Intersection
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.bvh.Bvh
-import java.util.Arrays
+import kaloffl.spath.tracing.Ray
 
 /**
  * A scene holds all the objects that might be displayed, as well as the camera
@@ -14,8 +15,10 @@ import java.util.Arrays
 class Scene(objects: Array[SceneObject], val camera: Camera) {
 
   val lightShapes: Array[Shape] = {
-    objects.filter { _.material.terminatesPath }.flatMap { _.shapes }
+    objects.filter { _.material.minEmittance != Color.BLACK }.flatMap { _.shapes }
   }
+  println("Lights in scene: " + lightShapes.length)
+  val lightSurface: Double = lightShapes.map { _.surfaceArea }.sum
 
   val bvh = {
     val primitives = objects.foldLeft(0)((num, obj) ⇒ num + obj.shapes.length)
@@ -41,5 +44,19 @@ class Scene(objects: Array[SceneObject], val camera: Camera) {
    */
   def getIntersection(ray: Ray): Intersection = {
     bvh.getIntersection(ray)
+  }
+
+  def getRandomLight(random: DoubleSupplier): Shape = {
+    var index = 0
+    var acc = 0.0
+    val rand = random.getAsDouble * lightSurface
+    val lightCount = lightShapes.length
+    while (index < lightCount) {
+      val currShape = lightShapes(index)
+      acc += currShape.surfaceArea
+      if (acc > rand) return currShape
+      index += 1
+    }
+    return null
   }
 }

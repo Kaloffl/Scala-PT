@@ -75,7 +75,7 @@ class Bvh(objects: Array[SceneObject]) {
         while (i < headNode.children.length) {
           val child = headNode.children(i)
           val depth = child.depth(ray)
-          if (!depth.isInfinite && depth < closest.depth) {
+          if (Double.PositiveInfinity != depth && depth < closest.depth) {
             stack add new NodeIntersection(depth, child)
           }
           i += 1

@@ -1,5 +1,7 @@
 package kaloffl.spath.math
 
+import java.util.function.DoubleSupplier
+
 /**
  * A 3 dimensional mathematical vector of double precision floating point
  * numbers. It implements the usual operations like addition and scaling but
@@ -54,30 +56,44 @@ case class Vec3d(x: Double, y: Double, z: Double) {
     Vec3d(x / len, y / len, z / len)
   }
 
+  def refractance(v: Vec3d, i1: Double, i2: Double): Double = {
+    val cosI = -dot(v)
+    val n = i1 / i2
+    val sinT2 = n * n * (1.0 - cosI * cosI)
+    if (sinT2 > 1.0) {
+      return 1.0
+    }
+    val cosT = Math.sqrt(1.0 - sinT2)
+    val rOrth = (i1 * cosI - i2 * cosT) / (i1 * cosI + i2 * cosT)
+    val rPar = (i2 * cosI - i1 * cosT) / (i2 * cosI + i1 * cosT)
+    return (rOrth * rOrth + rPar * rPar) / 2.0
+  }
+
   def refract(v: Vec3d, i1: Double, i2: Double): Vec3d = {
-    val cosI = dot(v)
-    val n = if (cosI > 0.0) i2 / i1 else i1 / i2
+    val cosI = -dot(v)
+    val n = i1 / i2
     val sinT2 = n * n * (1.0 - cosI * cosI)
 
-    if (sinT2 > 1.0f) {
-      val a = cosI * 2.0f
+    if (sinT2 > 1.0) {
+      val a = cosI * -2.0f
       return Vec3d(
         x - (v.x * a),
         y - (v.y * a),
         z - (v.z * a))
     }
 
-    val a = n * cosI + Math.sqrt(1.0 - sinT2)
-    val nx = x * n - v.x * a
-    val ny = y * n - v.y * a
-    val nz = z * n - v.z * a
-    val length = Math.sqrt(nx * nx + ny * ny + nz * nz)
-    return Vec3d(nx / length, ny / length, nz / length)
+    val a = n * cosI - Math.sqrt(1.0 - sinT2)
+    val nx = x * n + v.x * a
+    val ny = y * n + v.y * a
+    val nz = z * n + v.z * a
+    return Vec3d(nx, ny, nz)
+    //    val length = Math.sqrt(nx * nx + ny * ny + nz * nz)
+    //    return Vec3d(nx / length, ny / length, nz / length)
   }
 
-  def randomHemisphere(random: () ⇒ Double): Vec3d = {
-    val angle = random() * 2.0 * Math.PI
-    val rnd = random()
+  def randomHemisphere(random: DoubleSupplier): Vec3d = {
+    val angle = random.getAsDouble * 2.0 * Math.PI
+    val rnd = random.getAsDouble
     val distSq = 1.0 - rnd * rnd
     val dist = Math.sqrt(distSq)
 

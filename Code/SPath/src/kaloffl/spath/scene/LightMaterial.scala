@@ -3,26 +3,34 @@ package kaloffl.spath.scene
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Context
+import kaloffl.spath.math.Attenuation
 
-class LightMaterial(val color: Color) extends Material {
+class LightMaterial(
+    val color: Color,
+    emittance: Float,
+    radius: Double) extends Material {
 
-  override def terminatesPath: Boolean = true
+  val emitted = color * emittance
+  val attenuation = Attenuation.radius(radius)
 
-  override def maxEmittance = color
+  override def minEmittance = emitted
 
-  override def reflectanceAt(
-      worldPos: Vec3d, 
-      normal: Vec3d, 
-      context: Context): Color = {
-    return color
-  }
+  override def emittanceAt(
+    worldPos: Vec3d,
+    surfaceNormal: Vec3d,
+    context: Context): Color = emitted
 
-  override def reflectNormal(
+  override def getInfo(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,
     incomingNormal: Vec3d,
-    context: Context): Vec3d = {
+    context: Context): SurfaceInfo = {
 
-    return surfaceNormal.randomHemisphere(context.random)
+    new SurfaceInfo(
+      color,
+      emitted,
+      attenuation,
+      surfaceNormal.randomHemisphere(context.random),
+      false)
   }
 }

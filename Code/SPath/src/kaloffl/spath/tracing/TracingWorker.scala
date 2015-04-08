@@ -5,6 +5,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
+import java.util.function.DoubleSupplier
 
 /**
  * A worker that renders a chink of the final image by shooting rays through
@@ -24,7 +25,7 @@ class TracingWorker(
     val width: Int,
     val height: Int,
     val scene: Scene,
-    val random: () ⇒ Double) {
+    val random: DoubleSupplier) {
 
   // The sum of determined colors is stored in this array per-channel-per-pixel
   val samples: Array[Float] = new Array[Float](width * height * 3)
@@ -32,6 +33,13 @@ class TracingWorker(
 
   // the number of passes that have been rendered
   var samplesTaken: Int = 0
+
+  def sampleToDistribution(s: Int): Double = {
+      if (0 == s) return 1
+      val n = s / 2 + 2 * (Math.log(s / 2 + 2) / Math.log(2) - 1).toInt
+      val p = Math.pow(2, (Math.log(n + 1) / Math.log(2)).toInt)
+      return (n + 1 - p) / (p + 1) * (2 * (s & 0x01) - 1)
+    }
 
   /**
    * Renders a pass and adds the color to the samples array
@@ -41,8 +49,11 @@ class TracingWorker(
 
     val dWidth = display.width
     val dHeight = display.height
-    val displayOffsetX = dWidth * 0.5f + random() * 2.0f - 1.0f - left
-    val displayOffsetY = dHeight * 0.5f + random() * 2.0f - 1.0f - top
+    val r = Math.sqrt(pass).toInt
+    val dx = sampleToDistribution(Math.min(r, pass - r * r))
+    val dy = sampleToDistribution(Math.min(r, r * r + 2 * r - pass))
+    val displayOffsetX = dWidth * 0.5f + dx - left
+    val displayOffsetY = dHeight * 0.5f + dy - top
     val context = new Context(random, pass, maxBounces, display)
 
     val maxIndex = width * height
@@ -51,7 +62,7 @@ class TracingWorker(
       val y = (displayOffsetY - index / width) / dHeight
       val ray = camera.createRay(random, x, y)
 
-      val color = pathTrace(ray, context)
+      val color = pathTrace(ray, maxBounces, context)
 
       val sampleIndex = index * 3
       samples(sampleIndex) += color.r2
@@ -88,28 +99,31 @@ class TracingWorker(
    * points in the lights of the scene and tracing to them.
    */
   def directLight(pos: Vec3d, normal: Vec3d, context: Context): Color = {
-    var light = Color.BLACK
-    var index = 0
-    val lightCount = scene.lightShapes.length
-    while (index < lightCount) {
-      val shape = scene.lightShapes(index)
-      val point = shape.getRandomInnerPoint(random)
-      val dir = (point - pos).normalize
-      // Checking the normal against the direction to the light to prevent rays
-      // going through the surface of the object the point sits on
-      val diffuse = normal.dot(dir)
-      if (diffuse >= 0) {
-        val intersection = scene.getIntersection(new Ray(pos, dir))
-        if (intersection.hitShape == shape) {
-          val worldPos = pos + dir * intersection.depth
-          val surfaceNormal = shape.getNormal(worldPos)
-          val emittance = intersection.material.reflectanceAt(worldPos, surfaceNormal, context)
-          light += emittance * diffuse.toFloat
-        }
+    // TODO several problems with this method: 
+    // 1. Light shapes with a larger volume have a higher chance of being missed
+    // despite having the same surface area exposed.
+    // 2. Light traveling through transparent shapes is ignored, all shapes
+    // count as blocking.
+    val shape = scene.getRandomLight(random)
+    val point = shape.getRandomInnerPoint(random)
+    val dir = (point - pos).normalize
+    // Checking the normal against the direction to the light to prevent rays
+    // going through the surface of the object the point sits on
+    val diffuse = normal.dot(dir)
+    if (diffuse >= 0) {
+      val intersection = scene.getIntersection(new Ray(pos, dir))
+      val hit = intersection.hitShape
+      if (null != hit) {
+        val depth = intersection.depth
+        val worldPos = pos + dir * depth
+        val surfaceNormal = hit.getNormal(worldPos)
+        val emittance = intersection.material.emittanceAt(worldPos, surfaceNormal, context)
+        val attenuation = intersection.material.attenuation(depth)
+
+        return emittance * (diffuse * attenuation).toFloat
       }
-      index += 1
     }
-    return light / lightCount
+    return Color.BLACK
   }
 
   /**
@@ -123,40 +137,32 @@ class TracingWorker(
    * Traces a ray in the scene and reacts to intersections depending on the
    * material that was hit.
    */
-  def pathTrace(startRay: Ray, context: Context): Color = {
-    var bounce = 0
-    var color = Color.WHITE
-    var ray = startRay
-    val bounces = context.maxBounces
-    val rouletThreshold = bounces * 0.9f
-    val killThreshold = 1.0f / Math.max((bounces * 0.1f).toInt, 1)
+  def pathTrace(ray: Ray, bouncesLeft: Int, context: Context): Color = {
+    if (0 == bouncesLeft) return Color.BLACK
 
-    while (bounce < bounces) {
-      bounce += 1
+    val intersection = scene.getIntersection(ray)
+    val hitShape = intersection.hitShape
+    if (null == hitShape) return skyColor(ray.normal)
 
-      val intersection = scene.getIntersection(ray)
-      val hitShape = intersection.hitShape
-      if (null == hitShape) return color * skyColor(ray.normal)
+    val depth = intersection.depth
+    val point = ray.normal * depth + ray.start
+    val surfaceNormal = hitShape.getNormal(point)
 
-      val material = intersection.material
-
-      val point = ray.normal * intersection.depth + ray.start
-      val surfaceNormal = hitShape.getNormal(point)
-
-      color = color * material.reflectanceAt(point, surfaceNormal, context)
-
-      if (material.terminatesPath) return color
-      if (bounce == bounces) return Color.BLACK
-
-      // The more bounces the ray went the higher the chance is that we will just
-      // calculate the direct light and stop it. This way we reduce rendering time
-      // and create a brighter image.
-      if (bounce > rouletThreshold && random() < killThreshold)
-        return directLight(point, surfaceNormal, context) * color
-
-      val newDir = material.reflectNormal(point, surfaceNormal, ray.normal, context)
-      ray = new Ray(point, newDir)
+    val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, context)
+    if (info.emittance != Color.BLACK) {
+      return info.emittance * info.attenuation(depth).toFloat
     }
-    return Color.BLACK
+
+    //    return Color(surfaceNormal)
+    //    return info.reflectance * directLight(point, surfaceNormal, context)
+
+    val newDir = info.outgoing
+    val indirect = pathTrace(new Ray(point, newDir), bouncesLeft - 1, context)
+    val color = info.reflectance
+    if (info.translucent) {
+      return color * indirect
+    }
+    val direct = directLight(point, surfaceNormal, context)
+    return color * (direct + indirect)
   }
 }

@@ -2,17 +2,21 @@ package kaloffl.spath.scene.shapes
 
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Ray
+import java.util.function.DoubleSupplier
 
 /**
  * @author Lars
  */
-class Triangle(val vertA: Vec3d, val vertB: Vec3d, val vertC: Vec3d) extends Shape {
+class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape {
 
-  //  val edgeB = vertC - vertA
-  //  val edgeA = vertB - vertA
-  val normal = (vertB - vertA).cross(vertC - vertA).normalize
+  val edgeA = vertB - vertA
+  val edgeB = vertC - vertA
+
+  val normal = (edgeA).cross(edgeB).normalize
 
   override def enclosingAABB: AABB = {
+    val vertB = edgeA + vertA
+    val vertC = edgeB + vertA
     val minX = Math.min(vertA.x, Math.min(vertB.x, vertC.x))
     val minY = Math.min(vertA.y, Math.min(vertB.y, vertC.y))
     val minZ = Math.min(vertA.z, Math.min(vertB.z, vertC.z))
@@ -27,8 +31,8 @@ class Triangle(val vertA: Vec3d, val vertB: Vec3d, val vertC: Vec3d) extends Sha
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {
-    val P = ray.normal.cross(vertC - vertA)
-    val d = (vertB - vertA).dot(P)
+    val P = ray.normal.cross(edgeB)
+    val d = edgeA.dot(P)
 
     if (d > -0.000001 && d < 0.000001)
       return Double.PositiveInfinity
@@ -39,13 +43,13 @@ class Triangle(val vertA: Vec3d, val vertB: Vec3d, val vertC: Vec3d) extends Sha
     if (u < 0.0f || u > 1.0f)
       return Double.PositiveInfinity
 
-    val Q = T.cross(vertB - vertA)
+    val Q = T.cross(edgeA)
     val v = ray.normal.dot(Q) / d
 
     if (v < 0.0f || u + v > 1.0f)
       return Double.PositiveInfinity
 
-    val t = (vertC - vertA).dot(Q) / d
+    val t = edgeB.dot(Q) / d
 
     if (t < 0.000001)
       return Double.PositiveInfinity
@@ -55,7 +59,9 @@ class Triangle(val vertA: Vec3d, val vertB: Vec3d, val vertC: Vec3d) extends Sha
 
   override def getNormal(point: Vec3d): Vec3d = normal
 
-  override def getRandomInnerPoint(random: () ⇒ Double): Vec3d = {
+  override def surfaceArea: Double = edgeA.length * edgeB.length / 2
+
+  override def getRandomInnerPoint(random: DoubleSupplier): Vec3d = {
     ???
   }
 }

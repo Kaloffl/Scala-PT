@@ -4,20 +4,41 @@ pathtracer TODOs
 	- controllable camera
 	- camera shutter shape
 	- camera movement for motion blur
-- switchable render mode
-	- raytracer
-	- path tracing
-	- surface normals
-	- reflected normal
-	- depth
+- UI
+	- settable sample count
+	- settable max bounce
+	- expotable image
+	- pause/unpause of rendering
+	- statistics
+		- rendertime
+		- time per sample
+		- number of threads
+		- cpu usage
+		- memory usage
+	- switchable render mode
+		- raytracer
+		- path tracing
+		- direct light
+		- surface normals
+		- reflected normal
+		- depth
 - post processing
 	- whitebalance
 	- HDR
 	- color correction
-- settable sky in the scene (normal -> color function?)
+- scene
+	- modular scene graph (trees in threes)
+	- settable sky function (normal -> color)
+	- life scene editing
+	- loadable scene tree
+- model/shape rotation, translation & scaling
 - textured objects
 - normalmaps for obects
 - spectral tracing
 - penetratable objects & penetration effects (fog, better colored glass)
-- life scene editing
 - portals
+- DE function shape
+- Better random sampler
+- better ply importer
+- light attenuation
+- command line tool (.scene in -> .png out)

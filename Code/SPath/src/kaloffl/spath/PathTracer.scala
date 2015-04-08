@@ -3,9 +3,9 @@ package kaloffl.spath
 import java.util.Arrays
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.Consumer
-
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.tracing.TracingWorker
+import java.util.function.DoubleSupplier
 
 /**
  * The PathTracer that can render an image of a given scene. This class handles
@@ -45,7 +45,9 @@ class PathTracer {
     val width = display.width / cols
     val height = display.height / rows
 
-    val random: () => Double = ThreadLocalRandom.current.nextDouble
+    val random = new DoubleSupplier {
+      override def getAsDouble = ThreadLocalRandom.current.nextDouble
+    }
 
     for (i ← 0 until numberOfWorkers) {
       val x = i % cols * width

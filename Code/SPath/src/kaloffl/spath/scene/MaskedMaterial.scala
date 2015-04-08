@@ -3,6 +3,7 @@ package kaloffl.spath.scene
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Context
+import kaloffl.spath.math.Attenuation
 
 class MaskedMaterial(
     val matA: Material,
@@ -13,28 +14,39 @@ class MaskedMaterial(
     0 == (num * factor).toInt - ((num - 1) * factor).toInt
   }
 
-  override def reflectanceAt(
+  override def attenuation = Attenuation.none
+
+  override def minEmittance: Color = {
+    val meA = matA.minEmittance
+    val meB = matB.minEmittance
+    new Color(
+      Math.min(meA.r2, meB.r2),
+      Math.min(meA.g2, meB.g2),
+      Math.min(meA.b2, meB.b2))
+  }
+
+  override def emittanceAt(
     worldPos: Vec3d,
-    normal: Vec3d,
+    surfaceNormal: Vec3d,
     context: Context): Color = {
 
     if (useA(context.passNum, mask.maskAmount(worldPos))) {
-      matA.reflectanceAt(worldPos, normal, context)
+      matA.emittanceAt(worldPos, surfaceNormal, context)
     } else {
-      matB.reflectanceAt(worldPos, normal, context)
+      matB.emittanceAt(worldPos, surfaceNormal, context)
     }
   }
 
-  def reflectNormal(
+  def getInfo(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,
     incomingNormal: Vec3d,
-    context: Context): Vec3d = {
+    context: Context): SurfaceInfo = {
 
     if (useA(context.passNum, mask.maskAmount(worldPos))) {
-      matA.reflectNormal(worldPos, surfaceNormal, incomingNormal, context)
+      matA.getInfo(worldPos, surfaceNormal, incomingNormal, context)
     } else {
-      matB.reflectNormal(worldPos, surfaceNormal, incomingNormal, context)
+      matB.getInfo(worldPos, surfaceNormal, incomingNormal, context)
     }
   }
 

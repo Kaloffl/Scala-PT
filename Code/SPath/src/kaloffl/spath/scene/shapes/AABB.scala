@@ -2,6 +2,7 @@ package kaloffl.spath.scene.shapes
 
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Ray
+import java.util.function.DoubleSupplier
 
 /**
  * AABB stands for Axis Aligned Bounding Box and is a very simple and
@@ -17,8 +18,15 @@ object AABB {
 
 class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
 
-  def size: Vec3d = max - min
-  def center: Vec3d = (min + max) / 2
+  def size: Vec3d = {
+    max - min
+  }
+  def center: Vec3d = {
+    Vec3d(
+      (min.x + max.x) / 2,
+      (min.y + max.y) / 2,
+      (min.z + max.z) / 2)
+  }
 
   override def getNormal(point: Vec3d): Vec3d = {
     val dist1 = (point - max).abs
@@ -34,11 +42,11 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
       "Could not determine AABB normal for point: " + point + ". AABB bounds are max: " + max + ", min: " + min + ".")
   }
 
-  override def getRandomInnerPoint(random: () ⇒ Double): Vec3d = {
+  override def getRandomInnerPoint(random: DoubleSupplier): Vec3d = {
     return Vec3d(
-      min.x + (size.x) * random(),
-      min.y + (size.y) * random(),
-      min.z + (size.z) * random())
+      min.x + (size.x) * random.getAsDouble,
+      min.y + (size.y) * random.getAsDouble,
+      min.z + (size.z) * random.getAsDouble)
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {
@@ -74,11 +82,11 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
       Math.max(max.x, other.max.x),
       Math.max(max.y, other.max.y),
       Math.max(max.z, other.max.z))
-    val sharedSize = (sharedMax - sharedMin)
-    return new AABB(sharedMin + sharedSize / 2, sharedSize)
+    return new AABB(sharedMin, sharedMax)
   }
 
   def surfaceArea: Double = {
+    val size = this.size
     return (size.x * (size.y + size.z) + size.y * size.z) * 2
   }
 
