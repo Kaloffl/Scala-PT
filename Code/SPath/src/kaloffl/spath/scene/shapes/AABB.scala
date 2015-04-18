@@ -53,20 +53,20 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
     val tx1 = (min.x - ray.start.x) / ray.normal.x
     val tx2 = (max.x - ray.start.x) / ray.normal.x
 
-    var tmin = Math.min(tx1, tx2)
-    var tmax = Math.max(tx1, tx2)
-
     val ty1 = (min.y - ray.start.y) / ray.normal.y
     val ty2 = (max.y - ray.start.y) / ray.normal.y
-
-    tmin = Math.max(tmin, Math.min(ty1, ty2))
-    tmax = Math.min(tmax, Math.max(ty1, ty2))
 
     val tz1 = (min.z - ray.start.z) / ray.normal.z
     val tz2 = (max.z - ray.start.z) / ray.normal.z
 
-    tmin = Math.max(tmin, Math.min(tz1, tz2))
-    tmax = Math.min(tmax, Math.max(tz1, tz2))
+    var tmin = Math.max(Math.max(
+      Math.min(tx1, tx2),
+      Math.min(ty1, ty2)),
+      Math.min(tz1, tz2))
+    var tmax = Math.min(Math.min(
+      Math.max(tx1, tx2),
+      Math.max(ty1, ty2)),
+      Math.max(tz1, tz2))
 
     if (tmax < tmin || tmin < 0.0001) return Double.PositiveInfinity
 

@@ -5,6 +5,7 @@ pathtracer TODOs
 	- camera shutter shape
 	- camera movement for motion blur
 - UI
+	- switch to JavaFX
 	- settable sample count
 	- settable max bounce
 	- expotable image
@@ -33,7 +34,7 @@ pathtracer TODOs
 	- loadable scene tree
 - model/shape rotation, translation & scaling
 - textured objects
-- normalmaps for obects
+- normalmaps for objects
 - spectral tracing
 - penetratable objects & penetration effects (fog, better colored glass)
 - portals

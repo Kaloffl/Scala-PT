@@ -8,7 +8,7 @@ import kaloffl.spath.scene.Scene
 import java.util.function.DoubleSupplier
 
 /**
- * A worker that renders a chink of the final image by shooting rays through
+ * A worker that renders a chunk of the final image by shooting rays through
  * the pixels it works on.
  *
  * @param left the x position of the left side of the area this worker renders
@@ -35,11 +35,16 @@ class TracingWorker(
   var samplesTaken: Int = 0
 
   def sampleToDistribution(s: Int): Double = {
-      if (0 == s) return 1
-      val n = s / 2 + 2 * (Math.log(s / 2 + 2) / Math.log(2) - 1).toInt
-      val p = Math.pow(2, (Math.log(n + 1) / Math.log(2)).toInt)
-      return (n + 1 - p) / (p + 1) * (2 * (s & 0x01) - 1)
-    }
+    val max = Math.sqrt(3000)
+    return s / max * 2 - 1
+
+    //    if (left + width > 640) return 0 //random.getAsDouble
+    //
+    //    if (0 == s) return 1
+    //    val n = s / 2 + 2 * (Math.log(s / 2 + 2) / Math.log(2) - 1).toInt
+    //    val p = Math.pow(2, (Math.log(n + 1) / Math.log(2)).toInt)
+    //    return (n + 1 - p) / (p + 1) * (2 * (s & 0x01) - 1)
+  }
 
   /**
    * Renders a pass and adds the color to the samples array
@@ -117,8 +122,14 @@ class TracingWorker(
         val depth = intersection.depth
         val worldPos = pos + dir * depth
         val surfaceNormal = hit.getNormal(worldPos)
-        val emittance = intersection.material.emittanceAt(worldPos, surfaceNormal, context)
-        val attenuation = intersection.material.attenuation(depth)
+        val info = intersection.material.getInfo(worldPos, surfaceNormal, dir, context)
+
+        if (info.translucent) {
+          return pathTrace(new Ray(worldPos, info.outgoing), 2, context)
+        }
+
+        val emittance = info.emittance
+        val attenuation = info.attenuation(depth)
 
         return emittance * (diffuse * attenuation).toFloat
       }
@@ -163,6 +174,6 @@ class TracingWorker(
       return color * indirect
     }
     val direct = directLight(point, surfaceNormal, context)
-    return color * (direct + indirect)
+    return color * (direct + indirect * newDir.dot(surfaceNormal).toFloat)
   }
 }

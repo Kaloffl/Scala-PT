@@ -32,6 +32,8 @@ object Main {
     val up = front.cross(Vec3d.RIGHT).normalize
     val camera = new Camera(Vec3d(0, 5, 13), front, up, 0.1f, Vec3d(0, -2.5, -13).length)
 
+    val lowCamera = new Camera(Vec3d(0, 2.5, 13), Vec3d.BACK, Vec3d.UP, 0.0f, 13);
+
     val colorWhite = Color(0.9f, 0.9f, 0.9f)
     val colorBlack = Color(0.1f, 0.1f, 0.1f)
 
@@ -44,7 +46,7 @@ object Main {
     val colorPink = Color(0.9f, 0.1f, 0.9f)
 
     val matWhiteDiffuse = new DiffuseMaterial(colorWhite)
-    val matWhiteLight = new LightMaterial(Color.WHITE, 1 /*.42f*/, 1024)
+    val matWhiteLight = new LightMaterial(Color.WHITE, 1 /*.42f*/ , 1024)
     val matWhiteDiffuseReflective = new AllroundMaterial(colorWhite, 0.0f, 1.0f, 0.0f, 0.0f, 0.9f)
 
     val matRedDiffuse = new DiffuseMaterial(colorRed)
@@ -99,6 +101,43 @@ object Main {
 
     val matRedLight = new LightMaterial(Color.RED, 1.0f, 1024)
     val matGreenLight = new LightMaterial(Color.GREEN, 1.0f, 1024)
+
+    val coloredSpheres = Array(
+
+      new SceneObject(
+        new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f),
+        matWhiteDiffuse),
+      new SceneObject(
+        new Sphere(Vec3d(-2.5f, 2.0f, -5.0f), 2.0f),
+        matWhiteDiffuse),
+      new SceneObject(
+        new Sphere(Vec3d(5.0f, 2.0f, 0.0f), 2.0f),
+        matRedDiffuse),
+      new SceneObject(
+        new Sphere(Vec3d(2.5f, 1.0f, 6.0f), 1.0f),
+        matWhiteDiffuse),
+      new SceneObject(
+        new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f),
+        matWhiteDiffuse),
+
+      new SceneObject(
+        AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
+        matWhiteDiffuse),
+      new SceneObject(
+        AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
+        new LightMaterial(Color.WHITE, 1.2f, 1024f)),
+      new SceneObject(
+        AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
+        matWhiteDiffuse),
+      new SceneObject(
+        AABB(Vec3d(-8.5f, 4, 4), Vec3d(1, 8, 24)),
+        matWhiteDiffuse),
+      new SceneObject(
+        AABB(Vec3d(0, 4, -8.5f), Vec3d(16, 8, 1)),
+        matWhiteDiffuse),
+      new SceneObject(
+        AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
+        matWhiteDiffuse))
 
     val objects = Array(
 
@@ -229,9 +268,9 @@ object Main {
         new Sphere(Vec3d(0, 8, 0), 1),
         cmatLight),
 
-      new SceneObject(
-        PlyImporter.load("D:/temp/bunny_flipped.ply", Vec3d(30), Vec3d(-4, -0.989622, 0)),
-        cmatWhite),
+      //      new SceneObject(
+      //        PlyImporter.load("D:/temp/bunny_flipped.ply", Vec3d(30), Vec3d(-4, -0.989622, 0)),
+      //        cmatWhite),
 
       new SceneObject(
         AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
@@ -252,9 +291,11 @@ object Main {
         AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
         cmatWhite))
     val cornellCam = new Camera(Vec3d(-3, 5, 13), front, up, 0.01f, 13.0f)
+    //    val cornellScene = new Scene(cornellBox, cornellCam)
+    //    val dragonScene = new Scene(objects, camera)
+    val colorfulScene = new Scene(glassTest, lowCamera)
 
-    val scene = new Scene(cornellBox, cornellCam)
     //    BvhToFile.toFile(scene.bvh, "bvhCollapsed.txt")
-    pathTracer.render(display, scene, bounces = 8)
+    pathTracer.render(display, colorfulScene, bounces = 8)
   }
 }

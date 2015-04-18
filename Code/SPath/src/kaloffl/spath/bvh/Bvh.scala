@@ -23,7 +23,7 @@ import java.util.stream.Collectors
 import java.util.function.IntFunction
 
 object Bvh {
-  val MAX_LEAF_SIZE = 24
+  val MAX_LEAF_SIZE = 16
 }
 
 class Bvh(objects: Array[SceneObject]) {
