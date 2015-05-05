@@ -13,9 +13,7 @@ class MaskedMaterial(
   def useA(num: Int, factor: Double): Boolean = {
     0 == (num * factor).toInt - ((num - 1) * factor).toInt
   }
-
-  override def attenuation = Attenuation.none
-
+  
   override def minEmittance: Color = {
     val meA = matA.minEmittance
     val meB = matB.minEmittance
@@ -25,28 +23,32 @@ class MaskedMaterial(
       Math.min(meA.b2, meB.b2))
   }
 
-  override def emittanceAt(
-    worldPos: Vec3d,
-    surfaceNormal: Vec3d,
-    context: Context): Color = {
-
-    if (useA(context.passNum, mask.maskAmount(worldPos))) {
-      matA.emittanceAt(worldPos, surfaceNormal, context)
-    } else {
-      matB.emittanceAt(worldPos, surfaceNormal, context)
-    }
-  }
-
-  def getInfo(
+  override def getEmittance(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,
     incomingNormal: Vec3d,
+    depth: Double,
+    context: Context): Color = {
+
+    if (useA(context.passNum, mask.maskAmount(worldPos))) {
+      matA.getEmittance(worldPos, surfaceNormal, incomingNormal, depth, context)
+    } else {
+      matB.getEmittance(worldPos, surfaceNormal, incomingNormal, depth, context)
+    }
+  }
+
+  override def getInfo(
+    worldPos: Vec3d,
+    surfaceNormal: Vec3d,
+    incomingNormal: Vec3d,
+    depth: Double,
+    refractivityIndex: Double,
     context: Context): SurfaceInfo = {
 
     if (useA(context.passNum, mask.maskAmount(worldPos))) {
-      matA.getInfo(worldPos, surfaceNormal, incomingNormal, context)
+      matA.getInfo(worldPos, surfaceNormal, incomingNormal, depth, refractivityIndex, context)
     } else {
-      matB.getInfo(worldPos, surfaceNormal, incomingNormal, context)
+      matB.getInfo(worldPos, surfaceNormal, incomingNormal, depth, refractivityIndex, context)
     }
   }
 

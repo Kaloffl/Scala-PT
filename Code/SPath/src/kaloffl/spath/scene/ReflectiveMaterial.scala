@@ -10,19 +10,12 @@ import kaloffl.spath.math.Attenuation
  */
 class ReflectiveMaterial(val color: Color, val glossiness: Double) extends Material {
 
-  def reflectanceAt(
-    worldPos: Vec3d,
-    normal: Vec3d,
-    context: Context): Color = {
-    return color
-  }
-
-  override def attenuation = Attenuation.none
-
-  def getInfo(
+  override def getInfo(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,
     incomingNormal: Vec3d,
+    depth: Double,
+    refractivityIndex: Double,
     context: Context): SurfaceInfo = {
 
     val randomness = surfaceNormal.randomHemisphere(context.random)
@@ -30,7 +23,6 @@ class ReflectiveMaterial(val color: Color, val glossiness: Double) extends Mater
     new SurfaceInfo(
       color,
       Color.BLACK,
-      Attenuation.none,
       if (axis.dot(incomingNormal) > 0) {
         incomingNormal.reflect(-axis)
       } else {

@@ -10,7 +10,7 @@ import java.util.function.DoubleSupplier
  * These vectors are immutable and each operation creates a new instance with
  * the new values.
  */
-case class Vec3d(x: Double, y: Double, z: Double) {
+case class Vec3d(val x: Double, val y: Double, val z: Double) {
 
   def +(v: Vec3d): Vec3d = Vec3d(x + v.x, y + v.y, z + v.z)
   def +(f: Double): Vec3d = Vec3d(x + f, y + f, z + f)
@@ -35,6 +35,13 @@ case class Vec3d(x: Double, y: Double, z: Double) {
   def min = Math.min(x, Math.min(y, z))
   def max = Math.max(x, Math.max(y, z))
   def abs = Vec3d(Math.abs(x), Math.abs(y), Math.abs(z))
+
+  def pow(v: Vec3d): Vec3d = {
+    Vec3d(Math.pow(x, v.x), Math.pow(y, v.y), Math.pow(z, v.z))
+  }
+  def pow(f: Double): Vec3d = {
+    Vec3d(Math.pow(x, f), Math.pow(y, f), Math.pow(z, f))
+  }
 
   def cross(v: Vec3d): Vec3d = {
     Vec3d(
@@ -101,12 +108,40 @@ case class Vec3d(x: Double, y: Double, z: Double) {
     // where z > 0
     val nx = dist * Math.cos(angle)
     val ny = dist * Math.sin(angle)
-    val nz = 1.0 - rnd
+    val nz = rnd
 
     // if the angle between the original and the new vector is more than 90°, 
     // we just turn it 180°
     if (x * nx + y * ny + z * nz < 0.0) return Vec3d(-nx, -ny, -nz)
     return Vec3d(nx, ny, nz)
+  }
+
+  def weightedHemisphere(random: DoubleSupplier): Vec3d = {
+    val angle = random.getAsDouble * 2.0 * Math.PI
+    val rnd = random.getAsDouble
+    val distSq = (1 - rnd * rnd)
+    val dist = Math.sqrt(rnd)
+
+    val nx = dist * Math.cos(angle)
+    val ny = dist * Math.sin(angle)
+    val nz = Math.sqrt(1 - dist * dist)
+
+    if (z < 0) {
+      return ((Mat3d(
+        -z, 0, x,
+        0, -z, y,
+        -x, -y, -z) + Mat3d(
+          y * y, -x * y, 0,
+          -x * y, x * x, 0,
+          0, 0, 0) * (1.0f / (1.0f - z))) * Vec3d(-nx, -ny, -nz))
+    }
+    return ((Mat3d(
+      z, 0, x,
+      0, z, y,
+      -x, -y, z) + Mat3d(
+        y * y, -x * y, 0,
+        -x * y, x * x, 0,
+        0, 0, 0) * (1.0f / (1.0f + z))) * Vec3d(nx, ny, nz))
   }
 }
 
@@ -134,5 +169,17 @@ object Vec3d {
   val WHITE: Vec3d = UNIT
 
   def apply(): Vec3d = BLACK
-  def apply(d: Double): Vec3d = Vec3d(d, d, d)
+  def apply(d: Double): Vec3d = new Vec3d(d, d, d)
+
+  def randomNormal(random: DoubleSupplier): Vec3d = {
+    val angle = random.getAsDouble * 2.0 * Math.PI
+    val rnd = random.getAsDouble * 2 - 1
+    val distSq = 1.0 - rnd * rnd
+    val dist = Math.sqrt(distSq)
+
+    val nx = dist * Math.cos(angle)
+    val ny = dist * Math.sin(angle)
+    val nz = rnd
+    return Vec3d(nx, ny, nz)
+  }
 }

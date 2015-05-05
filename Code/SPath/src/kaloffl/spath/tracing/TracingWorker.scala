@@ -6,6 +6,7 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
 import java.util.function.DoubleSupplier
+import kaloffl.spath.scene.Material
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -67,8 +68,7 @@ class TracingWorker(
       val y = (displayOffsetY - index / width) / dHeight
       val ray = camera.createRay(random, x, y)
 
-      val color = pathTrace(ray, maxBounces, context)
-
+      val color = pathTrace(ray, maxBounces, scene.air, context)
       val sampleIndex = index * 3
       samples(sampleIndex) += color.r2
       samples(sampleIndex + 1) += color.g2
@@ -100,80 +100,50 @@ class TracingWorker(
   }
 
   /**
-   * Tries to find direct lighting of a point in space by targeting random
-   * points in the lights of the scene and tracing to them.
-   */
-  def directLight(pos: Vec3d, normal: Vec3d, context: Context): Color = {
-    // TODO several problems with this method: 
-    // 1. Light shapes with a larger volume have a higher chance of being missed
-    // despite having the same surface area exposed.
-    // 2. Light traveling through transparent shapes is ignored, all shapes
-    // count as blocking.
-    val shape = scene.getRandomLight(random)
-    val point = shape.getRandomInnerPoint(random)
-    val dir = (point - pos).normalize
-    // Checking the normal against the direction to the light to prevent rays
-    // going through the surface of the object the point sits on
-    val diffuse = normal.dot(dir)
-    if (diffuse >= 0) {
-      val intersection = scene.getIntersection(new Ray(pos, dir))
-      val hit = intersection.hitShape
-      if (null != hit) {
-        val depth = intersection.depth
-        val worldPos = pos + dir * depth
-        val surfaceNormal = hit.getNormal(worldPos)
-        val info = intersection.material.getInfo(worldPos, surfaceNormal, dir, context)
-
-        if (info.translucent) {
-          return pathTrace(new Ray(worldPos, info.outgoing), 2, context)
-        }
-
-        val emittance = info.emittance
-        val attenuation = info.attenuation(depth)
-
-        return emittance * (diffuse * attenuation).toFloat
-      }
-    }
-    return Color.BLACK
-  }
-
-  /**
-   * @return a color that might depend on the incoming normal
-   */
-  def skyColor(normal: Vec3d): Color = {
-    return Color.BLACK
-  }
-
-  /**
    * Traces a ray in the scene and reacts to intersections depending on the
    * material that was hit.
    */
-  def pathTrace(ray: Ray, bouncesLeft: Int, context: Context): Color = {
+  def pathTrace(ray: Ray, bouncesLeft: Int, air: Material, context: Context): Color = {
     if (0 == bouncesLeft) return Color.BLACK
 
-    val intersection = scene.getIntersection(ray)
+    val scatterChance = context.random.getAsDouble
+    val scatter = Math.log(scatterChance + 1) / air.scatterPropability
+    val intersection = scene.getIntersection(ray, scatter)
     val hitShape = intersection.hitShape
-    if (null == hitShape) return skyColor(ray.normal)
+    if (null == hitShape) {
+      if (scatter > scene.skyDistance) {
+        // TODO weighted/random hemisphere also might be broken causing rays to hit the sky in an enclosed environment.
+        val sky = scene.sky
+        return sky.getEmittance(Vec3d.ORIGIN, -ray.normal, ray.normal, scene.skyDistance, context)
+      }
+
+      val point = ray.start + ray.normal * scatter
+      val indirect = pathTrace(new Ray(point, Vec3d.randomNormal(context.random)), bouncesLeft - 1, air, context)
+      return indirect * air.getAbsorbtion(point, context).mix(Color.WHITE, Math.exp(-air.absorbtionCoefficient * scatter).toFloat)
+    }
 
     val depth = intersection.depth
+
     val point = ray.normal * depth + ray.start
     val surfaceNormal = hitShape.getNormal(point)
 
-    val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, context)
-    if (info.emittance != Color.BLACK) {
-      return info.emittance * info.attenuation(depth).toFloat
-    }
+    val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, depth, air.refractivityIndex, context)
 
-    //    return Color(surfaceNormal)
-    //    return info.reflectance * directLight(point, surfaceNormal, context)
+    val I = air.getAbsorbtion(point, context).mix(Color.WHITE, Math.exp(-air.absorbtionCoefficient * depth).toFloat)
+
+    if (info.emittance != Color.BLACK) {
+      return (info.emittance * I).max(Color.BLACK)
+    }
 
     val newDir = info.outgoing
-    val indirect = pathTrace(new Ray(point, newDir), bouncesLeft - 1, context)
-    val color = info.reflectance
-    if (info.translucent) {
-      return color * indirect
+    val nextAir = if (newDir.dot(surfaceNormal) < 0) {
+      intersection.material
+    } else {
+      scene.air
     }
-    val direct = directLight(point, surfaceNormal, context)
-    return color * (direct + indirect * newDir.dot(surfaceNormal).toFloat)
+
+    val color = info.reflectance
+    val indirect = pathTrace(new Ray(point, newDir), bouncesLeft - 1, nextAir, context)
+    return (color * indirect * I).max(Color.BLACK)
   }
 }

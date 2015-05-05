@@ -12,7 +12,12 @@ import kaloffl.spath.tracing.Ray
  * A scene holds all the objects that might be displayed, as well as the camera
  * from that the image is rendered.
  */
-class Scene(objects: Array[SceneObject], val camera: Camera) {
+class Scene(
+    objects: Array[SceneObject], 
+    val camera: Camera, 
+    val air: Material,
+    val sky: Material,
+    val skyDistance: Double = Double.PositiveInfinity) {
 
   val lightShapes: Array[Shape] = {
     objects.filter { _.material.minEmittance != Color.BLACK }.flatMap { _.shapes }
@@ -42,8 +47,8 @@ class Scene(objects: Array[SceneObject], val camera: Camera) {
    * Tries to find an Intersection of the given ray with the objects in the
    * scene. If none is found, null is returned.
    */
-  def getIntersection(ray: Ray): Intersection = {
-    bvh.getIntersection(ray)
+  def getIntersection(ray: Ray, maxDist: Double): Intersection = {
+    bvh.getIntersection(ray, maxDist)
   }
 
   def getRandomLight(random: DoubleSupplier): Shape = {

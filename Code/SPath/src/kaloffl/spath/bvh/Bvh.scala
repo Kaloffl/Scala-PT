@@ -52,13 +52,16 @@ class Bvh(objects: Array[SceneObject]) {
     return new SubArray(boxed, 0, boxed.length)
   }
 
-  def getIntersection(ray: Ray): Intersection = {
+  def getIntersection(ray: Ray, maxDist: Double): Intersection = {
     class NodeIntersection(val depth: Double, val node: BvhNode)
     // TODO build a array based sorted stack
     // need to figure out the max size. possibly tree-max-depth * 2?
     val stack: SortedStack[NodeIntersection] = new SortedStack(_.depth < _.depth)
-    stack add new NodeIntersection(root.depth(ray), root)
-    var closest = new Intersection(Double.PositiveInfinity, null, null)
+    val rootDepth = root.depth(ray)
+    var closest = new Intersection(maxDist, null, null)
+    if(rootDepth > maxDist) return closest
+    
+    stack add new NodeIntersection(rootDepth, root)
     while (!stack.empty) {
       val head = stack.pop
       if (head.depth >= closest.depth) {

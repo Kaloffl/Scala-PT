@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
 import java.awt.Dimension
 import javax.swing.WindowConstants
+import java.awt.Graphics
 
 /**
  * When instantiated, this class creates a new window with a canvas of the given 
@@ -16,7 +17,11 @@ import javax.swing.WindowConstants
 class Display(val width: Int, val height: Int) {
 
   private val window = new JFrame("Scala Path Tracer")
-  private val canvas = new Canvas()
+  private val canvas = new Canvas() {
+    override def paint(g: Graphics): Unit = {
+      g.drawImage(buffer, 0, 0, null)
+    }
+  }
   private val buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
   private val raster = (buffer.getRaster.getDataBuffer.asInstanceOf[DataBufferInt]).getData();
 

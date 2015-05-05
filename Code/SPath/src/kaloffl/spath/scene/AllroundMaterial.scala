@@ -6,14 +6,16 @@ import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Attenuation
 
 class AllroundMaterial(
-    color: Color,
-    emittance: Float,
-    reflectivity: Float,
-    refractivity: Float,
-    refractivityIndex: Float,
-    glossiness: Float) extends Material {
+    val color: Color,
+    val emittance: Float,
+    val reflectivity: Float,
+    val refractivity: Float,
+    override val refractivityIndex: Double,
+    val glossiness: Float) extends Material {
 
   override def minEmittance: Color = color * emittance
+
+  override def getAbsorbtion(worldPos: Vec3d, context: Context) = color
 
   def reflectNormal(
     worldPos: Vec3d,
@@ -44,26 +46,27 @@ class AllroundMaterial(
     return reflected
   }
 
-  override def emittanceAt(
+  override def getEmittance(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,
+    incomingNormal: Vec3d,
+    depth: Double,
     context: Context): Color = {
 
     color * emittance
   }
 
-  override def attenuation = Attenuation.none
-
   override def getInfo(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,
     incomingNormal: Vec3d,
+    depth: Double,
+    refractivityIndex: Double,
     context: Context): SurfaceInfo = {
 
     new SurfaceInfo(
       color,
       color * emittance,
-      Attenuation.none,
       reflectNormal(worldPos, surfaceNormal, incomingNormal, context),
       true)
   }

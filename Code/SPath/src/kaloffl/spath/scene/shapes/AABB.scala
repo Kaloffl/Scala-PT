@@ -68,8 +68,11 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
       Math.max(ty1, ty2)),
       Math.max(tz1, tz2))
 
-    if (tmax < tmin || tmin < 0.0001) return Double.PositiveInfinity
-
+    if (tmax < tmin) return Double.PositiveInfinity
+    if (tmin < 0.0001) {
+      if (tmax < 0.0001) return Double.PositiveInfinity
+      return tmax
+    }
     return tmin
   }
 

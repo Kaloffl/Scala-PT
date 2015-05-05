@@ -12,7 +12,7 @@ class Attenuation(
     val linear: Double,
     val quadratic: Double) {
 
-  def apply(dist: Double): Double = {
-    return 1.0 / (constant + linear * dist + quadratic * dist * dist)
+  def apply(dist: Double): Float = {
+    return 1.0f / (constant + linear * dist + quadratic * dist * dist).toFloat
   }
 }
