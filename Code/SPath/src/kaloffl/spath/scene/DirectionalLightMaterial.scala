@@ -23,8 +23,14 @@ class DirectionalLightMaterial(
     depth: Double,
     context: Context): Color = {
 
-    val factor = Math.max(0, limit * incomingNormal.dot(dir) - limit + 1).toFloat
-    return emitted * factor
+    val angle = Math.max(limit, incomingNormal.dot(dir).toFloat)
+    if (1 == limit) {
+      if (1 == angle) {
+        return emitted
+      }
+      return Color.BLACK
+    }
+    return emitted * (1 - (1 - angle) / (1 - limit))
   }
 
   override def getInfo(

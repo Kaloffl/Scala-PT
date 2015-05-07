@@ -18,9 +18,7 @@ object Hemisphere {
 
   def main(args: Array[String]): Unit = {
     val rng = new DoubleSupplier() {
-      override def getAsDouble(): Double = {
-        ThreadLocalRandom.current().nextDouble()
-      }
+      override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
     }
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer

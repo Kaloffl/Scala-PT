@@ -89,6 +89,9 @@ class TracingWorker(
       def toColorChannelInt(value: Double): Int = {
         (Math.min(Math.sqrt(value / samplesTaken), 1) * 0xff).toInt
       }
+      if (samples(i3).isNaN) {
+        System.err.println("NaN detected! ABORT SHIP!")
+      }
 
       val red = toColorChannelInt(samples(i3))
       val green = toColorChannelInt(samples(i3 + 1))
@@ -106,20 +109,46 @@ class TracingWorker(
   def pathTrace(ray: Ray, bouncesLeft: Int, air: Material, context: Context): Color = {
     if (0 == bouncesLeft) return Color.BLACK
 
+    // First we determine the distance it will take the ray to hit an air 
+    // particle and be scattered. If the current air has a scatter probability 
+    // of 0, the distance will be infinity.
     val scatterChance = context.random.getAsDouble
-    val scatter = Math.log(scatterChance + 1) / air.scatterPropability
-    val intersection = scene.getIntersection(ray, scatter)
+    val scatterDist = Math.log(scatterChance + 1) / air.scatterPropability
+
+    // Now try to find an object in the scene that is closer than the determined 
+    // scatter depth. If none is found and the scatter depth is not infinity, 
+    // the ray will be scattered.
+    val intersection = scene.getIntersection(ray, scatterDist)
     val hitShape = intersection.hitShape
     if (null == hitShape) {
-      if (scatter > scene.skyDistance) {
-        // TODO weighted/random hemisphere also might be broken causing rays to hit the sky in an enclosed environment.
-        val sky = scene.sky
-        return sky.getEmittance(Vec3d.ORIGIN, -ray.normal, ray.normal, scene.skyDistance, context)
+      // if no object was hit, the ray will either scatter or hit the sky. At 
+      // the moment the sky will only really work if the air is clear and the 
+      // scatter probability is 0.
+      if (java.lang.Double.isInfinite(scatterDist)) {
+        // FIXME weighted/random hemisphere might be broken causing rays to
+        // hit the sky in an enclosed environment. Another possibility might be 
+        // rays hitting the corner of a room and then not hitting the wall 
+        // because they are too close.
+        val dist = scene.skyDistance
+        val point = ray.start + ray.normal * dist
+        val emitted = scene.sky.getEmittance(
+          point, -ray.normal, ray.normal, dist, context)
+        val absorbtionScale = if (java.lang.Double.isInfinite(dist)) {
+          0.0f
+        } else {
+          (air.absorbtionCoefficient * -dist).toFloat
+        }
+        val absorbed = (air.getAbsorbtion(point, context) * absorbtionScale).exp
+        return emitted * absorbed
       }
 
-      val point = ray.start + ray.normal * scatter
-      val indirect = pathTrace(new Ray(point, Vec3d.randomNormal(context.random)), bouncesLeft - 1, air, context)
-      return indirect * air.getAbsorbtion(point, context).mix(Color.WHITE, Math.exp(-air.absorbtionCoefficient * scatter).toFloat)
+      val point = ray.start + ray.normal * scatterDist
+      val absorbed = (air.getAbsorbtion(point, context)
+        * (air.absorbtionCoefficient * -scatterDist).toFloat).exp
+      val newRay = new Ray(point, Vec3d.randomNormal(context.random))
+      val indirect = pathTrace(
+        newRay, bouncesLeft - 1, air, context)
+      return indirect * absorbed
     }
 
     val depth = intersection.depth
@@ -129,10 +158,10 @@ class TracingWorker(
 
     val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, depth, air.refractivityIndex, context)
 
-    val I = air.getAbsorbtion(point, context).mix(Color.WHITE, Math.exp(-air.absorbtionCoefficient * depth).toFloat)
+    val absorbed = (air.getAbsorbtion(point, context) * (air.absorbtionCoefficient * -depth).toFloat).exp
 
     if (info.emittance != Color.BLACK) {
-      return (info.emittance * I).max(Color.BLACK)
+      return info.emittance * absorbed
     }
 
     val newDir = info.outgoing
@@ -144,6 +173,6 @@ class TracingWorker(
 
     val color = info.reflectance
     val indirect = pathTrace(new Ray(point, newDir), bouncesLeft - 1, nextAir, context)
-    return (color * indirect * I).max(Color.BLACK)
+    return color * indirect * absorbed
   }
 }

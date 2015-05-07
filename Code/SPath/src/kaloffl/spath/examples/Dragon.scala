@@ -30,11 +30,11 @@ object Dragon {
     val matPinkDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.05, 0.0, 1.0)
 
     val matWhiteLight = new LightMaterial(Color.WHITE, 2, 1024)
 
-    val matRedGlass = new TransparentMaterial(Color(0.9f, 0.1f, 0.1f), 5, 0.2, 1.2)
+    val matRedGlass = new TransparentMaterial(Color(0.2f, 0.4f, 0.5f), 16, 0, 1.5)
 
     val checkeredMask = new CheckeredMask(2)
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)

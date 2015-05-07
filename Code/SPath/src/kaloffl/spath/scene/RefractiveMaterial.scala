@@ -23,9 +23,9 @@ class RefractiveMaterial(
     val randomness = surfaceNormal.randomHemisphere(context.random)
     val axis = surfaceNormal * (1 - glossiness) + randomness * glossiness
     val (i1, i2, surf) = if (axis.dot(incomingNormal) > 0) {
-      (refractivityIndex, airRefractivityIndex, -axis)
+      (refractivityIndex, 1.0, -axis)
     } else {
-      (airRefractivityIndex, refractivityIndex, axis)
+      (1.0, refractivityIndex, axis)
     }
 
     new SurfaceInfo(

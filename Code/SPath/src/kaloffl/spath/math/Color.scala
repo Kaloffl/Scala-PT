@@ -1,5 +1,7 @@
 package kaloffl.spath.math
 
+import java.util.function.DoubleSupplier
+
 class Color(val r2: Float, val g2: Float, val b2: Float) {
 
   def r: Float = Math.sqrt(r2).toFloat
@@ -43,6 +45,26 @@ class Color(val r2: Float, val g2: Float, val b2: Float) {
     return this * (1 - factor) + other * factor
   }
 
+  def pow(f: Float): Color = {
+    new Color(
+      Math.pow(r2, f).toFloat,
+      Math.pow(g2, f).toFloat,
+      Math.pow(b2, f).toFloat)
+  }
+  def pow(c: Color): Color = {
+    new Color(
+      Math.pow(r2, c.r2).toFloat,
+      Math.pow(g2, c.g2).toFloat,
+      Math.pow(b2, c.b2).toFloat)
+  }
+
+  def exp(): Color = {
+    new Color(
+      Math.exp(r2).toFloat,
+      Math.exp(g2).toFloat,
+      Math.exp(b2).toFloat)
+  }
+
   override def equals(obj: Any): Boolean = {
     obj match {
       case Color(r2, g2, b2) ⇒ this.r2 == r2 && this.g2 == g2 && this.b2 == b2
@@ -68,4 +90,37 @@ object Color {
   def apply(v: Vec3d) = new Color(v.x.toFloat, v.y.toFloat, v.z.toFloat)
 
   def unapply(c: Color) = Some((c.r2, c.g2, c.b2))
+
+
+  def randomColor(random: DoubleSupplier, brightness: Float): Color = {  
+    val hue = random.getAsDouble.toFloat
+    val saturation = (random.getAsDouble * 2000 + 4000).toFloat / 10000f
+    return Color.fromHsb(hue, saturation, brightness)
+  }
+  
+  def fromHsb(hue: Float, saturation: Float, brightness: Float): Color = {
+    if (saturation == 0) {
+      Color(brightness, brightness, brightness)
+    } else {
+      val h = (hue - Math.floor(hue).toFloat) * 6.0f
+      val f = h - Math.floor(h).toFloat
+      val p = brightness * (1.0f - saturation)
+      val q = brightness * (1.0f - saturation * f)
+      val t = brightness * (1.0f - (saturation * (1.0f - f)))
+      (h.toInt) match {
+        case 0 ⇒
+          Color(brightness, t, p)
+        case 1 ⇒
+          Color(q, brightness, p)
+        case 2 ⇒
+          Color(p, brightness, t)
+        case 3 ⇒
+          Color(p, q, brightness)
+        case 4 ⇒
+          Color(t, p, brightness)
+        case 5 ⇒
+          Color(brightness, p, q)
+      }
+    }
+  }
 }
