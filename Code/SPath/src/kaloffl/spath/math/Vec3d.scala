@@ -94,54 +94,30 @@ case class Vec3d(val x: Double, val y: Double, val z: Double) {
     val ny = y * n + v.y * a
     val nz = z * n + v.z * a
     return Vec3d(nx, ny, nz)
-    //    val length = Math.sqrt(nx * nx + ny * ny + nz * nz)
-    //    return Vec3d(nx / length, ny / length, nz / length)
+  }
+
+  def ortho: Vec3d = {
+    //  See : http://lolengine.net/blog/2013/09/21/picking-orthogonal-vector-combing-coconuts
+    return if (Math.abs(x) > Math.abs(z)) Vec3d(-y, x, 0) else Vec3d(0, -z, y);
+  }
+
+  def randomHemisphere(random: DoubleSupplier, bias: Double): Vec3d = {
+    val baseX = ortho.normalize
+    val baseY = cross(baseX).normalize
+    val angle = random.getAsDouble * 2 * Math.PI
+    val rnd = Math.pow(random.getAsDouble, 1.0 / (bias + 1.0))
+    val dist = Math.sqrt(1.0 - rnd * rnd)
+    return baseX * (Math.cos(angle) * dist) +
+      baseY * (Math.sin(angle) * dist) +
+      this * rnd
   }
 
   def randomHemisphere(random: DoubleSupplier): Vec3d = {
-    val angle = random.getAsDouble * 2.0 * Math.PI
-    val rnd = random.getAsDouble
-    val distSq = 1.0 - rnd * rnd
-    val dist = Math.sqrt(distSq)
-
-    // components of a normalized vector on the surface of a hemisphere 
-    // where z > 0
-    val nx = dist * Math.cos(angle)
-    val ny = dist * Math.sin(angle)
-    val nz = rnd
-
-    // if the angle between the original and the new vector is more than 90°, 
-    // we just turn it 180°
-    if (x * nx + y * ny + z * nz < 0.0) return Vec3d(-nx, -ny, -nz)
-    return Vec3d(nx, ny, nz)
+    return randomHemisphere(random, 0.0)
   }
 
   def weightedHemisphere(random: DoubleSupplier): Vec3d = {
-    val angle = random.getAsDouble * 2.0 * Math.PI
-    val rnd = random.getAsDouble
-    val distSq = (1 - rnd * rnd)
-    val dist = Math.sqrt(rnd)
-
-    val nx = dist * Math.cos(angle)
-    val ny = dist * Math.sin(angle)
-    val nz = Math.sqrt(1 - dist * dist)
-
-    if (z < 0) {
-      return ((Mat3d(
-        -z, 0, x,
-        0, -z, y,
-        -x, -y, -z) + Mat3d(
-          y * y, -x * y, 0,
-          -x * y, x * x, 0,
-          0, 0, 0) * (1.0f / (1.0f - z))) * Vec3d(-nx, -ny, -nz))
-    }
-    return ((Mat3d(
-      z, 0, x,
-      0, z, y,
-      -x, -y, z) + Mat3d(
-        y * y, -x * y, 0,
-        -x * y, x * x, 0,
-        0, 0, 0) * (1.0f / (1.0f + z))) * Vec3d(nx, ny, nz))
+    return randomHemisphere(random, 1.0)
   }
 }
 
@@ -162,13 +138,7 @@ object Vec3d {
   val FRONT: Vec3d = Vec3d(0, 0, 1)
   val BACK: Vec3d = Vec3d(0, 0, -1)
 
-  val RED: Vec3d = LEFT
-  val GREEN: Vec3d = UP
-  val BLUE: Vec3d = FRONT
-  val BLACK: Vec3d = ORIGIN
-  val WHITE: Vec3d = UNIT
-
-  def apply(): Vec3d = BLACK
+  def apply(): Vec3d = ORIGIN
   def apply(d: Double): Vec3d = new Vec3d(d, d, d)
 
   def randomNormal(random: DoubleSupplier): Vec3d = {

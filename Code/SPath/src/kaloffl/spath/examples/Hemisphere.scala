@@ -32,7 +32,7 @@ object Hemisphere {
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matGrayDiffuse = new DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
-    val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.WHITE, 0.0, 0.0, 1.0)
 
     val diffuseMaterials = Array(
       matRedDiffuse,
@@ -47,7 +47,7 @@ object Hemisphere {
 
     val hemisphere = (for (i ← 0 to 2000) yield {
       val weight = Math.cos(rng.getAsDouble * Math.PI / 2)
-      val rhs = Vec3d.randomNormal(rng)
+      val rhs = Vec3d.BACK.weightedHemisphere(rng)
       new SceneObject(
         new Sphere(rhs, 0.025f),
         diffuseMaterials((rng.getAsDouble * diffuseMaterials.length).toInt))
@@ -55,7 +55,7 @@ object Hemisphere {
 
     val closerLowCam = new Camera(Vec3d(0, 0, 2.2), Vec3d(0, 0, -1).normalize, Vec3d.LEFT, 0, 3)
 
-    val hemisphereScene = new Scene(hemisphere.toArray, closerLowCam, matAir, new DirectionalLightMaterial(Color.WHITE, 2, Vec3d(0, -1, 3).normalize, 2))
+    val hemisphereScene = new Scene(hemisphere.toArray, closerLowCam, matAir, new DirectionalLightMaterial(Color.WHITE, 2, Vec3d(0, 1, -3).normalize, 0.5f))
     pathTracer.render(display, hemisphereScene, bounces = 12)
   }
 }

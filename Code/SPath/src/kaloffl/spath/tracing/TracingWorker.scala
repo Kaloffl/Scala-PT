@@ -171,8 +171,7 @@ class TracingWorker(
       scene.air
     }
 
-    val color = info.reflectance
     val indirect = pathTrace(new Ray(point, newDir), bouncesLeft - 1, nextAir, context)
-    return color * indirect * absorbed
+    return info.reflectance * indirect * absorbed
   }
 }

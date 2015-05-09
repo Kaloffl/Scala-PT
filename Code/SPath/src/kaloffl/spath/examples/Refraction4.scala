@@ -20,12 +20,14 @@ import kaloffl.spath.scene.DirectionalLightMaterial
 import java.util.function.DoubleSupplier
 import java.util.concurrent.ThreadLocalRandom
 
-object Refraction3 {
+object Refraction4 {
   def main(args: Array[String]): Unit = {
+    val rng = new DoubleSupplier() {
+      override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
+    }
+    
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer
-
-    val glassColor = Color(0.2f, 0.4f, 0.5f)
 
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
@@ -57,10 +59,10 @@ object Refraction3 {
 
     val minHeight = 1.0
     val maxHeight = 4.0
-    val objects = (for (x ← 0 until 10; y ← 0 until 10) yield {
+    val objects = (for (x ← 0 until 20; y ← 0 until 20) yield {
       new SceneObject(
-        new Sphere(Vec3d(x * 2 - 10, 0.501, y * 2 - 10), 0.5f),
-        new TransparentMaterial(glassColor, Math.pow(2, x - 1), 0.0, 1 + y / 10.0))
+        new Sphere(Vec3d(x * 1.1 - 10.5, 0.501, y * 1.1 - 10.5), 0.5f),
+        new TransparentMaterial(Color.randomColor(rng, 0.5f), 8, 0.0, 1.8))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

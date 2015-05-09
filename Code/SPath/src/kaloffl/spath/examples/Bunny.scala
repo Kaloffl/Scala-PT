@@ -30,11 +30,11 @@ object Bunny {
     val matPinkDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.0, 1.0)
 
     val matWhiteLight = new LightMaterial(Color.WHITE, 2, 1024)
 
-    val matYellowGlass = new TransparentMaterial(Color(0.9f, 0.9f, 0.1f), 2, 0.5, 1.4)
+    val matYellowGlass = new TransparentMaterial(Color(0.2f, 0.22f, 0.5f), 64, 2.0, 1.0)
 
     val checkeredMask = new CheckeredMask(2)
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
@@ -80,9 +80,9 @@ object Bunny {
         AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
         matWhiteDiffuse))
 
-    val bunnyForward = Vec3d(0.25, -2.5, -5)
+    val bunnyForward = Vec3d(-2, -1.25, -5)
     val bunnyTop = bunnyForward.cross(Vec3d.RIGHT).normalize
-    val bunnyCam = new Camera(Vec3d(-2, 6, 4), bunnyForward.normalize, bunnyTop, 0.1, bunnyForward.length)
+    val bunnyCam = new Camera(Vec3d(0, 5, 4), bunnyForward.normalize, bunnyTop, 0.12, bunnyForward.length)
 
     val bunnyScene = new Scene(objects, bunnyCam, matAir, matBlackDiffuse)
 

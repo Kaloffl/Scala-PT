@@ -8,8 +8,9 @@ pathtracer TODOs
 	- switch to JavaFX
 	- settable sample count
 	- settable max bounce
-	- expotable image
+	- exportable image
 	- pause/unpause of rendering
+	- saving rendering status to continue later
 	- statistics
 		- rendertime
 		- time per sample
@@ -23,14 +24,19 @@ pathtracer TODOs
 		- surface normals
 		- reflected normal
 		- depth
+	- catalogs
+		- materials
+		- shapes & models
+		- scenes
 - post processing
 	- whitebalance
 	- HDR
 	- color correction
 - scene
-	- modular scene graph (trees in threes)
+	- modular scene graph (trees in trees)
 	- life scene editing
 	- loadable scene tree
+	- octree based voxel volume
 - model/shape rotation, translation & scaling
 - textured objects
 - normalmaps for objects
@@ -40,3 +46,4 @@ pathtracer TODOs
 - Better random sampler
 - better ply importer
 - command line tool (.scene in -> .png out)
+- better in-scattering to allow godrays

@@ -20,17 +20,27 @@ import kaloffl.spath.scene.DirectionalLightMaterial
 import java.util.function.DoubleSupplier
 import java.util.concurrent.ThreadLocalRandom
 
-object Refraction3 {
+object Scatter2 {
   def main(args: Array[String]): Unit = {
+    val rng = new DoubleSupplier() {
+      override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
+    }
+    
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer
 
     val glassColor = Color(0.2f, 0.4f, 0.5f)
 
+    val matRedDiffuse = new DiffuseMaterial(Color(0.9f, 0.6f, 0.6f))
+    val matGreenDiffuse = new DiffuseMaterial(Color(0.6f, 0.9f, 0.6f))
+    val matBlueDiffuse = new DiffuseMaterial(Color(0.6f, 0.6f, 0.9f))
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
     val matWhiteLight = new LightMaterial(Color.WHITE, 2, 1024)
+
+    val mask = new GridMask(2, 0.04, Vec3d(0.5, 0.5, 0.5))
+    val matBlackWhiteCheckered = new MaskedMaterial(matWhiteDiffuse, matBlueDiffuse, mask)
 
     val matAir = new TransparentMaterial(Color.WHITE, 0, 0.0, 1.0)
 
@@ -59,8 +69,8 @@ object Refraction3 {
     val maxHeight = 4.0
     val objects = (for (x ← 0 until 10; y ← 0 until 10) yield {
       new SceneObject(
-        new Sphere(Vec3d(x * 2 - 10, 0.501, y * 2 - 10), 0.5f),
-        new TransparentMaterial(glassColor, Math.pow(2, x - 1), 0.0, 1 + y / 10.0))
+        AABB(Vec3d(x * 2 - 9.5, 0.501, y * 2 - 9.5), Vec3d(1)),
+        new TransparentMaterial(Color.randomColor(rng, 0.5f), Math.pow(2, x % 5), 0.2 * y * x / 2, 1.1))
     }).toArray
 
     val front = Vec3d(0, -11, 9)
