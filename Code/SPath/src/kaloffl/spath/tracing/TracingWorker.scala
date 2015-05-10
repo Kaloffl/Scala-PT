@@ -1,13 +1,14 @@
 package kaloffl.spath.tracing
 
-import kaloffl.spath.Display
+import java.util.function.DoubleSupplier
+
+import kaloffl.spath.RenderTarget
 import kaloffl.spath.math.Color
+import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
-import kaloffl.spath.scene.Scene
-import java.util.function.DoubleSupplier
 import kaloffl.spath.scene.Material
-import kaloffl.spath.math.Vec2d
+import kaloffl.spath.scene.Scene
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -51,7 +52,7 @@ class TracingWorker(
   /**
    * Renders a pass and adds the color to the samples array
    */
-  def render(maxBounces: Int, pass: Int, display: Display): Unit = {
+  def render(maxBounces: Int, pass: Int, display: RenderTarget): Unit = {
     samplesTaken += 1
 
     val dWidth = display.width
@@ -80,7 +81,7 @@ class TracingWorker(
   /**
    * Draws the current samples to the display
    */
-  def draw(display: Display) {
+  def draw(display: RenderTarget) {
     val maxIndex = width * height
     for (index ← 0 until maxIndex) {
       val x = index % width + left
@@ -99,7 +100,7 @@ class TracingWorker(
       val blue = toColorChannelInt(samples(i3 + 2))
       val color = red << 16 | green << 8 | blue
 
-      display.drawPixel(x, y, color)
+      display.setPixel(x, y, color)
     }
   }
 

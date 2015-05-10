@@ -14,7 +14,7 @@ import java.awt.Graphics
  * Individual pixels on said canvas can be modified. To display the changes, 
  * redraw must be called.
  */
-class Display(val width: Int, val height: Int) {
+class Display(override val width: Int, override val height: Int) extends RenderTarget {
 
   private val window = new JFrame("Scala Path Tracer")
   private val canvas = new Canvas() {
@@ -39,7 +39,7 @@ class Display(val width: Int, val height: Int) {
   /**
    * Displays the current image to the screen
    */
-  def redraw: Unit = {
+  def update: Unit = {
     val graphicsContext = strategy.getDrawGraphics
 
     graphicsContext.drawImage(buffer, 0, 0, null)
@@ -52,7 +52,7 @@ class Display(val width: Int, val height: Int) {
    * Sets the pixel on the given position to the given color value. Does not 
    * check bounds, so bad positions may cause ArrayIndexOutOfBoundsExceptions.
    */
-  def drawPixel(x: Int, y: Int, color: Int): Unit = {
+  override def setPixel(x: Int, y: Int, color: Int): Unit = {
     raster(x + y * width) = color
   }
 }
