@@ -13,6 +13,7 @@ import javafx.stage.Stage
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.math.Vec3d
 import java.util.function.DoubleSupplier
+import kaloffl.spath.math.Vec2d
 
 /**
  * This class was created to test the even distribution of points by the
@@ -54,7 +55,7 @@ class HemisphereDistribution extends Application {
 
     val size = Vec3d(150, 150, 150)
     for (i ← 0 until 10000) {
-      val vec = startVector.randomHemisphere(rnd) * size + size
+      val vec = startVector.randomHemisphere(Vec2d.random(rnd)) * size + size
       val sphere = new Sphere(1)
       sphere.setMaterial(mat)
       sphere.setTranslateX(vec.x + (x * 300))

@@ -14,6 +14,7 @@ import java.util.function.DoubleSupplier
 import java.util.concurrent.ThreadLocalRandom
 import javafx.scene.chart.LineChart
 import kaloffl.spath.math.Mat3d
+import kaloffl.spath.math.Vec2d
 
 class ImportanceDotDistribution extends Application {
 
@@ -60,13 +61,13 @@ class ImportanceDotDistribution extends Application {
       override def handle(l: Long) {
         addToSeries(rngSeries, random.getAsDouble)
         //        while (true) {
-        val newDir = Vec3d.UP.randomHemisphere(random)
+        val newDir = Vec3d.UP.randomHemisphere(Vec2d.random(random))
         val diffuse = newDir.dot(Vec3d.UP)
         addToSeries(normalSeries, diffuse)
 
         if (diffuse > random.getAsDouble) {
           addToSeries(referenceSeries, diffuse)
-          addToSeries(weighted1Series, Vec3d.UP.weightedHemisphere(random).dot(Vec3d.UP))
+          addToSeries(weighted1Series, Vec3d.UP.weightedHemisphere(Vec2d.random(random)).dot(Vec3d.UP))
         }
         //        }
       }

@@ -34,7 +34,6 @@ class TransparentMaterial(
         incomingNormal.reflect(surf);
       } else {
         incomingNormal.refract(surf, i1, i2)
-      },
-      true)
+      })
   }
 }

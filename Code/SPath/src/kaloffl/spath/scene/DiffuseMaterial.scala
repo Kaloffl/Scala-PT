@@ -4,6 +4,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Vec2d
 
 class DiffuseMaterial(val color: Color) extends Material {
 
@@ -18,7 +19,6 @@ class DiffuseMaterial(val color: Color) extends Material {
     new SurfaceInfo(
       color,
       Color.BLACK,
-      surfaceNormal.weightedHemisphere(context.random),
-      false)
+      surfaceNormal.weightedHemisphere(Vec2d.random(context.random)))
   }
 }

@@ -101,23 +101,27 @@ case class Vec3d(val x: Double, val y: Double, val z: Double) {
     return if (Math.abs(x) > Math.abs(z)) Vec3d(-y, x, 0) else Vec3d(0, -z, y);
   }
 
-  def randomHemisphere(random: DoubleSupplier, bias: Double): Vec3d = {
+  def randomConeSample(random: Vec2d, extent: Double, bias: Double): Vec3d = {
     val baseX = ortho.normalize
     val baseY = cross(baseX).normalize
-    val angle = random.getAsDouble * 2 * Math.PI
-    val rnd = Math.pow(random.getAsDouble, 1.0 / (bias + 1.0))
+    val angle = random.x * 2 * Math.PI
+    val rnd = Math.pow(1.0 - random.y * extent, 1.0 / (bias + 1.0))
     val dist = Math.sqrt(1.0 - rnd * rnd)
     return baseX * (Math.cos(angle) * dist) +
       baseY * (Math.sin(angle) * dist) +
       this * rnd
   }
 
-  def randomHemisphere(random: DoubleSupplier): Vec3d = {
-    return randomHemisphere(random, 0.0)
+  def randomHemisphere(random: Vec2d, bias: Double): Vec3d = {
+    return randomConeSample(random, 1.0, bias)
   }
 
-  def weightedHemisphere(random: DoubleSupplier): Vec3d = {
-    return randomHemisphere(random, 1.0)
+  def randomHemisphere(random: Vec2d): Vec3d = {
+    return randomConeSample(random, 1.0, 0.0)
+  }
+
+  def weightedHemisphere(random: Vec2d): Vec3d = {
+    return randomConeSample(random, 1.0, 1.0)
   }
 }
 
@@ -141,9 +145,9 @@ object Vec3d {
   def apply(): Vec3d = ORIGIN
   def apply(d: Double): Vec3d = new Vec3d(d, d, d)
 
-  def randomNormal(random: DoubleSupplier): Vec3d = {
-    val angle = random.getAsDouble * 2.0 * Math.PI
-    val rnd = random.getAsDouble * 2 - 1
+  def randomNormal(random: Vec2d): Vec3d = {
+    val angle = random.x * 2.0 * Math.PI
+    val rnd = random.y * 2 - 1
     val distSq = 1.0 - rnd * rnd
     val dist = Math.sqrt(distSq)
 

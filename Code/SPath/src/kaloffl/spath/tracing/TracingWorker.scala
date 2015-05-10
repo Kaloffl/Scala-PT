@@ -7,6 +7,7 @@ import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
 import java.util.function.DoubleSupplier
 import kaloffl.spath.scene.Material
+import kaloffl.spath.math.Vec2d
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -145,7 +146,7 @@ class TracingWorker(
       val point = ray.start + ray.normal * scatterDist
       val absorbed = (air.getAbsorbtion(point, context)
         * (air.absorbtionCoefficient * -scatterDist).toFloat).exp
-      val newRay = new Ray(point, Vec3d.randomNormal(context.random))
+      val newRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(context.random)))
       val indirect = pathTrace(
         newRay, bouncesLeft - 1, air, context)
       return indirect * absorbed

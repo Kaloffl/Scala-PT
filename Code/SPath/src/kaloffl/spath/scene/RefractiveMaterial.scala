@@ -4,6 +4,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Vec2d
 
 class RefractiveMaterial(
     val color: Color,
@@ -20,8 +21,7 @@ class RefractiveMaterial(
     airRefractivityIndex: Double,
     context: Context): SurfaceInfo = {
 
-    val randomness = surfaceNormal.randomHemisphere(context.random)
-    val axis = surfaceNormal * (1 - glossiness) + randomness * glossiness
+    val axis = surfaceNormal.randomConeSample(Vec2d.random(context.random), glossiness, 0.0)
     val (i1, i2, surf) = if (axis.dot(incomingNormal) > 0) {
       (refractivityIndex, 1.0, -axis)
     } else {
@@ -35,7 +35,6 @@ class RefractiveMaterial(
         incomingNormal.reflect(surf);
       } else {
         incomingNormal.refract(surf, i1, i2)
-      },
-      true)
+      })
   }
 }

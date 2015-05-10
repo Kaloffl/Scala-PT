@@ -4,6 +4,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Vec2d
 
 class LightMaterial(
     val color: Color,
@@ -32,7 +33,6 @@ class LightMaterial(
     new SurfaceInfo(
       color,
       emitted,
-      surfaceNormal.randomHemisphere(context.random),
-      false)
+      surfaceNormal.randomHemisphere(Vec2d.random(context.random)))
   }
 }

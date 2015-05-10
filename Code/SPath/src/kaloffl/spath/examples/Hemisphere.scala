@@ -13,6 +13,7 @@ import kaloffl.spath.PathTracer
 import kaloffl.spath.Display
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.TransparentMaterial
+import kaloffl.spath.math.Vec2d
 
 object Hemisphere {
 
@@ -47,7 +48,7 @@ object Hemisphere {
 
     val hemisphere = (for (i ← 0 to 2000) yield {
       val weight = Math.cos(rng.getAsDouble * Math.PI / 2)
-      val rhs = Vec3d.BACK.weightedHemisphere(rng)
+      val rhs = Vec3d.BACK.weightedHemisphere(Vec2d.random(rng))
       new SceneObject(
         new Sphere(rhs, 0.025f),
         diffuseMaterials((rng.getAsDouble * diffuseMaterials.length).toInt))

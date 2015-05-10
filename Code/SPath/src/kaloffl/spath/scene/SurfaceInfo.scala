@@ -7,5 +7,4 @@ import kaloffl.spath.math.Attenuation
 class SurfaceInfo(
   val reflectance: Color,
   val emittance: Color,
-  val outgoing: Vec3d,
-  val translucent: Boolean)
+  val outgoing: Vec3d)

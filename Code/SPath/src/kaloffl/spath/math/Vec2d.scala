@@ -67,6 +67,8 @@ object Vec2d {
 
   def apply(): Vec2d = ORIGIN
   def apply(d: Double): Vec2d = new Vec2d(d, d)
+  
+  def random(rng: DoubleSupplier): Vec2d = Vec2d(rng.getAsDouble, rng.getAsDouble)
 
   def randomNormal(random: DoubleSupplier): Vec2d = {
     val angle = random.getAsDouble * 2.0 * Math.PI
