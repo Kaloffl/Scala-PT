@@ -29,11 +29,14 @@ pathtracer TODOs
 		- shapes & models
 		- scenes
 - post processing
-	- whitebalance
-	- HDR
+	- white balance
+	- bloom
 	- color correction
 - scene
 	- modular scene graph (trees in trees)
+		- BVH as a shape
+		- shapeList as a shape
+		- mesh using BVH for triangles
 	- life scene editing
 	- loadable scene tree
 	- octree based voxel volume
@@ -43,7 +46,14 @@ pathtracer TODOs
 - spectral tracing
 - portals
 - DE function shape
+- ray marching (for DE functions and possibly tree traversal)
 - Better random sampler
 - better ply importer
 - command line tool (.scene in -> .png out)
 - better in-scattering to allow godrays
+- progress monitor for all time consuming tasks
+	- rendering
+	- import of model files
+	- BVH construction
+- bi-directional path tracing
+- selective splitting (split one ray into multiple in high-variance areas to accelerate convergence)

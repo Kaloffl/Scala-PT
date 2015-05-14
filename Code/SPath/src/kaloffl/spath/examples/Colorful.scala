@@ -27,7 +27,7 @@ object Colorful {
     val matPinkDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.0, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.0, 0.0, 1.0)
 
     val coloredSpheres = Array(
       new SceneObject(

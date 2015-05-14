@@ -41,10 +41,10 @@ object Refraction {
 
     val matWhiteLight = new LightMaterial(Color.WHITE, 2, 1024)
 
-    val checkeredMask = new CheckeredMask(2)
+    val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matAir = new TransparentMaterial(Color.WHITE, 0.1, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.BLACK, 0.1, 0.0, 1.0)
 
     val glassTest = Array(
       new SceneObject(

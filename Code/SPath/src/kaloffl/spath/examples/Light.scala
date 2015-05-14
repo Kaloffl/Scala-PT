@@ -34,7 +34,7 @@ object Light {
 
     val matWhiteGlass8 = new RefractiveMaterial(Color.WHITE, 1.8, 0.0)
 
-    val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.02, 1.0)
+    val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.02, 1.0)
 
     val coloredLights = Array(
       new SceneObject(
