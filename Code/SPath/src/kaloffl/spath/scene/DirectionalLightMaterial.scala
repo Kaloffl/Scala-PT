@@ -42,9 +42,10 @@ class DirectionalLightMaterial(
     refractivityIndex: Double,
     context: Context): SurfaceInfo = {
 
+    val emit = getEmittance(worldPos, surfaceNormal, incomingNormal, depth, context)
     new SurfaceInfo(
-      color,
-      getEmittance(worldPos, surfaceNormal, incomingNormal, depth, context),
+      emit,
+      emit,
       surfaceNormal.randomHemisphere(Vec2d.random(context.random)))
   }
 }

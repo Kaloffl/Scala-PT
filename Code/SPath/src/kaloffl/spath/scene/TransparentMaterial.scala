@@ -4,12 +4,14 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Vec2d
 
 class TransparentMaterial(
     val color: Color,
-    override val absorbtionCoefficient: Double,
-    override val scatterPropability: Double,
-    override val refractivityIndex: Double) extends Material {
+    override val absorbtionCoefficient: Double = 1,
+    override val scatterPropability: Double = 0,
+    override val refractivityIndex: Double = 1,
+    val roughness: Double = 0) extends Material {
 
   override def getAbsorbtion(worldPos: Vec3d, context: Context): Color = color
 
@@ -27,13 +29,14 @@ class TransparentMaterial(
       (1.0, refractivityIndex, surfaceNormal)
     }
 
+    val axis = surf.randomConeSample(Vec2d.random(context.random), roughness, 0)
     new SurfaceInfo(
       Color.WHITE,
       Color.BLACK,
-      if (context.random.getAsDouble < incomingNormal.refractance(surf, i1, i2)) {
-        incomingNormal.reflect(surf);
+      if (context.random.getAsDouble < incomingNormal.refractance(axis, i1, i2)) {
+        incomingNormal.reflect(axis)
       } else {
-        incomingNormal.refract(surf, i1, i2)
+        incomingNormal.refract(axis, i1, i2)
       })
   }
 }

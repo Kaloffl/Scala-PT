@@ -42,13 +42,6 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
       "Could not determine AABB normal for point: " + point + ". AABB bounds are max: " + max + ", min: " + min + ".")
   }
 
-  override def getRandomInnerPoint(random: DoubleSupplier): Vec3d = {
-    return Vec3d(
-      min.x + (size.x) * random.getAsDouble,
-      min.y + (size.y) * random.getAsDouble,
-      min.z + (size.z) * random.getAsDouble)
-  }
-
   override def getIntersectionDepth(ray: Ray): Double = {
     val tx1 = (min.x - ray.start.x) / ray.normal.x
     val tx2 = (max.x - ray.start.x) / ray.normal.x

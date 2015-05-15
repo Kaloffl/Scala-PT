@@ -19,12 +19,6 @@ class Scene(
     val sky: Material,
     val skyDistance: Double = Double.PositiveInfinity) {
 
-  val lightShapes: Array[Shape] = {
-    objects.filter { _.material.minEmittance != Color.BLACK }.flatMap { _.shapes }
-  }
-  println("Lights in scene: " + lightShapes.length)
-  val lightSurface: Double = lightShapes.map { _.surfaceArea }.sum
-
   val bvh = {
     val primitives = objects.foldLeft(0)((num, obj) ⇒ num + obj.shapes.length)
     printf("Building BVH for %d primitives.\n", primitives)
@@ -49,19 +43,5 @@ class Scene(
    */
   def getIntersection(ray: Ray, maxDist: Double): Intersection = {
     bvh.getIntersection(ray, maxDist)
-  }
-
-  def getRandomLight(random: DoubleSupplier): Shape = {
-    var index = 0
-    var acc = 0.0
-    val rand = random.getAsDouble * lightSurface
-    val lightCount = lightShapes.length
-    while (index < lightCount) {
-      val currShape = lightShapes(index)
-      acc += currShape.surfaceArea
-      if (acc > rand) return currShape
-      index += 1
-    }
-    return null
   }
 }

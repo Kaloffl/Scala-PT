@@ -18,25 +18,6 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
       (point.z - position.z) / radius)
   }
 
-  override def getRandomInnerPoint(random: DoubleSupplier): Vec3d = {
-    var point: Vec3d = null
-    do {
-      point = Vec3d(
-        (random.getAsDouble * 2.0 - 1.0),
-        (random.getAsDouble * 2.0 - 1.0),
-        (random.getAsDouble * 2.0 - 1.0))
-    } while (point.length > 1)
-    return point * radius + position
-    //    val w = random()
-    //    val r = w * (2.0 - w) * radius
-    //    val theta = 2.0 * Math.PI * random()
-    //    val phi = Math.acos(2.0 * random() - 1.0)
-    //    return Vec3d(
-    //      position.x + (r * Math.sin(phi) * Math.cos(theta)),
-    //      position.y + (r * Math.sin(phi) * Math.sin(theta)),
-    //      position.z + (r * Math.cos(phi)))
-  }
-
   override def getIntersectionDepth(ray: Ray): Double = {
     val start = ray.start
     val dx = position.x - start.x
@@ -58,8 +39,6 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
 
     return Float.PositiveInfinity
   }
-
-  override def surfaceArea: Double = radiusSq * Math.PI * 4
 
   override def enclosingAABB: AABB = {
     AABB(position, Vec3d(radius * 2))

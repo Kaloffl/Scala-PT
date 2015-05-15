@@ -58,10 +58,4 @@ class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape {
   }
 
   override def getNormal(point: Vec3d): Vec3d = normal
-
-  override def surfaceArea: Double = edgeA.length * edgeB.length / 2
-
-  override def getRandomInnerPoint(random: DoubleSupplier): Vec3d = {
-    ???
-  }
 }

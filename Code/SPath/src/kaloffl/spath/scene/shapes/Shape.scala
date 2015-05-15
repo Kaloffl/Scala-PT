@@ -20,18 +20,11 @@ trait Shape {
   def getNormal(point: Vec3d): Vec3d
 
   /**
-   * Returns a random point inside the shape.
-   */
-  def getRandomInnerPoint(random: DoubleSupplier): Vec3d
-
-  /**
    * Tells the distance a ray must travel in order to intersect with the shape.
    * If the ray can't intersect the shape, a large or infinite number is
    * returned.
    */
   def getIntersectionDepth(ray: Ray): Double
 
-  def surfaceArea: Double
-  
   def enclosingAABB: AABB
 }
