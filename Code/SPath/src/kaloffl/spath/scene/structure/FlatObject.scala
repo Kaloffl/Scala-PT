@@ -30,6 +30,7 @@ class FlatObject(shapes: Array[Shape], material: Material) extends SceneNode {
     if (null == closestShape) {
       return null
     }
-    return new Intersection(closestDist, closestShape, material)
+    val point = ray.start + ray.normal * closestDist
+    return new Intersection(closestDist, closestShape.getNormal(point), material)
   }
 }

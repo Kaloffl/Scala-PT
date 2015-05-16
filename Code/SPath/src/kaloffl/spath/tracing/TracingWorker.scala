@@ -157,10 +157,9 @@ class TracingWorker(
         ray = new Ray(point, Vec3d.randomNormal(Vec2d.random(context.random)))
         color *= absorbed
       } else {
-        val hitShape = intersection.hitShape
         val depth = intersection.depth
         val point = ray.normal * depth + ray.start
-        val surfaceNormal = hitShape.getNormal(point)
+        val surfaceNormal = intersection.surfaceNormal
         val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, depth, air.refractivityIndex, context)
         val absorbed = (air.getAbsorbtion(point, context) * (air.absorbtionCoefficient * -depth).toFloat).exp
 
