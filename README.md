@@ -13,13 +13,15 @@ colored lights adding up to create neutral lighting
 ![colored lights adding up to create neutral lighting](https://dl.dropboxusercontent.com/u/21098557/krams/ray63.png)
 The [Stanford Dragon](http://www.cc.gatech.edu/projects/large_models/dragon.html) with subsurface scattering and refractive surface
 ![The Stanford Dragon with subsurface scattering and refractive surface](https://dl.dropboxusercontent.com/u/21098557/krams/ray73.png)
+A rendering of the Power 8 Mandelbulb. This took ages to render...
+![A rendering of the Power 8 Mandelbulb. This took ages to render...](https://dl.dropboxusercontent.com/u/21098557/krams/ray94.png)
 
 # Features
 A probably incomplete list of features this pathtracer currently supports:
 * Rendering:
   * Distance based light absorbtion in volumes
   * Scattering of light rays in volumes
-  * Refraction of light on surfaces
+  * Refraction of light on surfaces according to the refractivity indices
   * Importance sampling on diffuse surfaces
   * Sky material for rays that hit no geometry
 * Materials:
@@ -34,10 +36,14 @@ A probably incomplete list of features this pathtracer currently supports:
   * Trangles
   * AABBs
   * Spheres
+  * raymarched (DE) shapes
+    * Sphere for testing
+    * Mandelbulb
 * Other:
+  * Depth of Field controlled by aperture size and focus length
   * the programm will try to use all CPU cores for rendering
   * the scene is stored in a BVH during rendering
-  * simple ind incomplete importer for PLY model files
+  * simple and incomplete importer for PLY model files
 
 # Plans
 Plans are currently found in [this file](https://github.com/Kaloffl/Scala-PT/blob/master/Code/SPath/plans.txt). I will go through that list and put a redone version here later.
