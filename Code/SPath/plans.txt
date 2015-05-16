@@ -33,20 +33,16 @@ pathtracer TODOs
 	- bloom
 	- color correction
 - scene
-	- modular scene graph (trees in trees)
-		- BVH as a shape
-		- shapeList as a shape
-		- mesh using BVH for triangles
 	- life scene editing
 	- loadable scene tree
 	- octree based voxel volume
-- model/shape rotation, translation & scaling
-- textured objects
-- normalmaps for objects
+	- bring back BVH for SceneObjects
+	- shape combinators (union, subtraction, intersection)
+	- model/shape rotation, translation & scaling
+	- textured objects
+	- normalmaps for objects
+	- portals
 - spectral tracing
-- portals
-- DE function shape
-- ray marching (for DE functions and possibly tree traversal)
 - Better random sampler
 - better ply importer
 - command line tool (.scene in -> .png out)
@@ -57,3 +53,4 @@ pathtracer TODOs
 	- BVH construction
 - bi-directional path tracing
 - selective splitting (split one ray into multiple in high-variance areas to accelerate convergence)
+- single scatter optimization for air scattering

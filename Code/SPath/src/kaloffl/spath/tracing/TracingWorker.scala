@@ -1,14 +1,13 @@
 package kaloffl.spath.tracing
 
 import java.util.function.DoubleSupplier
-
 import kaloffl.spath.RenderTarget
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
-import kaloffl.spath.scene.Material
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.materials.Material
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -132,8 +131,7 @@ class TracingWorker(
       // scatter depth. If none is found and the scatter depth is not infinity, 
       // the ray will be scattered.
       val intersection = scene.getIntersection(ray, scatterDist)
-      val hitShape = intersection.hitShape
-      if (null == hitShape) {
+      if (null == intersection) {
         // if no object was hit, the ray will either scatter or hit the sky. At 
         // the moment the sky will only really work if the air is clear and the 
         // scatter probability is 0.
@@ -159,6 +157,7 @@ class TracingWorker(
         ray = new Ray(point, Vec3d.randomNormal(Vec2d.random(context.random)))
         color *= absorbed
       } else {
+        val hitShape = intersection.hitShape
         val depth = intersection.depth
         val point = ray.normal * depth + ray.start
         val surfaceNormal = hitShape.getNormal(point)

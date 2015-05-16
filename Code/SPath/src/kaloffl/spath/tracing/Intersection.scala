@@ -1,7 +1,6 @@
 package kaloffl.spath.tracing
 
-import kaloffl.spath.scene.SceneObject
-import kaloffl.spath.scene.Material
+import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.scene.shapes.Shape
 
 /**

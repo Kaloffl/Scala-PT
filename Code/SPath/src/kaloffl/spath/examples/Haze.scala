@@ -5,16 +5,16 @@ import kaloffl.spath.PathTracer
 import kaloffl.spath.Display
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.LightMaterial
 import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.SceneObject
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.math.Color
-import kaloffl.spath.scene.TransparentMaterial
-import kaloffl.spath.scene.RefractiveMaterial
-import kaloffl.spath.scene.DiffuseMaterial
-import kaloffl.spath.scene.MaskedMaterial
-import kaloffl.spath.scene.CheckeredMask
+import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.materials.DiffuseMaterial
+import kaloffl.spath.scene.materials.MaskedMaterial
+import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.materials.RefractiveMaterial
+import kaloffl.spath.scene.materials.CheckeredMask
 
 object Haze {
 
@@ -38,31 +38,31 @@ object Haze {
     val matWhiteGlass8 = new RefractiveMaterial(Color.WHITE, 1.8, 0.0)
     val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.001, 1.0)
 
-    val hazeObjects = Array(
+    val hazeObjects = SceneNode(Array(
 
-      new SceneObject(
+      SceneNode(
         new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f),
         matWhiteGlass8), //matYellowDiffuse),
-      new SceneObject(
+      SceneNode(
         new Sphere(Vec3d(-2.5f, 2.0f, -5.0f), 2.0f),
         matCyanDiffuse),
-      new SceneObject(
+      SceneNode(
         new Sphere(Vec3d(5.0f, 2.0f, 0.0f), 2.0f),
         matPinkDiffuse),
-      new SceneObject(
+      SceneNode(
         new Sphere(Vec3d(2.5f, 1.0f, 6.0f), 1.0f),
         matWhiteDiffuse),
-      new SceneObject(
+      SceneNode(
         new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f),
         matBlackDiffuse),
 
-      new SceneObject(
+      SceneNode(
         new Sphere(Vec3d(0, 4, 0), 1),
         new LightMaterial(Color(1, 0.9f, 0.8f), 2, 1024)),
 
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, -0.5, 0), Vec3d(24, 1, 24)),
-        matBlackWhiteCheckered))
+        matBlackWhiteCheckered)))
 
     val hazeScene = new Scene(hazeObjects, camera, matAir, matBlackDiffuse)
     pathTracer.render(display, hazeScene, bounces = 12)

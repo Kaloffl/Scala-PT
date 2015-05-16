@@ -6,14 +6,14 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.PathTracer
 import java.util.function.DoubleSupplier
 import kaloffl.spath.Display
-import java.util.concurrent.ThreadLocalRandom
-import kaloffl.spath.scene.TransparentMaterial
 import kaloffl.spath.math.Color
-import kaloffl.spath.scene.DiffuseMaterial
 import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.SceneObject
 import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.LightMaterial
+import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.materials.DiffuseMaterial
+import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.structure.FlatObject
 
 object CornellBox {
 
@@ -32,33 +32,33 @@ object CornellBox {
     val cmatGreen = new DiffuseMaterial(Color(0.15f, 0.48f, 0.09f))
     val cmatLight = new LightMaterial(Color.WHITE, 1, 512)
 
-    val cornellBox = Array(
-      new SceneObject(
+    val cornellBox = SceneNode(Array(
+      SceneNode(
         new Sphere(Vec3d(0, 17, 0), 10),
         cmatLight),
 
-      //            new SceneObject(
+      //            SceneNode(
       //              PlyImporter.load("D:/temp/bunny_flipped.ply", Vec3d(30), Vec3d(-4, -0.989622, 0)),
       //              cmatWhite),
 
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
         cmatWhite),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
         cmatWhite),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
         cmatRed),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(-8.5f, 4, 4), Vec3d(1, 8, 24)),
         cmatGreen),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, 4, -8.5f), Vec3d(16, 8, 1)),
         cmatWhite),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
-        cmatWhite))
+        cmatWhite)))
 
     val cornellScene = new Scene(cornellBox, cornellCam, matAir, matBlackDiffuse)
 

@@ -5,16 +5,16 @@ import kaloffl.spath.PathTracer
 import kaloffl.spath.Display
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.LightMaterial
 import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.SceneObject
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.math.Color
-import kaloffl.spath.scene.TransparentMaterial
-import kaloffl.spath.scene.RefractiveMaterial
-import kaloffl.spath.scene.DiffuseMaterial
-import kaloffl.spath.scene.MaskedMaterial
-import kaloffl.spath.scene.CheckeredMask
+import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.materials.DiffuseMaterial
+import kaloffl.spath.scene.materials.MaskedMaterial
+import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.materials.RefractiveMaterial
+import kaloffl.spath.scene.materials.CheckeredMask
 
 object LightScatter {
 
@@ -38,24 +38,24 @@ object LightScatter {
     val matWhiteGlass8 = new RefractiveMaterial(Color.WHITE, 1.8, 0.0)
     val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.05, 1.0)
 
-    val hazeObjects = Array(
+    val hazeObjects = SceneNode(Array(
 
-      new SceneObject(
+      SceneNode(
         new Sphere(Vec3d(0, 0, 0), 1),
         new LightMaterial(Color(1, 0.9f, 0.8f), 4, 1024)),
 
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, 0, -1.05), Vec3d(2, 4, 0.1)),
         matBlackDiffuse),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(-1.05, 0, 0), Vec3d(0.1, 4, 2)),
         matBlackDiffuse),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, 0, 1.05), Vec3d(2, 4, 0.1)),
         matBlackDiffuse),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(1.05, 0, 0), Vec3d(0.1, 4, 2)),
-        matBlackDiffuse))
+        matBlackDiffuse)))
 
     val hazeScene = new Scene(hazeObjects, camera, matAir, matBlackDiffuse)
     pathTracer.render(display, hazeScene, bounces = 12)

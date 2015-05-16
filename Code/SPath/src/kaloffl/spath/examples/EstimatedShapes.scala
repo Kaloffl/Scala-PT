@@ -1,22 +1,22 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.scene.LightMaterial
 import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.DiffuseMaterial
 import kaloffl.spath.Display
 import kaloffl.spath.PathTracer
 import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.MaskedMaterial
-import kaloffl.spath.scene.SceneObject
 import kaloffl.spath.scene.Camera
-import kaloffl.spath.scene.TransparentMaterial
-import kaloffl.spath.scene.ReflectiveMaterial
+import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.CheckeredMask
 import kaloffl.spath.math.Color
 import kaloffl.spath.scene.shapes.EstimatedSphere
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.shapes.Mandelbulb
+import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.materials.DiffuseMaterial
+import kaloffl.spath.scene.materials.MaskedMaterial
+import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.materials.ReflectiveMaterial
+import kaloffl.spath.scene.materials.CheckeredMask
 
 object EstimatedShapes {
 
@@ -43,34 +43,33 @@ object EstimatedShapes {
 
     val matAir = new TransparentMaterial(Color.BLACK, 0, 0.0, 1.0)
 
-    val glassTest = Array(
-      //      new SceneObject(
+    val glassTest = SceneNode(Array(
+      //      SceneNode(
       //        new EstimatedSphere(Vec3d(-2, 2, 0), 1),
       //        matRedDiffuse),
-      //
-      //      new SceneObject(
+      //      SceneNode(
       //        new Sphere(Vec3d(2, 2, 0), 1),
       //        matRedDiffuse),
 
-      new SceneObject(
+      SceneNode(
         new Mandelbulb(Vec3d(2, 2, 0), 8),
         matWhiteDiffuse),
 
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, -1.5, 0), Vec3d(10, 1, 10)),
         matBlackWhiteCheckered),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(5.5, 3, 0), Vec3d(1, 8, 10)),
         matRedDiffuse),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, 3, -5.5), Vec3d(10, 8, 1)),
         matGreenDiffuse),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(-5.5, 3, 0), Vec3d(1, 8, 10)),
         matBlueDiffuse),
-      new SceneObject(
+      SceneNode(
         AABB(Vec3d(0, 3, 5.5), Vec3d(10, 8, 1)),
-        matWhiteDiffuse))
+        matWhiteDiffuse)))
 
     val front = Vec3d(0, -1.5, -2.5).normalize
     val up = Vec3d.LEFT.cross(front)

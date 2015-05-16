@@ -14,6 +14,29 @@ object AABB {
   def apply(center: Vec3d, size: Vec3d): AABB = {
     new AABB(center - size / 2, center + size / 2)
   }
+
+  def apply[T](objects: Array[T], unbox: T ⇒ AABB): AABB = {
+    var i = 0
+    var minX = Double.MaxValue
+    var minY = Double.MaxValue
+    var minZ = Double.MaxValue
+    var maxX = Double.MinValue
+    var maxY = Double.MinValue
+    var maxZ = Double.MinValue
+    while (i < objects.length) {
+      val objBB = unbox(objects(i))
+      minX = Math.min(minX, objBB.min.x)
+      minY = Math.min(minY, objBB.min.y)
+      minZ = Math.min(minZ, objBB.min.z)
+      maxX = Math.max(maxX, objBB.max.x)
+      maxY = Math.max(maxY, objBB.max.y)
+      maxZ = Math.max(maxZ, objBB.max.z)
+      i += 1
+    }
+    val min = Vec3d(minX, minY, minZ)
+    val max = Vec3d(maxX, maxY, maxZ)
+    return new AABB(min, max)
+  }
 }
 
 class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
