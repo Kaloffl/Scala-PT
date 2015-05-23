@@ -10,7 +10,7 @@ import kaloffl.spath.scene.SurfaceInfo
 class LightMaterial(
     val color: Color,
     emittance: Float,
-    radius: Double) extends Material {
+    val attenuation: Attenuation) extends Material {
 
   val emitted = color * emittance
 
@@ -32,7 +32,7 @@ class LightMaterial(
     context: Context): SurfaceInfo = {
 
     new SurfaceInfo(
-      color,
+      Color.WHITE,
       emitted,
       surfaceNormal.randomHemisphere(Vec2d.random(context.random)))
   }

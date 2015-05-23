@@ -14,6 +14,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.structure.FlatObject
+import kaloffl.spath.math.Attenuation
 
 object CornellBox {
 
@@ -30,13 +31,14 @@ object CornellBox {
     val cmatWhite = new DiffuseMaterial(Color(0.76f, 0.75f, 0.5f))
     val cmatRed = new DiffuseMaterial(Color(0.63f, 0.06f, 0.04f))
     val cmatGreen = new DiffuseMaterial(Color(0.15f, 0.48f, 0.09f))
-    val cmatLight = new LightMaterial(Color.WHITE, 1, 512)
+    val cmatLight = new LightMaterial(Color.WHITE, 1, Attenuation.radius(10))
+
+    val light = new FlatObject(
+      new Sphere(Vec3d(0, 17, 0), 10),
+      cmatLight)
 
     val cornellBox = SceneNode(Array(
-      SceneNode(
-        new Sphere(Vec3d(0, 17, 0), 10),
-        cmatLight),
-
+      light,
       //            SceneNode(
       //              PlyImporter.load("D:/temp/bunny_flipped.ply", Vec3d(30), Vec3d(-4, -0.989622, 0)),
       //              cmatWhite),
@@ -60,7 +62,7 @@ object CornellBox {
         AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
         cmatWhite)))
 
-    val cornellScene = new Scene(cornellBox, cornellCam, matAir, matBlackDiffuse)
+    val cornellScene = new Scene(cornellBox, cornellCam, matAir, matBlackDiffuse, lights = Array(light))
 
     pathTracer.render(display, cornellScene, bounces = 12)
   }

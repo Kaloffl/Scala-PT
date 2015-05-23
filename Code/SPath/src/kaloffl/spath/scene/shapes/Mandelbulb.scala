@@ -29,6 +29,6 @@ class Mandelbulb(position: Vec3d, power: Int) extends EstimatedShape {
   }
 
   override def enclosingAABB: AABB = {
-    return AABB(position, Vec3d(2))
+    return AABB(position, Vec3d(2.5))
   }
 }

@@ -4,6 +4,7 @@ pathtracer TODOs
 	- controllable camera
 	- camera shutter shape
 	- camera movement for motion blur
+	- shutter time
 - UI
 	- switch to JavaFX
 	- settable sample count
@@ -52,7 +53,6 @@ pathtracer TODOs
 	- rendering
 	- import of model files
 	- BVH construction
-- bi-directional path tracing
 - selective splitting (split one ray into multiple in high-variance areas to accelerate convergence)
 - single scatter optimization for air scattering
 - adaptive rendering (declare chunks of the render done if variance is low)

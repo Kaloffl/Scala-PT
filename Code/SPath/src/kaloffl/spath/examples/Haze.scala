@@ -15,6 +15,8 @@ import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
 import kaloffl.spath.scene.materials.CheckeredMask
+import kaloffl.spath.scene.structure.FlatObject
+import kaloffl.spath.math.Attenuation
 
 object Haze {
 
@@ -38,6 +40,10 @@ object Haze {
     val matWhiteGlass8 = new RefractiveMaterial(Color.WHITE, 1.8, 0.0)
     val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.001, 1.0)
 
+    val light = new FlatObject(
+      new Sphere(Vec3d(0, 4, 0), 1),
+      new LightMaterial(Color(1, 0.9f, 0.8f), 2, Attenuation.radius(1)))
+
     val hazeObjects = SceneNode(Array(
 
       SceneNode(
@@ -56,15 +62,13 @@ object Haze {
         new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f),
         matBlackDiffuse),
 
-      SceneNode(
-        new Sphere(Vec3d(0, 4, 0), 1),
-        new LightMaterial(Color(1, 0.9f, 0.8f), 2, 1024)),
+      light,
 
       SceneNode(
         AABB(Vec3d(0, -0.5, 0), Vec3d(24, 1, 24)),
         matBlackWhiteCheckered)))
 
-    val hazeScene = new Scene(hazeObjects, camera, matAir, matBlackDiffuse)
+    val hazeScene = new Scene(hazeObjects, camera, matAir, matBlackDiffuse, lights = Array(light))
     pathTracer.render(display, hazeScene, bounces = 12)
   }
 }

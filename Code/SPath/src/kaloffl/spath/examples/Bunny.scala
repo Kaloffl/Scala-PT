@@ -18,6 +18,7 @@ import kaloffl.spath.scene.materials.CheckeredMask
 import kaloffl.spath.scene.structure.FlatObject
 import kaloffl.spath.bvh.Bvh
 import kaloffl.spath.scene.structure.HierarchicalObject
+import kaloffl.spath.math.Attenuation
 
 object Bunny {
 
@@ -35,7 +36,7 @@ object Bunny {
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.0, 1.0)
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 2, 1024)
+    val matWhiteLight = new LightMaterial(Color.WHITE, 2, Attenuation.none)
 
     val matYellowGlass = new TransparentMaterial(Color(0.2f, 0.22f, 0.5f), 64, 2.0, 1.0)
 

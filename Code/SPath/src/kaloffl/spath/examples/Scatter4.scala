@@ -14,6 +14,7 @@ import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.ReflectiveMaterial
 import kaloffl.spath.scene.materials.CheckeredMask
+import kaloffl.spath.math.Attenuation
 
 object Scatter4 {
   def main(args: Array[String]): Unit = {
@@ -28,9 +29,9 @@ object Scatter4 {
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 16, 1024)
-    val matRedLight = new LightMaterial(Color.RED, 256, 1024)
-    val matGreenLight = new LightMaterial(Color.GREEN, 16, 1024)
+    val matWhiteLight = new LightMaterial(Color.WHITE, 16, Attenuation.none)
+    val matRedLight = new LightMaterial(Color.RED, 256, Attenuation.none)
+    val matGreenLight = new LightMaterial(Color.GREEN, 16, Attenuation.none)
 
     val matMirror = new ReflectiveMaterial(Color(0.5f, 0.5f, 0.5f), 0.001)
 
@@ -66,7 +67,7 @@ object Scatter4 {
     //    val up = Vec3d(0, 9, -1.5).normalize
     val camera = new Camera(Vec3d(0, 3, 9), front, up, 0.01, 9)
 
-    val glassScene = new Scene(glassTest, camera, matAir, new LightMaterial(Color.WHITE, 1, 1024))
+    val glassScene = new Scene(glassTest, camera, matAir, new LightMaterial(Color.WHITE, 1, Attenuation.none))
 
     pathTracer.render(display, glassScene, bounces = 128)
   }

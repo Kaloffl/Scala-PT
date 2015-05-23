@@ -15,6 +15,7 @@ import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.CheckeredMask
+import kaloffl.spath.math.Attenuation
 
 object Dragon {
 
@@ -32,9 +33,9 @@ object Dragon {
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.05, 0.0, 1.0)
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 2, 1024)
+    val matWhiteLight = new LightMaterial(Color.WHITE, 2, Attenuation.none)
 
-    val matRedGlass = new TransparentMaterial(Color(0.2f, 0.4f, 0.5f), 16, 0, 1.5)
+    val matRedGlass = new TransparentMaterial(Color(0.2f, 0.4f, 0.5f), 4, 2, 1.5)
 
     val checkeredMask = new CheckeredMask(2)
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)

@@ -15,6 +15,7 @@ import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.CheckeredMask
+import kaloffl.spath.math.Attenuation
 
 object Outdoor {
 
@@ -30,7 +31,7 @@ object Outdoor {
     val checkeredMask = new CheckeredMask(2)
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 2, 1024)
+    val matWhiteLight = new LightMaterial(Color.WHITE, 2, Attenuation.radius(1))
     val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.001, 1.0)
 
     val outdoor = SceneNode(Array(

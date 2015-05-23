@@ -15,6 +15,7 @@ import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
 import kaloffl.spath.scene.materials.CheckeredMask
+import kaloffl.spath.math.Attenuation
 
 object Scatter3 {
 
@@ -60,7 +61,7 @@ object Scatter3 {
         matBlackDiffuse),
       SceneNode(
         AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
-        new LightMaterial(Color.WHITE, 8, 1024)),
+        new LightMaterial(Color.WHITE, 8, Attenuation.none)),
       SceneNode(
         AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
         matBlackDiffuse), //matBlueDiffuse),

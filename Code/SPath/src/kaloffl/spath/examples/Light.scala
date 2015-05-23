@@ -14,6 +14,7 @@ import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
+import kaloffl.spath.math.Attenuation
 
 object Light {
 
@@ -55,13 +56,13 @@ object Light {
 
       SceneNode(
         AABB(Vec3d(-4, 7.5, 4), Vec3d(3, 0.125, 22)),
-        new LightMaterial(colorRed, 2, 1024)),
+        new LightMaterial(colorRed, 2, Attenuation.none)),
       SceneNode(
         AABB(Vec3d(0, 7.5, 4), Vec3d(3, 0.125, 22)),
-        new LightMaterial(colorGreen, 2, 1024)),
+        new LightMaterial(colorGreen, 2, Attenuation.none)),
       SceneNode(
         AABB(Vec3d(4, 7.5, 4), Vec3d(3, 0.125, 22)),
-        new LightMaterial(colorBlue, 2, 1024)),
+        new LightMaterial(colorBlue, 2, Attenuation.none)),
 
       SceneNode(
         AABB(Vec3d(-7.5, 7, 4), Vec3d(1, 2, 22)),

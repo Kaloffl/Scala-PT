@@ -14,6 +14,7 @@ import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.CheckeredMask
+import kaloffl.spath.math.Attenuation
 
 object Refraction2 {
   def main(args: Array[String]): Unit = {
@@ -40,7 +41,7 @@ object Refraction2 {
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 2, 1024)
+    val matWhiteLight = new LightMaterial(Color.WHITE, 2, Attenuation.none)
 
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)

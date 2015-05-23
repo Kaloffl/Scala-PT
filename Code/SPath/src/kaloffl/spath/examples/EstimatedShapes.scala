@@ -17,6 +17,7 @@ import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.ReflectiveMaterial
 import kaloffl.spath.scene.materials.CheckeredMask
+import kaloffl.spath.math.Attenuation
 
 object EstimatedShapes {
 
@@ -32,9 +33,9 @@ object EstimatedShapes {
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 16, 1024)
-    val matRedLight = new LightMaterial(Color.RED, 256, 1024)
-    val matGreenLight = new LightMaterial(Color.GREEN, 16, 1024)
+    val matWhiteLight = new LightMaterial(Color.WHITE, 1, Attenuation.none)
+    val matRedLight = new LightMaterial(Color.RED, 2, Attenuation.none)
+    val matGreenLight = new LightMaterial(Color.GREEN, 2, Attenuation.none)
 
     val matMirror = new ReflectiveMaterial(Color(0.5f, 0.5f, 0.5f), 0.001)
 
@@ -52,21 +53,31 @@ object EstimatedShapes {
       //        matRedDiffuse),
 
       SceneNode(
-        new Mandelbulb(Vec3d(2, 2, 0), 8),
+        new Mandelbulb(Vec3d.ORIGIN, 8),
         matWhiteDiffuse),
+
+      SceneNode(
+        new Sphere(Vec3d(4, 0, 0), 1),
+        matRedLight),
+      SceneNode(
+        new Sphere(Vec3d(-4, 0, 0), 1),
+        matGreenLight),
 
       SceneNode(
         AABB(Vec3d(0, -1.5, 0), Vec3d(10, 1, 10)),
         matBlackWhiteCheckered),
       SceneNode(
+        AABB(Vec3d(0, 7.5, 0), Vec3d(10, 1, 10)),
+        matWhiteLight),
+      SceneNode(
         AABB(Vec3d(5.5, 3, 0), Vec3d(1, 8, 10)),
-        matRedDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(0, 3, -5.5), Vec3d(10, 8, 1)),
-        matGreenDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(-5.5, 3, 0), Vec3d(1, 8, 10)),
-        matBlueDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(0, 3, 5.5), Vec3d(10, 8, 1)),
         matWhiteDiffuse)))
@@ -75,7 +86,7 @@ object EstimatedShapes {
     val up = Vec3d.LEFT.cross(front)
     val camera = new Camera(Vec3d(0, 1.5, 2.5), front, up, 0.015, 3)
 
-    val glassScene = new Scene(glassTest, camera, matAir, new LightMaterial(Color.WHITE, 2, 1024))
+    val glassScene = new Scene(glassTest, camera, matAir, matBlackDiffuse)
 
     pathTracer.render(display, glassScene, bounces = 4)
   }

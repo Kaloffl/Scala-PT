@@ -114,4 +114,12 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
   }
 
   override def enclosingAABB: AABB = this
+
+  override def randomSurfacePoint(rng: DoubleSupplier): Vec3d = {
+    // TODO optimize
+    val side = Vec3d.DIRECTIONS((rng.getAsDouble * 6).toInt)
+    val x = side.ortho
+    val y = side.cross(x)
+    return center + (side * size / 2) + (x * (rng.getAsDouble - 0.5) * size) + (y * (rng.getAsDouble - 0.5) * size)
+  }
 }

@@ -14,6 +14,7 @@ import kaloffl.spath.scene.materials.GridMask
 import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.math.Attenuation
 
 object Scatter {
   def main(args: Array[String]): Unit = {
@@ -41,7 +42,7 @@ object Scatter {
     val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 2, 1024)
+    val matWhiteLight = new LightMaterial(Color.WHITE, 2, Attenuation.none)
 
     val mask = new GridMask(2, 0.04, Vec3d(0.5, 0.5, 0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matWhiteDiffuse, matBlueDiffuse, mask)

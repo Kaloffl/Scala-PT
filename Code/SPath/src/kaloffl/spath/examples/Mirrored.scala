@@ -13,6 +13,7 @@ import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.ReflectiveMaterial
+import kaloffl.spath.math.Attenuation
 
 object Mirrored {
 
@@ -35,7 +36,7 @@ object Mirrored {
         new ReflectiveMaterial(Color(0.2f, 0.8f, 0.2f), 0.4f)),
       SceneNode(
         AABB(Vec3d(0, 32.5, 0), Vec3d(16, 1, 24)),
-        new LightMaterial(Color.WHITE, 1f, 1024f)),
+        new LightMaterial(Color.WHITE, 1f, Attenuation.none)),
       SceneNode(
         AABB(Vec3d(8.5f, 16, 0), Vec3d(1, 32, 24)),
         matMirror),

@@ -13,13 +13,15 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.structure.FlatObject
-import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.scene.materials.ReflectiveMaterial
+import kaloffl.spath.scene.materials.MaskedMaterial
+import kaloffl.spath.scene.materials.CheckeredMask
 import kaloffl.spath.math.Attenuation
 
-object Colorful {
+object Indirect {
 
   def main(args: Array[String]): Unit = {
-    val display = new Display(128, 72)
+    val display = new Display(1280, 720)
     val pathTracer = new PathTracer
 
     val matRedDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
@@ -32,61 +34,61 @@ object Colorful {
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.0, 0.0, 1.0)
 
-            val light = new FlatObject(
-            AABB(Vec3d(0, 7.8, 4), Vec3d(12, 0.1, 20)),
-            new LightMaterial(Color.WHITE, 2f, Attenuation.none))
-//    val light = new FlatObject(
-//      Array[Shape](
-//          new Sphere(Vec3d(-1.1, 6.9, 1.9), 1),
-//          new Sphere(Vec3d(-1.1, 6.9, 4.1), 1),
-//          new Sphere(Vec3d(1.1, 6.9, 1.9), 1),
-//          new Sphere(Vec3d(1.1, 6.9, 4.1), 1)),
-//      new LightMaterial(Color.WHITE, 8f, Attenuation.radius(1)))
+    val matMirror = new ReflectiveMaterial(Color.WHITE, 0.0)
+    val matGlass = new TransparentMaterial(Color(0.9f, 0.9f, 0.9f), 0.1, 0.0, 2.0, 0.0)
+    val matLight = new LightMaterial(Color.WHITE, 3f, Attenuation.radius(0.5f))
+
+    val checkeredMask = new CheckeredMask(2, Vec3d(0.5, 0, 0))
+    val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
+
+    val light = new FlatObject(
+      new Sphere(Vec3d(0, 14.0f, 0), 0.5f),
+      matLight)
 
     val coloredSpheres = SceneNode(Array(
       SceneNode(
-        new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f),
-        matYellowDiffuse),
+        new Sphere(Vec3d(-5.0f, 1.5f, 2.5f), 1.5f),
+        matMirror),
       SceneNode(
-        new Sphere(Vec3d(-2.5f, 2.0f, -5.0f), 2.0f),
-        matCyanDiffuse),
+        new Sphere(Vec3d(-1.0f, 1.5f, 0.0f), 1.5f),
+        matGlass),
       SceneNode(
-        new Sphere(Vec3d(5.0f, 2.0f, 0.0f), 2.0f),
-        matPinkDiffuse),
-      SceneNode(
-        new Sphere(Vec3d(2.5f, 1.0f, 6.0f), 1.0f),
-        matWhiteDiffuse),
-      SceneNode(
-        new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f),
-        matBlackDiffuse),
+        new Sphere(Vec3d(-3.0f, 1f, 6.0f), 1f),
+        matRedDiffuse),
+
+      light,
 
       SceneNode(
-        AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
+        AABB(Vec3d(1.5, 12.5, 0), Vec3d(13, 1, 16)),
         matWhiteDiffuse),
-      new FlatObject(
-        AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
-        matWhiteDiffuse),
-      light,
-      //      SceneNode(
-      //        AABB(Vec3d(0, 7, 4), Vec3d(14, 0.125, 22)),
-      //        matWhiteDiffuse),
+
       SceneNode(
-        AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
+        AABB(Vec3d(0, -0.5, 0), Vec3d(16, 1, 16)),
+        matWhiteDiffuse),
+      SceneNode(
+        AABB(Vec3d(0, 16.5, 0), Vec3d(16, 1, 16)),
+        matWhiteDiffuse),
+      SceneNode(
+        AABB(Vec3d(8.5f, 8, 0), Vec3d(1, 16, 16)),
         matBlueDiffuse),
       SceneNode(
-        AABB(Vec3d(-8.5f, 4, 4), Vec3d(1, 8, 24)),
-        matRedDiffuse),
+        AABB(Vec3d(-8.5f, 8, 0), Vec3d(1, 16, 16)),
+        matBlackWhiteCheckered),
       SceneNode(
-        AABB(Vec3d(0, 4, -8.5f), Vec3d(16, 8, 1)),
-        matGreenDiffuse),
+        AABB(Vec3d(0, 8, -8.5f), Vec3d(16, 16, 1)),
+        matBlackDiffuse),
       SceneNode(
-        AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
-        matWhiteDiffuse)))
+        AABB(Vec3d(0, 8, 8.5), Vec3d(16, 16, 1)),
+        matBlackDiffuse)))
 
-    val lowCamera = new Camera(Vec3d(0, 2.5, 13), Vec3d.BACK, Vec3d.UP, 0.0f, 13);
+    val focus = Vec3d(-4, 0.5, 3)
+    val position = Vec3d(3, 5.5, 3)
+    val forward = (focus - position).normalize
+    val up = Vec3d(0, 0, -1).normalize.cross(forward).normalize
+    val lowCamera = new Camera(position, forward, up, 0.0f, 13);
 
     val colorfulScene = new Scene(coloredSpheres, lowCamera, matAir, matBlackDiffuse, lights = Array(light))
 
-    pathTracer.render(display, colorfulScene, bounces = 6)
+    pathTracer.render(display, colorfulScene, bounces = 16)
   }
 }

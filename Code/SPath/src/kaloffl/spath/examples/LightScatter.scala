@@ -15,6 +15,7 @@ import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
 import kaloffl.spath.scene.materials.CheckeredMask
+import kaloffl.spath.math.Attenuation
 
 object LightScatter {
 
@@ -42,7 +43,7 @@ object LightScatter {
 
       SceneNode(
         new Sphere(Vec3d(0, 0, 0), 1),
-        new LightMaterial(Color(1, 0.9f, 0.8f), 4, 1024)),
+        new LightMaterial(Color(1, 0.9f, 0.8f), 4, Attenuation.radius(1))),
 
       SceneNode(
         AABB(Vec3d(0, 0, -1.05), Vec3d(2, 4, 0.1)),

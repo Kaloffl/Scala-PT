@@ -27,4 +27,6 @@ trait Shape {
   def getIntersectionDepth(ray: Ray): Double
 
   def enclosingAABB: AABB
+  
+  def randomSurfacePoint(rng: DoubleSupplier): Vec3d
 }
