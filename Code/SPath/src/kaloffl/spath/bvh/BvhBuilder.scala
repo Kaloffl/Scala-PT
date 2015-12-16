@@ -34,33 +34,35 @@ class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTa
       return new BvhNode(null, elements, hull, level)
     }
 
-    val padding = 1
-    val maxChildSize = objects.length - padding
     var smallest = Double.MaxValue
     var bestOrder = 0
     var ordIndex = 0
-    var index = -1
+    var splittingIndex = -1
 
     val orderings: Array[Comparator[Shape]] = Array(
       BoxMinXOrder, BoxCenterXOrder, BoxMaxXOrder,
       BoxMinYOrder, BoxCenterYOrder, BoxMaxYOrder,
       BoxMinZOrder, BoxCenterZOrder, BoxMaxZOrder)
     while (ordIndex < orderings.length) {
-      objects.sort(orderings(ordIndex))
-      val taskA = new SurfaceAreaAccumulator(objects, 0, maxChildSize, 1)
-      val taskB = new SurfaceAreaAccumulator(objects, objects.length - 1, padding - 1, -1).fork
+      if (0 == level) {
+        objects.parallelSort(orderings(ordIndex))
+      } else {
+        objects.sort(orderings(ordIndex))
+      }
+      val taskA = new LeftSurfaceAreaTask(objects)
+      val taskB = new RightSurfaceAreaTask(objects).fork
       val surfaceAreasA = taskA.compute
       val surfaceAreasB = taskB.join
 
-      var i = padding
-      while (i < maxChildSize) {
-        val scoreA = surfaceAreasA(i) * (i + 1)
-        val i2 = i - padding
-        val scoreB = surfaceAreasB(i2) * (maxChildSize - i2)
+      var i = 0
+      val end = objects.length - 1
+      while (i < end) {
+        val scoreA = surfaceAreasA(i) * i
+        val scoreB = surfaceAreasB(i + 1) * (end - i)
         val score = scoreA + scoreB
         if (score < smallest) {
           smallest = score
-          index = i
+          splittingIndex = i
           bestOrder = ordIndex
         }
         i += 1
@@ -72,8 +74,8 @@ class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTa
       objects.sort(orderings(bestOrder))
     }
 
-    val objectsA = objects.slice(0, index + 1)
-    val objectsB = objects.slice(index + 1, objects.length)
+    val objectsA = objects.slice(0, splittingIndex + 1)
+    val objectsB = objects.slice(splittingIndex + 1, objects.length)
 
     val taskA = new NodeCreationTask(objectsA, level + 1)
     val taskB = new NodeCreationTask(objectsB, level + 1).fork
@@ -92,23 +94,35 @@ class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTa
     }
   }
 
-  class SurfaceAreaAccumulator(
-      val source: SubArray[Shape],
-      val from: Int,
-      val until: Int,
-      val step: Int) extends RecursiveTask[Array[Double]] {
-
-    //    printf("created task. from %d, until %d, step %d\n", from, until, step)
+  class LeftSurfaceAreaTask(source: SubArray[Shape])
+      extends RecursiveTask[Array[Double]] {
 
     override def compute(): Array[Double] = {
-      val offset = Math.min(from, until - step)
-      val surfaceAreas = new Array[Double](Math.abs(until - from))
-      var i = from
+      var i = 0
       var accumulator = source(i).enclosingAABB
-      while (i != until) {
+      val end = source.length - 1
+      val surfaceAreas = new Array[Double](source.length)
+      while (i < end) {
         accumulator = accumulator.enclose(source(i).enclosingAABB)
-        surfaceAreas(i - offset) = accumulator.surfaceArea
-        i += step
+        surfaceAreas(i) = accumulator.surfaceArea
+        i += 1
+      }
+      return surfaceAreas
+    }
+  }
+
+  class RightSurfaceAreaTask(source: SubArray[Shape])
+      extends RecursiveTask[Array[Double]] {
+
+    override def compute(): Array[Double] = {
+      var i = source.length - 1
+      var accumulator = source(i).enclosingAABB
+      val end = 0
+      val surfaceAreas = new Array[Double](source.length)
+      while (i > end) {
+        accumulator = accumulator.enclose(source(i).enclosingAABB)
+        surfaceAreas(i) = accumulator.surfaceArea
+        i -= 1
       }
       return surfaceAreas
     }

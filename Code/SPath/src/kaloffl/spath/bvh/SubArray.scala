@@ -59,4 +59,12 @@ class SubArray[T](
       until,
       ord.asInstanceOf[Comparator[Object]])
   }
+  
+  def parallelSort(ord: Comparator[T]): Unit = {
+    Arrays.parallelSort(
+      array.asInstanceOf[Array[Object]],
+      from,
+      until,
+      ord.asInstanceOf[Comparator[Object]])
+  }
 }
