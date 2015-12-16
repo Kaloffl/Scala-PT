@@ -20,6 +20,8 @@ class Color(val r2: Float, val g2: Float, val b2: Float) {
   def /(f: Float): Color = new Color(r2 / f, g2 / f, b2 / f)
   def /(c: Color): Color = new Color(r2 / c.r2, g2 / c.g2, b2 / c.b2)
 
+  def unary_-(): Color = new Color(1 - r2, 1 - g2, 1 - b2)
+
   def clamp(min: Color, max: Color): Color = {
     new Color(
       Math.min(Math.max(min.r2, r2), max.r2),
@@ -91,13 +93,12 @@ object Color {
 
   def unapply(c: Color) = Some((c.r2, c.g2, c.b2))
 
-
-  def randomColor(random: DoubleSupplier, brightness: Float): Color = {  
-    val hue = random.getAsDouble.toFloat
-    val saturation = (random.getAsDouble * 2000 + 4000).toFloat / 10000f
+  def randomColor(random: Vec2d, brightness: Float): Color = {
+    val hue = random.x.toFloat
+    val saturation = (random.y * 2000 + 4000).toFloat / 10000f
     return Color.fromHsb(hue, saturation, brightness)
   }
-  
+
   def fromHsb(hue: Float, saturation: Float, brightness: Float): Color = {
     if (saturation == 0) {
       Color(brightness, brightness, brightness)

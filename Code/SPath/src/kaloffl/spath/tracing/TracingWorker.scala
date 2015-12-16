@@ -10,6 +10,7 @@ import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.shapes.Shape
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -34,13 +35,15 @@ class TracingWorker(
   // The sum of determined colors is stored in this array per-channel-per-pixel
   val samples: Array[Float] = new Array[Float](width * height * 3)
   val camera: Camera = scene.camera
+  val tracer = new PathTracer(scene)
+  //  val tracer = new BidirectionalPathTracer(scene)
 
   // the number of passes that have been rendered
   var samplesTaken: Int = 0
 
   def sampleToDistribution(s: Int): Double = {
     val max = Math.sqrt(3000)
-    return s / max * 2 - 1
+    return (s + random.getAsDouble - 0.5) / max
 
     //    if (left + width > 640) return 0 //random.getAsDouble
     //
@@ -64,8 +67,6 @@ class TracingWorker(
     val displayOffsetX = dWidth * 0.5f + dx - left
     val displayOffsetY = dHeight * 0.5f + dy - top
     val context = new Context(random, pass, maxBounces, display)
-    
-    val tracer = new PathTracer(scene, context)
 
     val maxIndex = width * height
     for (index ← 0 until maxIndex) {
@@ -73,12 +74,7 @@ class TracingWorker(
       val y = (displayOffsetY - index / width) / dHeight
       val ray = camera.createRay(random, x, y)
 
-      val color = tracer.trace(ray, maxBounces)
-//        if ((x * 40).toInt % 2 == 0) {
-//          bidirectionalTrace(ray, maxBounces, scene.air, context)
-//        } else {
-//          pathTrace(ray, maxBounces, scene.air, context)
-//        }
+      val color = tracer.trace(ray, maxBounces, scene.air, context)
       val sampleIndex = index * 3
       samples(sampleIndex) += color.r2
       samples(sampleIndex + 1) += color.g2

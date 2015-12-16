@@ -5,13 +5,14 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.math.Color
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.materials.Material
 
-class PathTracer(val scene: Scene, context: Context) extends Tracer {
+class PathTracer(val scene: Scene) extends Tracer {
 
-  override def trace(startRay: Ray, maxBounces: Int): Color = {
+  override def trace(startRay: Ray, maxBounces: Int, startAir: Material, context: Context): Color = {
         var color = Color.WHITE
     var ray = startRay
-    var air = scene.air
+    var air = startAir
     var i = 0
     while (i < maxBounces) {
       // russian roulett ray termination
@@ -26,7 +27,7 @@ class PathTracer(val scene: Scene, context: Context) extends Tracer {
       // particle and be scattered. If the current air has a scatter probability 
       // of 0, the distance will be infinity.
       val scatterChance = context.random.getAsDouble
-      val scatterDist = Math.log(scatterChance + 1) / air.scatterPropability
+      val scatterDist = -Math.log(1 - scatterChance) / air.scatterPropability
 
       // Now try to find an object in the scene that is closer than the determined 
       // scatter depth. If none is found and the scatter depth is not infinity, 
@@ -60,7 +61,7 @@ class PathTracer(val scene: Scene, context: Context) extends Tracer {
       } else {
         val depth = intersection.depth
         val point = ray.normal * depth + ray.start
-        val surfaceNormal = intersection.surfaceNormal
+        val surfaceNormal = intersection.shape.getNormal(point)
         val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, depth, air.refractivityIndex, context)
         val absorbed = (air.getAbsorbtion(point, context) * (air.absorbtionCoefficient * -depth).toFloat).exp
 
@@ -76,11 +77,11 @@ class PathTracer(val scene: Scene, context: Context) extends Tracer {
           air = scene.air
         }
         ray = new Ray(point, newDir)
-        if (intersection.material.isInstanceOf[DiffuseMaterial]) {
-          color *= info.reflectance * absorbed * diffuse.toFloat * 2
-        } else {
+//        if (intersection.material.isInstanceOf[DiffuseMaterial]) {
+//          color *= info.reflectance * absorbed * diffuse.toFloat * 2
+//        } else {
           color *= info.reflectance * absorbed
-        }
+//        }
       }
       i += 1
     }

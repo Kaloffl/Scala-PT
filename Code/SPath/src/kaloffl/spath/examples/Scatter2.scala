@@ -17,13 +17,16 @@ import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Vec2d
+import java.util.Random
 
 object Scatter2 {
   def main(args: Array[String]): Unit = {
     val rng = new DoubleSupplier() {
-      override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
+      val random = new Random(123467)
+      override def getAsDouble(): Double = random.nextDouble
     }
-    
+
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer
 
@@ -49,13 +52,13 @@ object Scatter2 {
 
       SceneNode(
         AABB(Vec3d(0, -0.5, 0), Vec3d(32, 1, 32)),
-        matWhiteDiffuse), //matBlackWhiteCheckered),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(16.5f, 8, 0), Vec3d(1, 16, 32)),
-        matWhiteDiffuse), //matRedDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(-16.5f, 8, 0), Vec3d(1, 16, 32)),
-        matWhiteDiffuse), //matGreenDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(0, 8, -16.5f), Vec3d(32, 16, 1)),
         matWhiteDiffuse),
@@ -66,9 +69,10 @@ object Scatter2 {
     val minHeight = 1.0
     val maxHeight = 4.0
     val objects = (for (x ← 0 until 10; y ← 0 until 10) yield {
+      val rnd = Vec2d(rng.getAsDouble, rng.getAsDouble)
       SceneNode(
-        AABB(Vec3d(x * 2 - 9.5, 0.501, y * 2 - 9.5), Vec3d(1)),
-        new TransparentMaterial(Color.randomColor(rng, 0.5f), Math.pow(2, x % 5), 0.2 * y * x / 2, 1.1))
+        AABB(Vec3d(x * 2 - 9.5, 0.501, y * 2 - 9.5), Vec3d(1, 0.1, 1)),
+        new TransparentMaterial(Color.randomColor(rnd, 0.5f), 10 * Math.pow(x, 2) + 10, y * x + 4, 1.1))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

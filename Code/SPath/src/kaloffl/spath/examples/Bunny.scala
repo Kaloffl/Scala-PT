@@ -84,9 +84,9 @@ object Bunny {
         AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
         matWhiteDiffuse)))
 
-    val bunnyForward = Vec3d(-2, -1.25, -5)
+    val bunnyForward = Vec3d(-2, -1.25, -9)
     val bunnyTop = bunnyForward.cross(Vec3d.RIGHT).normalize
-    val bunnyCam = new Camera(Vec3d(0, 5, 4), bunnyForward.normalize, bunnyTop, 0.12, bunnyForward.length)
+    val bunnyCam = new Camera(Vec3d(0, 5, 8), bunnyForward.normalize, bunnyTop, 0.2, bunnyForward.length)
 
     val bunnyScene = new Scene(objects, bunnyCam, matAir, matBlackDiffuse)
 

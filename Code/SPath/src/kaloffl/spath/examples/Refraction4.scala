@@ -15,6 +15,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Vec2d
 
 object Refraction4 {
   def main(args: Array[String]): Unit = {
@@ -58,7 +59,7 @@ object Refraction4 {
     val objects = (for (x ← 0 until 20; y ← 0 until 20) yield {
       SceneNode(
         new Sphere(Vec3d(x * 1.1 - 10.5, 0.501, y * 1.1 - 10.5), 0.5f),
-        new TransparentMaterial(Color.randomColor(rng, 0.5f), 8, 0.0, 1.8))
+        new TransparentMaterial(Color.randomColor(Vec2d.random(rng), 0.5f), 8, 0.0, 1.8))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

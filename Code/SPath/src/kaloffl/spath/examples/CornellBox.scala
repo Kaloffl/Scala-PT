@@ -15,6 +15,8 @@ import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.structure.FlatObject
 import kaloffl.spath.math.Attenuation
+import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.scene.shapes.Triangle
 
 object CornellBox {
 
@@ -22,48 +24,87 @@ object CornellBox {
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer
 
-    val front = Vec3d(0, -2.5, -13).normalize
-    val up = front.cross(Vec3d.RIGHT).normalize
-    val cornellCam = new Camera(Vec3d(-3, 5, 13), front, up, 0.01f, 13.0f)
+    val cornellCam = new Camera(Vec3d(278, 273, -800), Vec3d.FRONT, Vec3d.UP, 0.0f, 13.0f)
 
-    val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.001, 1.0)
+    val matAir = new TransparentMaterial(Color.BLACK, 0.0, 0.0, 1.0)
     val matBlackDiffuse = new DiffuseMaterial(Color.BLACK)
-    val cmatWhite = new DiffuseMaterial(Color(0.76f, 0.75f, 0.5f))
-    val cmatRed = new DiffuseMaterial(Color(0.63f, 0.06f, 0.04f))
-    val cmatGreen = new DiffuseMaterial(Color(0.15f, 0.48f, 0.09f))
-    val cmatLight = new LightMaterial(Color.WHITE, 1, Attenuation.radius(10))
+    val cmatWhite = new DiffuseMaterial(new Color(0.737f, 0.728f, 0.767f))
+    val cmatRed = new DiffuseMaterial(new Color(0.642f, 0.063f, 0.061f))
+    val cmatGreen = new DiffuseMaterial(new Color(0.159f, 0.373f, 0.101f))
+    val cmatLight = new LightMaterial(new Color(34.0f, 23.6f, 8.0f), 1.0f, Attenuation.radius(10))
+
+    val roomWidth = 552.5
+    val roomHeight = 548.8
+    val roomDepth = 559.2
+
+    val s000 = Vec3d(130, 0, 65)
+    val s001 = Vec3d(82, 0, 225)
+    val s010 = Vec3d(130, 165, 65)
+    val s011 = Vec3d(82, 165, 225)
+    val s100 = Vec3d(290, 0, 114)
+    val s101 = Vec3d(240, 0, 272)
+    val s110 = Vec3d(290, 165, 114)
+    val s111 = Vec3d(240, 165, 272)
+
+    val t000 = Vec3d(265, 0, 296)
+    val t001 = Vec3d(314, 0, 456)
+    val t010 = Vec3d(265, 330, 296)
+    val t011 = Vec3d(314, 330, 456)
+    val t100 = Vec3d(423, 0, 247)
+    val t101 = Vec3d(472, 0, 406)
+    val t110 = Vec3d(423, 330, 247)
+    val t111 = Vec3d(472, 330, 406)
 
     val light = new FlatObject(
-      new Sphere(Vec3d(0, 17, 0), 10),
+      new AABB(Vec3d(213, roomHeight - 0.01, 227), Vec3d(343, roomHeight + 0.99, 332)),
       cmatLight)
 
     val cornellBox = SceneNode(Array(
       light,
-      //            SceneNode(
-      //              PlyImporter.load("D:/temp/bunny_flipped.ply", Vec3d(30), Vec3d(-4, -0.989622, 0)),
-      //              cmatWhite),
+      SceneNode(Array[Shape](
+        new Triangle(s111, s110, s010),
+        new Triangle(s011, s111, s010),
+        new Triangle(s011, s010, s000),
+        new Triangle(s001, s011, s000),
+        new Triangle(s101, s110, s111),
+        new Triangle(s100, s110, s101),
+        new Triangle(s000, s010, s110),
+        new Triangle(s000, s110, s100),
+        new Triangle(s111, s011, s001),
+        new Triangle(s101, s111, s001)),
+        cmatWhite),
+        
+      SceneNode(Array[Shape](
+        new Triangle(t111, t110, t010),
+        new Triangle(t011, t111, t010),
+        new Triangle(t011, t010, t000),
+        new Triangle(t001, t011, t000),
+        new Triangle(t101, t110, t111),
+        new Triangle(t100, t110, t101),
+        new Triangle(t000, t010, t110),
+        new Triangle(t000, t110, t100),
+        new Triangle(t111, t011, t001),
+        new Triangle(t101, t111, t001)),
+        cmatWhite),
 
       SceneNode(
-        AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
+        new AABB(Vec3d(0, -1, 0), Vec3d(roomWidth, 0, roomDepth)),
         cmatWhite),
       SceneNode(
-        AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
+        new AABB(Vec3d(0, roomHeight, 0), Vec3d(roomWidth, roomHeight + 1, roomDepth)),
         cmatWhite),
       SceneNode(
-        AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
-        cmatRed),
+        new AABB(Vec3d(0, 0, roomDepth), Vec3d(roomWidth, roomHeight, roomDepth + 1)),
+        cmatWhite),
       SceneNode(
-        AABB(Vec3d(-8.5f, 4, 4), Vec3d(1, 8, 24)),
+        new AABB(Vec3d(-1, 0, 0), Vec3d(0, roomHeight, roomDepth)),
         cmatGreen),
       SceneNode(
-        AABB(Vec3d(0, 4, -8.5f), Vec3d(16, 8, 1)),
-        cmatWhite),
-      SceneNode(
-        AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
-        cmatWhite)))
+        new AABB(Vec3d(roomWidth, 0, 0), Vec3d(roomWidth + 1, roomHeight, roomDepth)),
+        cmatRed)))
 
     val cornellScene = new Scene(cornellBox, cornellCam, matAir, matBlackDiffuse, lights = Array(light))
 
-    pathTracer.render(display, cornellScene, bounces = 12)
+    pathTracer.render(display, cornellScene, passes = 60000, bounces = 12)
   }
 }

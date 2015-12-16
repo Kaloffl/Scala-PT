@@ -19,7 +19,7 @@ import kaloffl.spath.math.Attenuation
 object Colorful {
 
   def main(args: Array[String]): Unit = {
-    val display = new Display(128, 72)
+    val display = new Display(1280, 720)
     val pathTracer = new PathTracer
 
     val matRedDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))

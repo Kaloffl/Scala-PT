@@ -20,6 +20,6 @@ class DiffuseMaterial(val color: Color) extends Material {
     new SurfaceInfo(
       color,
       Color.BLACK,
-      surfaceNormal.randomHemisphere(Vec2d.random(context.random)))
+      surfaceNormal.weightedHemisphere(Vec2d.random(context.random)))
   }
 }

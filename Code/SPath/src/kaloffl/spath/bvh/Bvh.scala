@@ -104,9 +104,9 @@ class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTa
       BoxMinZOrder, BoxCenterZOrder, BoxMaxZOrder)
     while (ordIndex < orderings.length) {
       objects.sort(orderings(ordIndex))
-      val taskA = new SurfaceAreaAccumulator(objects, 0, maxChildSize, 1).fork
+      val taskA = new SurfaceAreaAccumulator(objects, 0, maxChildSize, 1)
       val taskB = new SurfaceAreaAccumulator(objects, objects.length - 1, padding - 1, -1).fork
-      val surfaceAreasA = taskA.join
+      val surfaceAreasA = taskA.compute
       val surfaceAreasB = taskB.join
 
       var i = padding
@@ -132,10 +132,10 @@ class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTa
     val objectsA = objects.slice(0, index + 1)
     val objectsB = objects.slice(index + 1, objects.length)
 
-    val taskA = new NodeCreationTask(objectsA, level + 1).fork
+    val taskA = new NodeCreationTask(objectsA, level + 1)
     val taskB = new NodeCreationTask(objectsB, level + 1).fork
 
-    val children = Array(taskA.join, taskB.join)
+    val children = Array(taskA.compute, taskB.join)
     val bb = AABB[BvhNode](children, _.hull)
 
     if (level % 2 == 0) {

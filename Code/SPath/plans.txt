@@ -35,6 +35,7 @@ pathtracer TODOs
 	- bloom
 	- color correction
 - scene
+	- scene file format
 	- life scene editing
 	- loadable scene tree
 	- octree based voxel volume
@@ -57,3 +58,6 @@ pathtracer TODOs
 - single scatter optimization for air scattering
 - adaptive rendering (declare chunks of the render done if variance is low)
 - photon mapping?
+- automatic creation of Attenuation factor for lights (needed for direct lighting solutions & bidirectional tracing)
+- Extract air scattering code
+- Extract russian roulett code

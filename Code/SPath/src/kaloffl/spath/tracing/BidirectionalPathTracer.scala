@@ -8,9 +8,10 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.math.Color
 import kaloffl.spath.scene.Scene
 
-class BidirectionalPathTracer(scene: Scene, context: Context) extends Tracer {
+class BidirectionalPathTracer(scene: Scene) extends Tracer {
 
-  override def trace(ray: Ray, maxBounces: Int): Color = {
+  // TODO remove first camera ray
+  override def trace(ray: Ray, maxBounces: Int, startAir: Material, context: Context): Color = {
         val lightLength = maxBounces / 2 + 1
     val lightPoints = new Array[Vec3d](lightLength)
     val lightNormals = new Array[Vec3d](lightLength)
@@ -28,7 +29,7 @@ class BidirectionalPathTracer(scene: Scene, context: Context) extends Tracer {
       }
       val pos = start
       lightMaterials(0) = intersection.material
-      intersection.material.getEmittance(lightRay.start, intersection.surfaceNormal, -lightRay.normal, 0.001, context)
+      intersection.material.getEmittance(pos, intersection.shape.getNormal(pos), -lightRay.normal, 0.001, context)
     }
     lightPoints(0) = lightRay.start
     lightNormals(0) = lightRay.normal
@@ -165,7 +166,7 @@ class BidirectionalPathTracer(scene: Scene, context: Context) extends Tracer {
         materials(i) = intersection.material
         val point = ray.normal * depth + ray.start
         points(i) = point
-        val surfaceNormal = intersection.surfaceNormal
+        val surfaceNormal = intersection.shape.getNormal(point)
         normals(i) = surfaceNormal
         val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, depth, air.refractivityIndex, context)
         val absorbed = (air.getAbsorbtion(point, context) * (air.absorbtionCoefficient * -depth).toFloat).exp
