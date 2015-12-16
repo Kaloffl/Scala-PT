@@ -34,20 +34,21 @@ class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTa
       return new BvhNode(null, elements, hull, level)
     }
 
-    var smallest = Double.MaxValue
-    var bestOrder = 0
-    var ordIndex = 0
+    var lowestCost = Double.MaxValue
+    var bestOrdering = 0
     var splittingIndex = -1
+    var orderingIndex = 0
 
     val orderings: Array[Comparator[Shape]] = Array(
       BoxMinXOrder, BoxCenterXOrder, BoxMaxXOrder,
       BoxMinYOrder, BoxCenterYOrder, BoxMaxYOrder,
       BoxMinZOrder, BoxCenterZOrder, BoxMaxZOrder)
-    while (ordIndex < orderings.length) {
+
+    while (orderingIndex < orderings.length) {
       if (0 == level) {
-        objects.parallelSort(orderings(ordIndex))
+        objects.parallelSort(orderings(orderingIndex))
       } else {
-        objects.sort(orderings(ordIndex))
+        objects.sort(orderings(orderingIndex))
       }
       val taskA = new LeftSurfaceAreaTask(objects)
       val taskB = new RightSurfaceAreaTask(objects).fork
@@ -60,18 +61,18 @@ class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTa
         val scoreA = surfaceAreasA(i) * i
         val scoreB = surfaceAreasB(i + 1) * (end - i)
         val score = scoreA + scoreB
-        if (score < smallest) {
-          smallest = score
+        if (score < lowestCost) {
+          lowestCost = score
           splittingIndex = i
-          bestOrder = ordIndex
+          bestOrdering = orderingIndex
         }
         i += 1
       }
-      ordIndex += 1
+      orderingIndex += 1
     }
 
-    if (bestOrder != orderings.length - 1) {
-      objects.sort(orderings(bestOrder))
+    if (bestOrdering != orderings.length - 1) {
+      objects.sort(orderings(bestOrdering))
     }
 
     val objectsA = objects.slice(0, splittingIndex + 1)

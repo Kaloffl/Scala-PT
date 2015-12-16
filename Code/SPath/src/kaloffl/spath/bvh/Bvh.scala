@@ -19,8 +19,7 @@ class Bvh(objects: Array[Shape], material: Material) extends SceneNode {
 
   override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
     class NodeIntersection(val depth: Double, val node: BvhNode)
-    // TODO build an array based sorted stack
-    val stack: SortedStack[NodeIntersection] = new SortedStack(_.depth < _.depth)
+    val stack: SortedArrayStack[NodeIntersection] = new SortedArrayStack(_.depth < _.depth)
     val rootDepth = root.hullDepth(ray)
     if (rootDepth > maxDist) return null
 
