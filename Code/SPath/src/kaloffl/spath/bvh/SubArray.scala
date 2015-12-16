@@ -12,6 +12,8 @@ class SubArray[T](
     val from: Int,
     val until: Int) {
 
+  def this(array: Array[T]) = this(array, 0, array.length)
+
   def slice(from: Int, until: Int): SubArray[T] = {
     new SubArray(array, this.from + from, this.from + until)
   }
@@ -51,18 +53,10 @@ class SubArray[T](
   }
 
   def sort(ord: Comparator[T]): Unit = {
-//    if (length > 32) {
-//      Arrays.parallelSort(
-//        array.asInstanceOf[Array[Object]],
-//        from,
-//        until,
-//        ord.asInstanceOf[Comparator[Object]])
-//    } else {
-      Arrays.sort(
-        array.asInstanceOf[Array[Object]],
-        from,
-        until,
-        ord.asInstanceOf[Comparator[Object]])
-//    }
+    Arrays.sort(
+      array.asInstanceOf[Array[Object]],
+      from,
+      until,
+      ord.asInstanceOf[Comparator[Object]])
   }
 }

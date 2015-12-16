@@ -30,7 +30,7 @@ class Bvh(objects: Array[Shape], material: Material) extends SceneNode {
   println("Building a BVH for " + objects.length + " objects.")
   val start = System.nanoTime
 
-  val root: BvhNode = ForkJoinPool.commonPool().invoke(new NodeCreationTask(new SubArray(objects, 0, objects.length), 0))
+  val root: BvhNode = ForkJoinPool.commonPool().invoke(new NodeCreationTask(new SubArray(objects), 0))
 
   val duration = System.nanoTime - start
 
@@ -91,7 +91,7 @@ class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTa
       return new BvhNode(null, elements, hull, level)
     }
 
-    val padding = 1 //Bvh.MAX_LEAF_SIZE / 2
+    val padding = 1
     val maxChildSize = objects.length - padding
     var smallest = Double.MaxValue
     var bestOrder = 0
