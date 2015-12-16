@@ -35,11 +35,10 @@ pathtracer TODOs
 	- bloom
 	- color correction
 - scene
-	- scene file format
-	- life scene editing
-	- loadable scene tree
+	- scene file format (so trees are saved and don't need to be build every time)
+	- live scene editing
 	- octree based voxel volume
-	- BVH for SceneNodes
+	- BVH for SceneNodes (currently only work for shapes)
 	- shape combinators (union, subtraction, intersection)
 	- model/shape rotation, translation & scaling
 	- textured objects
@@ -49,15 +48,16 @@ pathtracer TODOs
 - Better random sampler
 - better ply importer
 - command line tool (.scene in -> .png out)
-- better in-scattering to allow godrays
+- better in-scattering to allow "godrays"
 - progress monitor for all time consuming tasks
 	- rendering
 	- import of model files
 	- BVH construction
 - selective splitting (split one ray into multiple in high-variance areas to accelerate convergence)
-- single scatter optimization for air scattering
+- single scatter optimization for air/fog scattering
 - adaptive rendering (declare chunks of the render done if variance is low)
 - photon mapping?
 - automatic creation of Attenuation factor for lights (needed for direct lighting solutions & bidirectional tracing)
 - Extract air scattering code
 - Extract russian roulett code
+- Custom fork-join framework to make things like BVH building faster
