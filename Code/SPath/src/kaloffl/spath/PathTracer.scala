@@ -6,6 +6,8 @@ import java.util.function.Consumer
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.tracing.TracingWorker
 import java.util.function.DoubleSupplier
+import kaloffl.jobs.JobPool
+import kaloffl.jobs.Job
 
 /**
  * The PathTracer that can render an image of a given scene. This class handles
@@ -21,7 +23,8 @@ class PathTracer {
   // there is only one chunk per core, all but one workers might finish and then
   // wait on the last one. By having more chunks, workers that finish early can
   // just start working on the next chunk.
-  val numberOfWorkers = Runtime.getRuntime.availableProcessors * Runtime.getRuntime.availableProcessors
+  val processors = Runtime.getRuntime.availableProcessors
+  val numberOfWorkers = processors * processors * 4
   val rows = Math.sqrt(numberOfWorkers).toInt
   val cols = numberOfWorkers / rows
 
@@ -56,6 +59,7 @@ class PathTracer {
     }
 
     var pass = 0
+    val pool = new JobPool
     while (pass < passes) {
       println("Starting pass #" + pass)
 
@@ -64,12 +68,23 @@ class PathTracer {
       // independent work in parallel. However we have to create an Consumer
       // Instance and can't use a Lambda because Java8 Lambdas are not (yet)
       // supported by Scala.
-      Arrays.stream(tracingWorkers).parallel.forEach(new Consumer[TracingWorker] {
-        override def accept(worker: TracingWorker): Unit = {
-          worker.render(bounces, pass, display)
-          worker.draw(display)
-        }
-      })
+      //      Arrays.stream(tracingWorkers).parallel.forEach(new Consumer[TracingWorker] {
+      //        override def accept(worker: TracingWorker): Unit = {
+      //          worker.render(bounces, pass, display)
+      //          worker.draw(display)
+      //        }
+      //      })
+      tracingWorkers.foreach { worker ⇒
+        pool.submit(new Job {
+          def canExecute = true
+          def execute = {
+            worker.render(bounces, pass, display)
+            worker.draw(display)
+          }
+        })
+      }
+      pool.execute
+
       val after = System.nanoTime
       val duration = after - before
       if (duration > 1000000000) {
