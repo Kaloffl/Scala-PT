@@ -32,16 +32,9 @@ object Colorful {
     val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.0, 0.0, 1.0)
 
-            val light = new FlatObject(
-            AABB(Vec3d(0, 7.8, 4), Vec3d(12, 0.1, 20)),
-            new LightMaterial(Color.WHITE, 2f, Attenuation.none))
-//    val light = new FlatObject(
-//      Array[Shape](
-//          new Sphere(Vec3d(-1.1, 6.9, 1.9), 1),
-//          new Sphere(Vec3d(-1.1, 6.9, 4.1), 1),
-//          new Sphere(Vec3d(1.1, 6.9, 1.9), 1),
-//          new Sphere(Vec3d(1.1, 6.9, 4.1), 1)),
-//      new LightMaterial(Color.WHITE, 8f, Attenuation.radius(1)))
+    val light = new FlatObject(
+      AABB(Vec3d(0, 7.8, 4), Vec3d(12, 0.1, 20)),
+      new LightMaterial(Color.WHITE, 2f, Attenuation.none))
 
     val coloredSpheres = SceneNode(Array(
       SceneNode(
@@ -67,9 +60,6 @@ object Colorful {
         AABB(Vec3d(0, 8.5, 4), Vec3d(16, 1, 24)),
         matWhiteDiffuse),
       light,
-      //      SceneNode(
-      //        AABB(Vec3d(0, 7, 4), Vec3d(14, 0.125, 22)),
-      //        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
         matBlueDiffuse),

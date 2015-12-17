@@ -77,7 +77,7 @@ class GridMask(val size: Double, thickness: Double, val offset: Vec3d = Vec3d.OR
     val mx = Math.abs(pos.x * size + offset.x) % 1
     val my = Math.abs(pos.y * size + offset.y) % 1
     val mz = Math.abs(pos.z * size + offset.z) % 1
-    if (mx < thickness || mx > 1-thickness || my < thickness || my > 1-thickness || mz < thickness || mz > 1-thickness) {
+    if (mx < thickness || mx > 1 - thickness || my < thickness || my > 1 - thickness || mz < thickness || mz > 1 - thickness) {
       1.0f
     } else {
       0.0f

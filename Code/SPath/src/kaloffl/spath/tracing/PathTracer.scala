@@ -10,7 +10,7 @@ import kaloffl.spath.scene.materials.Material
 class PathTracer(val scene: Scene) extends Tracer {
 
   override def trace(startRay: Ray, maxBounces: Int, startAir: Material, context: Context): Color = {
-        var color = Color.WHITE
+    var color = Color.WHITE
     var ray = startRay
     var air = startAir
     var i = 0
@@ -77,11 +77,11 @@ class PathTracer(val scene: Scene) extends Tracer {
           air = scene.air
         }
         ray = new Ray(point, newDir)
-//        if (intersection.material.isInstanceOf[DiffuseMaterial]) {
-//          color *= info.reflectance * absorbed * diffuse.toFloat * 2
-//        } else {
-          color *= info.reflectance * absorbed
-//        }
+        //        if (intersection.material.isInstanceOf[DiffuseMaterial]) {
+        //          color *= info.reflectance * absorbed * diffuse.toFloat * 2
+        //        } else {
+        color *= info.reflectance * absorbed
+        //        }
       }
       i += 1
     }

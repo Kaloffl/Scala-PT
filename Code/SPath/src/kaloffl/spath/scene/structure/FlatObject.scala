@@ -11,17 +11,17 @@ class FlatObject(val shapes: Array[Shape], val material: Material) extends Scene
   def this(shape: Shape, material: Material) {
     this(Array(shape), material)
   }
-  
+
   override val enclosingAABB = AABB[Shape](shapes, _.enclosingAABB)
-  
+
   override def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     var closestDist = maxDepth
     var closestShape: Shape = null
     var i = 0
-    while(i < shapes.length) {
+    while (i < shapes.length) {
       val depth = shapes(i).getIntersectionDepth(ray)
-      
-      if(depth < closestDist) {
+
+      if (depth < closestDist) {
         closestDist = depth
         closestShape = shapes(i)
       }
@@ -31,8 +31,8 @@ class FlatObject(val shapes: Array[Shape], val material: Material) extends Scene
       return null
     }
     return new Intersection(
-        closestDist, 
-        material,
-        closestShape)
+      closestDist,
+      material,
+      closestShape)
   }
 }

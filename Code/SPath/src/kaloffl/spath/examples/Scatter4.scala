@@ -63,8 +63,6 @@ object Scatter4 {
 
     val front = Vec3d(0, 0, -9).normalize
     val up = Vec3d.UP
-    //    val front = Vec3d(2, -1.5, -9).normalize
-    //    val up = Vec3d(0, 9, -1.5).normalize
     val camera = new Camera(Vec3d(0, 3, 9), front, up, 0.01, 9)
 
     val glassScene = new Scene(glassTest, camera, matAir, new LightMaterial(Color.WHITE, 1, Attenuation.none))

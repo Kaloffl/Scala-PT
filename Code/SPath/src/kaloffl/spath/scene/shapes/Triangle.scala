@@ -58,11 +58,11 @@ class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape {
   }
 
   override def getNormal(point: Vec3d): Vec3d = normal
-  
+
   override def randomSurfacePoint(rng: DoubleSupplier): Vec3d = {
     var x = rng.getAsDouble
     var y = rng.getAsDouble
-    if(x + y > 1) {
+    if (x + y > 1) {
       x = 1 - x
       y = 1 - y
     }

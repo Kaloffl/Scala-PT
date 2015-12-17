@@ -9,9 +9,9 @@ import javax.swing.WindowConstants
 import java.awt.Graphics
 
 /**
- * When instantiated, this class creates a new window with a canvas of the given 
+ * When instantiated, this class creates a new window with a canvas of the given
  * size.<br>
- * Individual pixels on said canvas can be modified. To display the changes, 
+ * Individual pixels on said canvas can be modified. To display the changes,
  * redraw must be called.
  */
 class Display(override val width: Int, override val height: Int) extends RenderTarget {
@@ -49,7 +49,7 @@ class Display(override val width: Int, override val height: Int) extends RenderT
   }
 
   /**
-   * Sets the pixel on the given position to the given color value. Does not 
+   * Sets the pixel on the given position to the given color value. Does not
    * check bounds, so bad positions may cause ArrayIndexOutOfBoundsExceptions.
    */
   override def setPixel(x: Int, y: Int, color: Int): Unit = {

@@ -42,19 +42,19 @@ object Scatter3 {
     val hazeObjects = Array(
       SceneNode(
         new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f),
-        matWhiteGlass8), //matYellowDiffuse),
+        matWhiteGlass8),
       SceneNode(
         new Sphere(Vec3d(-2.5f, 2.0f, -5.0f), 2.0f),
-        matBlackDiffuse), //matCyanDiffuse),
+        matBlackDiffuse),
       SceneNode(
         new Sphere(Vec3d(5.0f, 2.0f, 0.0f), 2.0f),
-        matBlackDiffuse), //matPinkDiffuse),
+        matBlackDiffuse),
       SceneNode(
         new Sphere(Vec3d(2.5f, 1.0f, 6.0f), 1.0f),
         matBlackDiffuse),
       SceneNode(
         new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f),
-        matBlackDiffuse), //matBlackDiffuse),
+        matBlackDiffuse),
 
       SceneNode(
         AABB(Vec3d(0, -0.5, 4), Vec3d(16, 1, 24)),
@@ -64,13 +64,13 @@ object Scatter3 {
         new LightMaterial(Color.WHITE, 8, Attenuation.none)),
       SceneNode(
         AABB(Vec3d(8.5f, 4, 4), Vec3d(1, 8, 24)),
-        matBlackDiffuse), //matBlueDiffuse),
+        matBlackDiffuse),
       SceneNode(
         AABB(Vec3d(-8.5f, 4, 4), Vec3d(1, 8, 24)),
-        matBlackDiffuse), //matRedDiffuse),
+        matBlackDiffuse),
       SceneNode(
         AABB(Vec3d(0, 4, -8.5f), Vec3d(16, 8, 1)),
-        matBlackDiffuse), //matGreenDiffuse),
+        matBlackDiffuse),
       SceneNode(
         AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
         matBlackDiffuse))

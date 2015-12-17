@@ -64,16 +64,6 @@ class PathTracer {
       println("Starting pass #" + pass)
 
       val before = System.nanoTime
-      // Here we use the new Java8 streams because they are excellent for doing
-      // independent work in parallel. However we have to create an Consumer
-      // Instance and can't use a Lambda because Java8 Lambdas are not (yet)
-      // supported by Scala.
-      //      Arrays.stream(tracingWorkers).parallel.forEach(new Consumer[TracingWorker] {
-      //        override def accept(worker: TracingWorker): Unit = {
-      //          worker.render(bounces, pass, display)
-      //          worker.draw(display)
-      //        }
-      //      })
       tracingWorkers.foreach { worker ⇒
         pool.submit(new Job {
           def canExecute = true

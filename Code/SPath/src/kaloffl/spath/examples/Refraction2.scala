@@ -126,7 +126,7 @@ object Refraction2 {
         matBlueDiffuse),
       SceneNode(
         AABB(Vec3d(0, 4, -8.5f), Vec3d(20, 8, 1)),
-        matWhiteDiffuse),//matGreenDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(0, 4, 16.5), Vec3d(20, 8, 1)),
         matWhiteDiffuse)))

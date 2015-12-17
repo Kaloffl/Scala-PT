@@ -42,9 +42,6 @@ object Outdoor {
       SceneNode(
         new Sphere(Vec3d(3, 1, -3), 1),
         matWhiteDiffuse),
-      //      SceneNode(
-      //        new Sphere(Vec3d(3, 1, 0), 1),
-      //        matWhiteDiffuse),
       SceneNode(
         new Sphere(Vec3d(3, 1, 3), 1),
         matWhiteDiffuse),
@@ -56,16 +53,9 @@ object Outdoor {
       SceneNode(
         new Sphere(Vec3d(-3, 1, -3), 1),
         matWhiteDiffuse),
-      //      SceneNode(
-      //        new Sphere(Vec3d(-3, 1, 0), 1),
-      //        matWhiteDiffuse),
       SceneNode(
         new Sphere(Vec3d(-3, 1, 3), 1),
-        matWhiteDiffuse)
-      //      SceneNode(
-        //        new Sphere(Vec3d(0, 1, 0), 1),
-        //        matWhiteDiffuse)
-        ))
+        matWhiteDiffuse)))
 
     val outdoorScene = new Scene(outdoor, lowCamera, matAir, new DirectionalLightMaterial(Color.WHITE, 0.125f, Vec3d.DOWN, 1))
 

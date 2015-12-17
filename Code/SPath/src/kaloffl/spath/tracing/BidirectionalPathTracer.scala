@@ -12,7 +12,7 @@ class BidirectionalPathTracer(scene: Scene) extends Tracer {
 
   // TODO remove first camera ray
   override def trace(ray: Ray, maxBounces: Int, startAir: Material, context: Context): Color = {
-        val lightLength = maxBounces / 2 + 1
+    val lightLength = maxBounces / 2 + 1
     val lightPoints = new Array[Vec3d](lightLength)
     val lightNormals = new Array[Vec3d](lightLength)
     val lightMaterials = new Array[Material](lightLength)

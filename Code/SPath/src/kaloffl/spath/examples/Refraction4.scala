@@ -22,7 +22,7 @@ object Refraction4 {
     val rng = new DoubleSupplier() {
       override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
     }
-    
+
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer
 
@@ -40,13 +40,13 @@ object Refraction4 {
 
       SceneNode(
         AABB(Vec3d(0, -0.5, 0), Vec3d(32, 1, 32)),
-        matWhiteDiffuse), //matBlackWhiteCheckered),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(16.5f, 8, 0), Vec3d(1, 16, 32)),
-        matWhiteDiffuse), //matRedDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(-16.5f, 8, 0), Vec3d(1, 16, 32)),
-        matWhiteDiffuse), //matGreenDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         AABB(Vec3d(0, 8, -16.5f), Vec3d(32, 16, 1)),
         matWhiteDiffuse),

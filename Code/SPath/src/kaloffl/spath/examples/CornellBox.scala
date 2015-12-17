@@ -73,7 +73,7 @@ object CornellBox {
         new Triangle(s111, s011, s001),
         new Triangle(s101, s111, s001)),
         cmatWhite),
-        
+
       SceneNode(Array[Shape](
         new Triangle(t111, t110, t010),
         new Triangle(t011, t111, t010),

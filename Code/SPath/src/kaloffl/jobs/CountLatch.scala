@@ -20,7 +20,7 @@ class CountLatch(initialValue: Int) {
   def countDown: Int = addAndGet(-1)
 
   def getCount = counter.get
-  
+
   def await: Unit = {
     waiting = Thread.currentThread() +: waiting
     while (0 != counter.get) {

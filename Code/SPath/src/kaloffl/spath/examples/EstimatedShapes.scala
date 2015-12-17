@@ -45,12 +45,6 @@ object EstimatedShapes {
     val matAir = new TransparentMaterial(Color.BLACK, 0, 0.0, 1.0)
 
     val glassTest = SceneNode(Array(
-      //      SceneNode(
-      //        new EstimatedSphere(Vec3d(-2, 2, 0), 1),
-      //        matRedDiffuse),
-      //      SceneNode(
-      //        new Sphere(Vec3d(2, 2, 0), 1),
-      //        matRedDiffuse),
 
       SceneNode(
         new Mandelbulb(Vec3d.ORIGIN, 8),

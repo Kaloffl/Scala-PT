@@ -24,7 +24,7 @@ class Bvh(objects: Array[Shape], material: Material) extends SceneNode {
     if (rootDepth > maxDist) return null
 
     var closestIntersection: Intersection = null
-    var closestDist= maxDist
+    var closestDist = maxDist
 
     stack add new NodeIntersection(rootDepth, root)
     while (!stack.empty) {

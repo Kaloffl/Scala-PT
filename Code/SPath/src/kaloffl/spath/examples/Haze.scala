@@ -48,7 +48,7 @@ object Haze {
 
       SceneNode(
         new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f),
-        matWhiteGlass8), //matYellowDiffuse),
+        matWhiteGlass8),
       SceneNode(
         new Sphere(Vec3d(-2.5f, 2.0f, -5.0f), 2.0f),
         matCyanDiffuse),

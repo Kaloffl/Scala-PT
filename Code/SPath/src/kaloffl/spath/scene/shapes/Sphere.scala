@@ -44,7 +44,7 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
   override def enclosingAABB: AABB = {
     AABB(position, Vec3d(radius * 2))
   }
-  
+
   override def randomSurfacePoint(rng: DoubleSupplier): Vec3d = {
     return Vec3d.randomNormal(Vec2d.random(rng)) * radius + position
   }

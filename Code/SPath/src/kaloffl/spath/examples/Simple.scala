@@ -39,8 +39,8 @@ object Simple {
 
     val light = new FlatObject(
       Array[Shape](
-          new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f),
-          new Sphere(Vec3d(-1.0f, 3.0f, -5.9f), 1f)),
+        new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f),
+        new Sphere(Vec3d(-1.0f, 3.0f, -5.9f), 1f)),
       matLight)
 
     val coloredSpheres = SceneNode(Array(

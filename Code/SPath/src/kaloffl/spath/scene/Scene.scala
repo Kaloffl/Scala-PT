@@ -17,8 +17,8 @@ import kaloffl.spath.math.Vec3d
  * from that the image is rendered.
  */
 class Scene(
-    val root: SceneNode, 
-    val camera: Camera, 
+    val root: SceneNode,
+    val camera: Camera,
     val air: Material,
     val sky: Material,
     val skyDistance: Double = Double.PositiveInfinity,
@@ -31,14 +31,14 @@ class Scene(
   def getIntersection(ray: Ray, maxDist: Double): Intersection = {
     root.getIntersection(ray, maxDist)
   }
-  
+
   def getRandomLightRay(rng: DoubleSupplier): Ray = {
     // TODO sky light
-    if(0 == lights.length) return null;
+    if (0 == lights.length) return null;
     val light = lights((rng.getAsDouble * lights.length).toInt)
     val shape = light.shapes((rng.getAsDouble * light.shapes.length).toInt)
     val start = shape.randomSurfacePoint(rng)
-    val dir = shape.getNormal(start)//.randomHemisphere(Vec2d.random(rng))
+    val dir = shape.getNormal(start) //.randomHemisphere(Vec2d.random(rng))
     return new Ray(start, dir)
   }
 }

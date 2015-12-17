@@ -40,19 +40,19 @@ object Light {
     val coloredLights = SceneNode(Array(
       SceneNode(
         new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f),
-        matWhiteGlass8), //matYellowDiffuse),
+        matWhiteGlass8),
       SceneNode(
         new Sphere(Vec3d(-2.5f, 2.0f, -5.0f), 2.0f),
-        matWhiteDiffuse), //matCyanDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         new Sphere(Vec3d(5.0f, 2.0f, 0.0f), 2.0f),
-        matWhiteDiffuse), //matPinkDiffuse),
+        matWhiteDiffuse),
       SceneNode(
         new Sphere(Vec3d(2.5f, 1.0f, 6.0f), 1.0f),
         matWhiteDiffuse),
       SceneNode(
         new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f),
-        matWhiteDiffuse), //matBlackDiffuse),
+        matWhiteDiffuse),
 
       SceneNode(
         AABB(Vec3d(-4, 7.5, 4), Vec3d(3, 0.125, 22)),

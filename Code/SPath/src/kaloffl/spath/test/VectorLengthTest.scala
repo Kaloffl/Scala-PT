@@ -9,15 +9,15 @@ object VectorLengthTest {
 
   def main(args: Array[String]): Unit = {
     val rng = new DoubleSupplier() {
-      override def getAsDouble() : Double = {
+      override def getAsDouble(): Double = {
         ThreadLocalRandom.current().nextDouble()
       }
     }
-    
-    for(i <- 0 until 100) {
+
+    for (i ← 0 until 100) {
       val vec = Vec3d.UP.weightedHemisphere(Vec2d.random(rng))
       val len = vec.length
-      if(len < 0.99 || len > 1.01) {
+      if (len < 0.99 || len > 1.01) {
         println(len)
       }
     }
