@@ -1,17 +1,32 @@
 package kaloffl.spath.bvh
 
-import kaloffl.spath.scene.shapes.AABB
 import java.util.Comparator
-import java.util.concurrent.RecursiveTask
+
+import kaloffl.jobs.Job
+import kaloffl.jobs.JobPool
+import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
-import java.util.concurrent.ForkJoinPool
 
 object BvhBuilder {
+
+  /**
+   * Takes a list of shapes and creates a Bounding Volume Hierarchy out of
+   * Axis Aligned Bounding Boxes for quick intersection checking with all the
+   * shapes.<br>
+   * The algorithm iterates top-down on the array of shapes. It will continue
+   * to split the array in halves until each piece is under a maximum size. The
+   * splitting is done in places where the two smallest AABBs will be created
+   * around the children.
+   */
   def buildHierarchy(objects: Array[Shape]): BvhNode = {
     println("Building a BVH for " + objects.length + " objects.")
     val start = System.nanoTime
 
-    val root = ForkJoinPool.commonPool().invoke(new NodeCreationTask(new SubArray(objects), 0))
+    val pool = new JobPool
+    
+    var root: BvhNode = null
+    pool.submit(new SplittingJob(pool, new SubArray(objects), n => root = n, 0))
+    pool.execute
 
     val duration = System.nanoTime - start
 
@@ -25,14 +40,23 @@ object BvhBuilder {
   }
 }
 
-class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTask[BvhNode] {
+class SplittingJob(
+    jobPool: JobPool, 
+    objects: SubArray[Shape], 
+    consumer: BvhNode => Unit,
+    level: Int) extends Job {
+  
+  override def canExecute = true
 
-  override def compute: BvhNode = {
+  override def execute: Unit = {
+    // If the array is small enough we create a leaf and return
     if (objects.length <= Bvh.MAX_LEAF_SIZE) {
       val elements = objects.toArray
       val hull = AABB[Shape](elements, _.enclosingAABB)
-      return new BvhNode(null, elements, hull, level)
+      consumer(new BvhNode(null, elements, hull, level))
+      return 
     }
+    // otherwise we look for the best place to split the array
 
     var lowestCost = Double.MaxValue
     var bestOrdering = 0
@@ -45,90 +69,97 @@ class NodeCreationTask(objects: SubArray[Shape], level: Int) extends RecursiveTa
       BoxMinZOrder, BoxCenterZOrder, BoxMaxZOrder)
 
     while (orderingIndex < orderings.length) {
+      // small optimization: on the first level there is only one job being 
+      // done, so we can sort in parallel and get the full benefit
       if (0 == level) {
+        // TODO use a custom JobPool based sort
         objects.parallelSort(orderings(orderingIndex))
       } else {
         objects.sort(orderings(orderingIndex))
       }
-      val taskA = new LeftSurfaceAreaTask(objects)
-      val taskB = new RightSurfaceAreaTask(objects).fork
-      val surfaceAreasA = taskA.compute
-      val surfaceAreasB = taskB.join
 
-      var i = 0
-      val end = objects.length - 1
-      while (i < end) {
-        val scoreA = surfaceAreasA(i) * i
-        val scoreB = surfaceAreasB(i + 1) * (end - i)
-        val score = scoreA + scoreB
-        if (score < lowestCost) {
-          lowestCost = score
-          splittingIndex = i
-          bestOrdering = orderingIndex
+      // first calculate the surface areas from the back to the front
+      val rightSurfaceAreas = new Array[Double](objects.length);
+      {
+        var i = objects.length - 1
+        var accumulator = objects(i).enclosingAABB
+        val end = 0
+        while (i > end) {
+          accumulator = accumulator.enclose(objects(i).enclosingAABB)
+          rightSurfaceAreas(i) = accumulator.surfaceArea
+          i -= 1
         }
-        i += 1
+      }
+      // then iterate from the front to the back, calculate the surface area 
+      // on the fly and compare the score to find the best splitting point
+      {
+        var i = 0
+        val end = objects.length - 1
+        var accumulator = objects(i).enclosingAABB
+        while (i < end) {
+          accumulator = accumulator.enclose(objects(i).enclosingAABB)
+          val scoreA = accumulator.surfaceArea * i
+          val scoreB = rightSurfaceAreas(i + 1) * (end - i)
+          val score = scoreA + scoreB
+          if (score < lowestCost) {
+            lowestCost = score
+            splittingIndex = i
+            bestOrdering = orderingIndex
+          }
+          i += 1
+        }
       }
       orderingIndex += 1
     }
 
     if (bestOrdering != orderings.length - 1) {
-      objects.sort(orderings(bestOrdering))
+      if (0 == level) {
+        // TODO use a custom JobPool based sort
+        objects.parallelSort(orderings(bestOrdering))
+      } else {
+        objects.sort(orderings(bestOrdering))
+      }
     }
 
     val objectsA = objects.slice(0, splittingIndex + 1)
     val objectsB = objects.slice(splittingIndex + 1, objects.length)
 
-    val taskA = new NodeCreationTask(objectsA, level + 1)
-    val taskB = new NodeCreationTask(objectsB, level + 1).fork
+    val merge = new MergeJob(level, consumer)
+    
+    jobPool.submit(new SplittingJob(jobPool, objectsA, n => merge.left = n, level + 1))
+    jobPool.submit(new SplittingJob(jobPool, objectsB, n => merge.right = n, level + 1))
 
-    val children = Array(taskA.compute, taskB.join)
+    jobPool.submit(merge)
+  }
+}
+
+class MergeJob(level: Int, consumer: BvhNode => Unit) extends Job {
+  
+  var  left: BvhNode = null
+  var  right: BvhNode = null
+  
+  override def canExecute = (null != left && null != right)
+  
+  override def execute: Unit = {
+    val children = Array(left, right)
     val bb = AABB[BvhNode](children, _.hull)
 
+    // Every two levels we collapse the previous level into the current one to
+    // create a 4-way tree instead of a binary one.
     if (level % 2 == 0) {
       val collapsed = children.flatMap { node ⇒
         if (null != node.children) node.children
         else Array(node)
       }
-      new BvhNode(collapsed, null, bb, level)
+      consumer(new BvhNode(collapsed, null, bb, level))
     } else {
-      new BvhNode(children, null, bb, level)
-    }
-  }
-
-  class LeftSurfaceAreaTask(source: SubArray[Shape])
-      extends RecursiveTask[Array[Double]] {
-
-    override def compute(): Array[Double] = {
-      var i = 0
-      var accumulator = source(i).enclosingAABB
-      val end = source.length - 1
-      val surfaceAreas = new Array[Double](source.length)
-      while (i < end) {
-        accumulator = accumulator.enclose(source(i).enclosingAABB)
-        surfaceAreas(i) = accumulator.surfaceArea
-        i += 1
-      }
-      return surfaceAreas
-    }
-  }
-
-  class RightSurfaceAreaTask(source: SubArray[Shape])
-      extends RecursiveTask[Array[Double]] {
-
-    override def compute(): Array[Double] = {
-      var i = source.length - 1
-      var accumulator = source(i).enclosingAABB
-      val end = 0
-      val surfaceAreas = new Array[Double](source.length)
-      while (i > end) {
-        accumulator = accumulator.enclose(source(i).enclosingAABB)
-        surfaceAreas(i) = accumulator.surfaceArea
-        i -= 1
-      }
-      return surfaceAreas
+      consumer(new BvhNode(children, null, bb, level))
     }
   }
 }
+
+// Following are the implementations of the nine different ways to sort. nothing
+// too exiting.
 
 object BoxCenterXOrder extends Comparator[Shape] {
   override def compare(shape1: Shape, shape2: Shape): Int = {
