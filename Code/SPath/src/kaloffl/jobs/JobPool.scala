@@ -1,9 +1,7 @@
 package kaloffl.jobs
 
-import java.util.LinkedList
-import java.util.concurrent.CountDownLatch
-import java.util.concurrent.locks.LockSupport
 import java.util.concurrent.ConcurrentLinkedQueue
+import java.util.concurrent.locks.LockSupport
 
 class JobPool {
   val jobs = new JobQueue
@@ -35,6 +33,9 @@ class JobPool {
   }
 
   def execute: Unit = {
+    // TODO I'm pretty sure that the pool won't stop while some jobs are
+    // still unfinished. However the stopping criteria is that no worker 
+    // is doing anything, so I'm not 100% convinced that it is correct.
     mainWorker.running = true
     mainWorker.run
     counter.await
@@ -52,7 +53,24 @@ class JobPool {
     val queue = new ConcurrentLinkedQueue[Job]
 
     def poll: Job = {
-      queue.poll
+      // TODO this setup isn't ideal: as long as there are jobs, the 
+      // workers will poll the queue for work, even if none of the jobs 
+      // can be executed.
+      // What we need is a way to park the workers if they can't find 
+      // executable jobs and reactivate them when jobs become executable.
+
+      while (true) {
+        val job = queue.poll
+        if (null == job) {
+          return null
+        }
+        if (!job.canExecute) {
+          queue.add(job)
+        } else {
+          return job
+        }
+      }
+      return null
     }
   }
 }

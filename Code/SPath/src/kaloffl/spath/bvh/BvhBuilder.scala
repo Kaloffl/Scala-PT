@@ -23,9 +23,9 @@ object BvhBuilder {
     val start = System.nanoTime
 
     val pool = new JobPool
-    
+
     var root: BvhNode = null
-    pool.submit(new SplittingJob(pool, new SubArray(objects), n => root = n, 0))
+    pool.submit(new SplittingJob(pool, new SubArray(objects), root = _, 0))
     pool.execute
 
     val duration = System.nanoTime - start
@@ -41,11 +41,11 @@ object BvhBuilder {
 }
 
 class SplittingJob(
-    jobPool: JobPool, 
-    objects: SubArray[Shape], 
-    consumer: BvhNode => Unit,
+    jobPool: JobPool,
+    objects: SubArray[Shape],
+    consumer: BvhNode ⇒ Unit,
     level: Int) extends Job {
-  
+
   override def canExecute = true
 
   override def execute: Unit = {
@@ -54,7 +54,7 @@ class SplittingJob(
       val elements = objects.toArray
       val hull = AABB[Shape](elements, _.enclosingAABB)
       consumer(new BvhNode(null, elements, hull, level))
-      return 
+      return
     }
     // otherwise we look for the best place to split the array
 
@@ -125,21 +125,21 @@ class SplittingJob(
     val objectsB = objects.slice(splittingIndex + 1, objects.length)
 
     val merge = new MergeJob(level, consumer)
-    
-    jobPool.submit(new SplittingJob(jobPool, objectsA, n => merge.left = n, level + 1))
-    jobPool.submit(new SplittingJob(jobPool, objectsB, n => merge.right = n, level + 1))
+
+    jobPool.submit(new SplittingJob(jobPool, objectsA, n ⇒ merge.left = n, level + 1))
+    jobPool.submit(new SplittingJob(jobPool, objectsB, n ⇒ merge.right = n, level + 1))
 
     jobPool.submit(merge)
   }
 }
 
-class MergeJob(level: Int, consumer: BvhNode => Unit) extends Job {
-  
-  var  left: BvhNode = null
-  var  right: BvhNode = null
-  
+class MergeJob(level: Int, consumer: BvhNode ⇒ Unit) extends Job {
+
+  var left: BvhNode = null
+  var right: BvhNode = null
+
   override def canExecute = (null != left && null != right)
-  
+
   override def execute: Unit = {
     val children = Array(left, right)
     val bb = AABB[BvhNode](children, _.hull)

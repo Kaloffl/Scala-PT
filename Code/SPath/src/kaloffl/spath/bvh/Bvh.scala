@@ -8,7 +8,7 @@ import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.tracing.Ray
 
 object Bvh {
-  val MAX_LEAF_SIZE = 16
+  val MAX_LEAF_SIZE = 8
 }
 
 class Bvh(objects: Array[Shape], material: Material) extends SceneNode {

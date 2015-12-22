@@ -10,11 +10,7 @@ class Worker(jobPool: JobPool) extends Runnable {
       if (null == job) {
         jobPool.park(this)
       } else {
-        if (job.canExecute) {
-          job.execute
-        } else {
-          jobPool.submit(job)
-        }
+        job.execute
       }
     }
   }
