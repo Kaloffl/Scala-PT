@@ -7,6 +7,8 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.tracing.Ray
+import kaloffl.spath.scene.shapes.Intersectable
+import kaloffl.spath.scene.shapes.Enclosable
 
 object SceneNode {
 
@@ -23,13 +25,23 @@ object SceneNode {
   }
 
   def apply(objects: Array[SceneNode]): SceneNode = {
-    new HierarchicalObject(objects)
+    if(objects.length < Bvh.MAX_LEAF_SIZE) {
+      new HierarchicalObject(objects)
+    } else {
+      BvhBuilder.buildBvh(objects)
+    }
   }
 }
 
-trait SceneNode {
+trait SceneNode extends Intersectable with Enclosable {
 
   def getIntersection(ray: Ray, maxDepth: Double): Intersection
 
-  def enclosingAABB: AABB
+  override def getIntersectionDepth(ray: Ray): Double = {
+    getIntersection(ray, Double.PositiveInfinity).depth
+  }
+  
+  override def getIntersectionDepth(ray: Ray, maxDepth: Double): Double = {
+    getIntersection(ray, maxDepth).depth
+  }
 }

@@ -9,4 +9,8 @@ trait Intersectable {
    * returned.
    */
   def getIntersectionDepth(ray: Ray): Double
+  
+  def getIntersectionDepth(ray: Ray, maxDepth: Double): Double = {
+    getIntersectionDepth(ray)
+  }
 }

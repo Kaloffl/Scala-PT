@@ -6,6 +6,9 @@ import kaloffl.jobs.JobPool
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.materials.Material
+import kaloffl.spath.scene.shapes.Enclosable
+import kaloffl.spath.scene.shapes.Intersectable
+import kaloffl.spath.scene.structure.SceneNode
 
 object BvhBuilder {
 
@@ -18,14 +21,14 @@ object BvhBuilder {
    * splitting is done in places where the two smallest AABBs will be created
    * around the children.
    */
-  def buildBvh(objects: Array[Shape], material: Material): Bvh = {
+  def buildBvh(objects: Array[Shape], material: Material): ShapeBvh = {
     println("Building a BVH for " + objects.length + " objects.")
     val start = System.nanoTime
 
     val pool = new JobPool
 
     var root: BvhNode[Shape] = null
-    pool.submit(new SplittingJob(pool, new SubArray(objects), root = _, 0))
+    pool.submit(new SplittingJob[Shape](pool, new SubArray(objects), root = _, 0))
     pool.execute
 
     val duration = System.nanoTime - start
@@ -36,14 +39,36 @@ object BvhBuilder {
     } else {
       println("buildtime: " + Math.floor(duration / 10000.0) / 100.0 + "ms")
     }
-    return new Bvh(root, material);
+    return new ShapeBvh(root, material);
   }
+  
+  def buildBvh(objects: Array[SceneNode]): ObjectBvh = {
+    println("Building a BVH for " + objects.length + " objects.")
+    val start = System.nanoTime
+
+    val pool = new JobPool
+
+    var root: BvhNode[SceneNode] = null
+    pool.submit(new SplittingJob[SceneNode](pool, new SubArray(objects), root = _, 0))
+    pool.execute
+
+    val duration = System.nanoTime - start
+
+    println("Done.")
+    if (duration > 1000000000) {
+      println("buildtime: " + Math.floor(duration / 10000000.0) / 100.0 + "s")
+    } else {
+      println("buildtime: " + Math.floor(duration / 10000.0) / 100.0 + "ms")
+    }
+    return new ObjectBvh(root);
+  }
+  
 }
 
-class SplittingJob(
+class SplittingJob[T <: Enclosable with Intersectable](
     jobPool: JobPool,
-    objects: SubArray[Shape],
-    consumer: BvhNode[Shape] ⇒ Unit,
+    objects: SubArray[T],
+    consumer: BvhNode[T] ⇒ Unit,
     level: Int) extends Job {
 
   override def canExecute = true
@@ -52,8 +77,8 @@ class SplittingJob(
     // If the array is small enough we create a leaf and return
     if (objects.length <= Bvh.MAX_LEAF_SIZE) {
       val elements = objects.toArray
-      val hull = AABB[Shape](elements, _.enclosingAABB)
-      consumer(new BvhNode(null, elements, hull, level))
+      val hull = AABB[T](elements, _.enclosingAABB)
+      consumer(new BvhNode[T](null, elements, hull, level))
       return
     }
     // otherwise we look for the best place to split the array
@@ -63,7 +88,7 @@ class SplittingJob(
     var splittingIndex = -1
     var orderingIndex = 0
 
-    val orderings: Array[Comparator[Shape]] = Array(
+    val orderings = Array(
       BoxMinXOrder, BoxCenterXOrder, BoxMaxXOrder,
       BoxMinYOrder, BoxCenterYOrder, BoxMaxYOrder,
       BoxMinZOrder, BoxCenterZOrder, BoxMaxZOrder)
@@ -126,17 +151,17 @@ class SplittingJob(
 
     val merge = new MergeJob(level, consumer)
 
-    jobPool.submit(new SplittingJob(jobPool, objectsA, n ⇒ merge.left = n, level + 1))
-    jobPool.submit(new SplittingJob(jobPool, objectsB, n ⇒ merge.right = n, level + 1))
+    jobPool.submit(new SplittingJob[T](jobPool, objectsA, n ⇒ merge.left = n, level + 1))
+    jobPool.submit(new SplittingJob[T](jobPool, objectsB, n ⇒ merge.right = n, level + 1))
 
     jobPool.submit(merge)
   }
 }
 
-class MergeJob(level: Int, consumer: BvhNode[Shape] ⇒ Unit) extends Job {
+class MergeJob[T <: Intersectable](level: Int, consumer: BvhNode[T] ⇒ Unit) extends Job {
 
-  var left: BvhNode[Shape] = null
-  var right: BvhNode[Shape] = null
+  var left: BvhNode[T] = null
+  var right: BvhNode[T] = null
 
   override def canExecute = (null != left && null != right)
 
@@ -144,7 +169,7 @@ class MergeJob(level: Int, consumer: BvhNode[Shape] ⇒ Unit) extends Job {
     val children = Array(left, right)
     // TODO put the hull construction into a different function. The apply 
     // function is not a good choice here
-    val bb = AABB[BvhNode[Shape]](children, _.hull) 
+    val bb = AABB[BvhNode[T]](children, _.hull) 
 
     // Every two levels we collapse the previous level into the current one to
     // create a 4-way tree instead of a binary one.
@@ -163,82 +188,82 @@ class MergeJob(level: Int, consumer: BvhNode[Shape] ⇒ Unit) extends Job {
 // Following are the implementations of the nine different ways to sort. nothing
 // too exiting.
 
-object BoxCenterXOrder extends Comparator[Shape] {
-  override def compare(shape1: Shape, shape2: Shape): Int = {
-    val x1 = shape1.enclosingAABB.center.x
-    val x2 = shape2.enclosingAABB.center.x
+object BoxCenterXOrder extends Comparator[Enclosable] {
+  override def compare(e1: Enclosable, e2: Enclosable): Int = {
+    val x1 = e1.enclosingAABB.center.x
+    val x2 = e2.enclosingAABB.center.x
     if (x1 < x2) return -1
     if (x1 > x2) return 1
     return 0
   }
 }
-object BoxMinXOrder extends Comparator[Shape] {
-  override def compare(shape1: Shape, shape2: Shape): Int = {
-    val x1 = shape1.enclosingAABB.min.x
-    val x2 = shape2.enclosingAABB.min.x
+object BoxMinXOrder extends Comparator[Enclosable] {
+  override def compare(e1: Enclosable, e2: Enclosable): Int = {
+    val x1 = e1.enclosingAABB.min.x
+    val x2 = e2.enclosingAABB.min.x
     if (x1 < x2) return -1
     if (x1 > x2) return 1
     return 0
   }
 }
-object BoxMaxXOrder extends Comparator[Shape] {
-  override def compare(shape1: Shape, shape2: Shape): Int = {
-    val x1 = shape1.enclosingAABB.max.x
-    val x2 = shape2.enclosingAABB.max.x
+object BoxMaxXOrder extends Comparator[Enclosable] {
+  override def compare(e1: Enclosable, e2: Enclosable): Int = {
+    val x1 = e1.enclosingAABB.max.x
+    val x2 = e2.enclosingAABB.max.x
     if (x1 < x2) return -1
     if (x1 > x2) return 1
     return 0
   }
 }
-object BoxCenterYOrder extends Comparator[Shape] {
-  override def compare(shape1: Shape, shape2: Shape): Int = {
-    val y1 = shape1.enclosingAABB.center.y
-    val y2 = shape2.enclosingAABB.center.y
+object BoxCenterYOrder extends Comparator[Enclosable] {
+  override def compare(e1: Enclosable, e2: Enclosable): Int = {
+    val y1 = e1.enclosingAABB.center.y
+    val y2 = e2.enclosingAABB.center.y
     if (y1 < y2) return -1
     if (y1 > y2) return 1
     return 0
   }
 }
-object BoxMinYOrder extends Comparator[Shape] {
-  override def compare(shape1: Shape, shape2: Shape): Int = {
-    val y1 = shape1.enclosingAABB.min.y
-    val y2 = shape2.enclosingAABB.min.y
+object BoxMinYOrder extends Comparator[Enclosable] {
+  override def compare(e1: Enclosable, e2: Enclosable): Int = {
+    val y1 = e1.enclosingAABB.min.y
+    val y2 = e2.enclosingAABB.min.y
     if (y1 < y2) return -1
     if (y1 > y2) return 1
     return 0
   }
 }
-object BoxMaxYOrder extends Comparator[Shape] {
-  override def compare(shape1: Shape, shape2: Shape): Int = {
-    val y1 = shape1.enclosingAABB.max.y
-    val y2 = shape2.enclosingAABB.max.y
+object BoxMaxYOrder extends Comparator[Enclosable] {
+  override def compare(e1: Enclosable, e2: Enclosable): Int = {
+    val y1 = e1.enclosingAABB.max.y
+    val y2 = e2.enclosingAABB.max.y
     if (y1 < y2) return -1
     if (y1 > y2) return 1
     return 0
   }
 }
-object BoxCenterZOrder extends Comparator[Shape] {
-  override def compare(shape1: Shape, shape2: Shape): Int = {
-    val z1 = shape1.enclosingAABB.center.z
-    val z2 = shape2.enclosingAABB.center.z
+object BoxCenterZOrder extends Comparator[Enclosable] {
+  override def compare(e1: Enclosable, e2: Enclosable): Int = {
+    val z1 = e1.enclosingAABB.center.z
+    val z2 = e2.enclosingAABB.center.z
     if (z1 < z2) return -1
     if (z1 > z2) return 1
     return 0
   }
 }
-object BoxMinZOrder extends Comparator[Shape] {
-  override def compare(shape1: Shape, shape2: Shape): Int = {
-    val z1 = shape1.enclosingAABB.min.z
-    val z2 = shape2.enclosingAABB.min.z
+object BoxMinZOrder extends Comparator[Enclosable] {
+  override def compare(e1: Enclosable, e2: Enclosable): Int = {
+    val z1 = e1.enclosingAABB.min.z
+    val z2 = e2.enclosingAABB.min.z
     if (z1 < z2) return -1
     if (z1 > z2) return 1
     return 0
   }
 }
-object BoxMaxZOrder extends Comparator[Shape] {
-  override def compare(shape1: Shape, shape2: Shape): Int = {
-    val z1 = shape1.enclosingAABB.max.z
-    val z2 = shape2.enclosingAABB.max.z
+object BoxMaxZOrder extends Comparator[Enclosable] {
+  override def compare(e1: Enclosable, e2: Enclosable): Int = {
+    val z1 = e1.enclosingAABB.max.z
+    val z2 = e2.enclosingAABB.max.z
     if (z1 < z2) return -1
     if (z1 > z2) return 1
     return 0

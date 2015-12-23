@@ -52,7 +52,7 @@ class SubArray[T](
     return r
   }
 
-  def sort(ord: Comparator[T]): Unit = {
+  def sort(ord: Comparator[_ >: T]): Unit = {
     Arrays.sort(
       array.asInstanceOf[Array[Object]],
       from,
@@ -60,7 +60,7 @@ class SubArray[T](
       ord.asInstanceOf[Comparator[Object]])
   }
 
-  def parallelSort(ord: Comparator[T]): Unit = {
+  def parallelSort(ord: Comparator[_ >: T]): Unit = {
     Arrays.parallelSort(
       array.asInstanceOf[Array[Object]],
       from,

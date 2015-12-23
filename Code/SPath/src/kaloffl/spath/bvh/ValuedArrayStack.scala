@@ -1,8 +1,8 @@
 package kaloffl.spath.bvh
 
-class ValuedArrayStack[T: Manifest] {
+class ValuedArrayStack[T] {
   val bufferSize = 24
-  var data: Array[T] = new Array(bufferSize)
+  var data: Array[T] = new Array[AnyRef](bufferSize).asInstanceOf[Array[T]]
   var values: Array[Double] = new Array(bufferSize)
   var start = bufferSize
 
@@ -66,7 +66,7 @@ class ValuedArrayStack[T: Manifest] {
   }
 
   def clear: Unit = {
-    data = new Array(bufferSize)
+    data = new Array[AnyRef](bufferSize).asInstanceOf[Array[T]]
     start = bufferSize
   }
 
