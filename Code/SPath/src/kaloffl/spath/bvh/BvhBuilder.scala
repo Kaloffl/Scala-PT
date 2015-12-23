@@ -1,11 +1,11 @@
 package kaloffl.spath.bvh
 
 import java.util.Comparator
-
 import kaloffl.jobs.Job
 import kaloffl.jobs.JobPool
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.scene.materials.Material
 
 object BvhBuilder {
 
@@ -18,7 +18,7 @@ object BvhBuilder {
    * splitting is done in places where the two smallest AABBs will be created
    * around the children.
    */
-  def buildHierarchy(objects: Array[Shape]): BvhNode[Shape] = {
+  def buildBvh(objects: Array[Shape], material: Material): Bvh = {
     println("Building a BVH for " + objects.length + " objects.")
     val start = System.nanoTime
 
@@ -36,7 +36,7 @@ object BvhBuilder {
     } else {
       println("buildtime: " + Math.floor(duration / 10000.0) / 100.0 + "ms")
     }
-    return root;
+    return new Bvh(root, material);
   }
 }
 

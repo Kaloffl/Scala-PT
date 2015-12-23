@@ -11,12 +11,7 @@ object Bvh {
   val MAX_LEAF_SIZE = 8
 }
 
-// TODO change the dependency direction to the BVH builder: the builder should
-// create a full BVH instead of the bvh calling the the builder to create the
-// hierarchy and return the root node
-class Bvh(objects: Array[Shape], material: Material) extends SceneNode {
-
-  val root = BvhBuilder.buildHierarchy(objects)
+class Bvh(root: BvhNode[Shape], material: Material) extends SceneNode {
 
   override def enclosingAABB: AABB = root.hull
 
