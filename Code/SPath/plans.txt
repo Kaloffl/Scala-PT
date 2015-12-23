@@ -38,7 +38,6 @@ pathtracer TODOs
 	- scene file format (so trees are saved and don't need to be build every time)
 	- live scene editing
 	- octree based voxel volume
-	- BVH for SceneNodes (currently only work for shapes)
 	- shape combinators (union, subtraction, intersection)
 	- model/shape rotation, translation & scaling
 	- textured objects
@@ -60,4 +59,4 @@ pathtracer TODOs
 - automatic creation of Attenuation factor for lights (needed for direct lighting solutions & bidirectional tracing)
 - Extract air scattering code
 - Extract russian roulett code
-- Custom fork-join framework to make things like BVH building faster
+- Allow Jobs in the jobpool to park if no executable jobs are available
