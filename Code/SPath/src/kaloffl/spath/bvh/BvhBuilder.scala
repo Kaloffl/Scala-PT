@@ -18,13 +18,13 @@ object BvhBuilder {
    * splitting is done in places where the two smallest AABBs will be created
    * around the children.
    */
-  def buildHierarchy(objects: Array[Shape]): BvhNode = {
+  def buildHierarchy(objects: Array[Shape]): BvhNode[Shape] = {
     println("Building a BVH for " + objects.length + " objects.")
     val start = System.nanoTime
 
     val pool = new JobPool
 
-    var root: BvhNode = null
+    var root: BvhNode[Shape] = null
     pool.submit(new SplittingJob(pool, new SubArray(objects), root = _, 0))
     pool.execute
 
@@ -43,7 +43,7 @@ object BvhBuilder {
 class SplittingJob(
     jobPool: JobPool,
     objects: SubArray[Shape],
-    consumer: BvhNode ⇒ Unit,
+    consumer: BvhNode[Shape] ⇒ Unit,
     level: Int) extends Job {
 
   override def canExecute = true
@@ -133,16 +133,18 @@ class SplittingJob(
   }
 }
 
-class MergeJob(level: Int, consumer: BvhNode ⇒ Unit) extends Job {
+class MergeJob(level: Int, consumer: BvhNode[Shape] ⇒ Unit) extends Job {
 
-  var left: BvhNode = null
-  var right: BvhNode = null
+  var left: BvhNode[Shape] = null
+  var right: BvhNode[Shape] = null
 
   override def canExecute = (null != left && null != right)
 
   override def execute: Unit = {
     val children = Array(left, right)
-    val bb = AABB[BvhNode](children, _.hull)
+    // TODO put the hull construction into a different function. The apply 
+    // function is not a good choice here
+    val bb = AABB[BvhNode[Shape]](children, _.hull) 
 
     // Every two levels we collapse the previous level into the current one to
     // create a 4-way tree instead of a binary one.

@@ -11,6 +11,9 @@ object Bvh {
   val MAX_LEAF_SIZE = 8
 }
 
+// TODO change the dependency direction to the BVH builder: the builder should
+// create a full BVH instead of the bvh calling the the builder to create the
+// hierarchy and return the root node
 class Bvh(objects: Array[Shape], material: Material) extends SceneNode {
 
   val root = BvhBuilder.buildHierarchy(objects)
@@ -18,40 +21,38 @@ class Bvh(objects: Array[Shape], material: Material) extends SceneNode {
   override def enclosingAABB: AABB = root.hull
 
   override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
-    class NodeIntersection(val depth: Double, val node: BvhNode)
-    val stack: SortedArrayStack[NodeIntersection] = new SortedArrayStack(_.depth < _.depth)
+    val stack = new ValuedArrayStack[BvhNode[Shape]]()
     val rootDepth = root.hullDepth(ray)
-    if (rootDepth > maxDist) return null
+    if (rootDepth > maxDist) return Intersection.nullIntersection
 
-    var closestIntersection: Intersection = null
-    var closestDist = maxDist
+    var closestShape: Shape = null
+    var closestDepth = maxDist
 
-    stack add new NodeIntersection(rootDepth, root)
+    stack add (root, rootDepth)
     while (!stack.empty) {
-      val head = stack.pop
-      if (head.depth >= closestDist) {
-        return closestIntersection
+      val (node, depth) = stack.pop
+      if (depth >= closestDepth) {
+        return new Intersection(closestDepth, material, closestShape)
       }
-      val headNode = head.node
-      if (null == headNode.children) {
-        val intersection = headNode.intersectElements(ray, maxDist, material)
-        if (null != intersection && closestDist > intersection.depth) {
-          closestIntersection = intersection
-          closestDist = intersection.depth
+      if (node.isLeaf) {
+        val (shape, depth) = node.intersectElements(ray, maxDist)
+        if (depth < closestDepth) {
+          closestShape = shape
+          closestDepth = depth
         }
       } else {
         var i = 0
-        while (i < headNode.children.length) {
-          val child = headNode.children(i)
+        while (i < node.children.length) {
+          val child = node.children(i)
           val depth = child.hullDepth(ray)
-          if (Double.PositiveInfinity != depth && depth < closestDist) {
-            stack add new NodeIntersection(depth, child)
+          if (Double.PositiveInfinity != depth && depth < closestDepth) {
+            stack add (child, depth)
           }
           i += 1
         }
       }
     }
-    return closestIntersection
+    return new Intersection(closestDepth, material, closestShape)
   }
 }
 

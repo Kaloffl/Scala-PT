@@ -10,7 +10,7 @@ import java.util.function.DoubleSupplier
  * random point inside the shape and tell the length a ray must travel in order
  * to intersect the shape.
  */
-trait Shape {
+trait Shape extends Intersectable {
 
   /**
    * Returns a normalized vector pointing straight away from the surface at
@@ -18,13 +18,6 @@ trait Shape {
    * points from the center of the sphere through the given point)
    */
   def getNormal(point: Vec3d): Vec3d
-
-  /**
-   * Tells the distance a ray must travel in order to intersect with the shape.
-   * If the ray can't intersect the shape, a large or infinite number is
-   * returned.
-   */
-  def getIntersectionDepth(ray: Ray): Double
 
   def enclosingAABB: AABB
 

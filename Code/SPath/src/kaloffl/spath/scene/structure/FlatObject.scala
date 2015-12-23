@@ -20,15 +20,11 @@ class FlatObject(val shapes: Array[Shape], val material: Material) extends Scene
     var i = 0
     while (i < shapes.length) {
       val depth = shapes(i).getIntersectionDepth(ray)
-
       if (depth < closestDist) {
         closestDist = depth
         closestShape = shapes(i)
       }
       i += 1
-    }
-    if (null == closestShape) {
-      return null
     }
     return new Intersection(
       closestDist,

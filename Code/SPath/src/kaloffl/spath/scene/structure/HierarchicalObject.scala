@@ -9,13 +9,12 @@ class HierarchicalObject(val children: Array[SceneNode]) extends SceneNode {
   val hull = AABB[SceneNode](children, _.enclosingAABB)
 
   def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
-    var closestIntersection: Intersection = null
+    var closestIntersection = Intersection.nullIntersection
     var closestDist = maxDepth
     var i = 0
     while (i < children.length) {
       val intersection = children(i).getIntersection(ray, closestDist)
-
-      if (null != intersection) {
+      if (intersection.hitObject) {
         closestIntersection = intersection
         closestDist = intersection.depth
       }

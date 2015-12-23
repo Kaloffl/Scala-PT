@@ -33,7 +33,7 @@ class PathTracer(val scene: Scene) extends Tracer {
       // scatter depth. If none is found and the scatter depth is not infinity, 
       // the ray will be scattered.
       val intersection = scene.getIntersection(ray, scatterDist)
-      if (null == intersection) {
+      if (!intersection.hitObject) {
         // if no object was hit, the ray will either scatter or hit the sky. At 
         // the moment the sky will only really work if the air is clear and the 
         // scatter probability is 0.
