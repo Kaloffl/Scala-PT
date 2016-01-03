@@ -24,15 +24,15 @@ object Hemisphere {
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer
 
-    val matRedDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
-    val matGreenDiffuse = new DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
-    val matBlueDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
-    val matYellowDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.1f))
-    val matCyanDiffuse = new DiffuseMaterial(Color(0.1f, 0.9f, 0.9f))
-    val matPinkDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
-    val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matGrayDiffuse = new DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
+    val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
+    val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
+    val matBlueDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
+    val matYellowDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.1f))
+    val matCyanDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.9f))
+    val matPinkDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
+    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
+    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
+    val matGrayDiffuse = DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
     val matAir = new TransparentMaterial(Color.WHITE, 0.0, 0.0, 1.0)
 
     val diffuseMaterials = Array(
@@ -56,7 +56,7 @@ object Hemisphere {
 
     val closerLowCam = new Camera(Vec3d(0, 0, 2.2), Vec3d(0, 0, -1).normalize, Vec3d.LEFT, 0, 3)
 
-    val hemisphereScene = new Scene(hemisphere, closerLowCam, matAir, new DirectionalLightMaterial(Color.WHITE, 2, Vec3d(0, 1, -3).normalize, 0.5f))
+    val hemisphereScene = new Scene(hemisphere, closerLowCam, matAir, new DirectionalLightMaterial(Color.WHITE * 2, Vec3d(0, 1, -3).normalize, 0.5f))
     pathTracer.render(display, hemisphereScene, bounces = 12)
   }
 }

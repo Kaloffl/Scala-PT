@@ -28,22 +28,22 @@ object LightScatter {
     val up = front.cross(Vec3d.RIGHT).normalize
     val camera = new Camera(Vec3d(0, 5, 13), front, up, 0.1, Vec3d(0, -2.5, -13).length)
 
-    val matCyanDiffuse = new DiffuseMaterial(Color(0.1f, 0.9f, 0.9f))
-    val matPinkDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
-    val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
+    val matCyanDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.9f))
+    val matPinkDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
+    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
+    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
     val checkeredMask = new CheckeredMask(2)
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matWhiteGlass8 = new RefractiveMaterial(Color.WHITE, 1.8, 0.0)
+    val matWhiteGlass8 = RefractiveMaterial(Color.WHITE, 1.8, 0.0)
     val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.05, 1.0)
 
     val hazeObjects = SceneNode(Array(
 
       SceneNode(
         new Sphere(Vec3d(0, 0, 0), 1),
-        new LightMaterial(Color(1, 0.9f, 0.8f), 4, Attenuation.radius(1))),
+        new LightMaterial(Color(1, 0.9f, 0.8f) * 4, Attenuation.radius(1))),
 
       SceneNode(
         AABB(Vec3d(0, 0, -1.05), Vec3d(2, 4, 0.1)),

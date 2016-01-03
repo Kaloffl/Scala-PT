@@ -27,11 +27,11 @@ object CornellBox {
     val cornellCam = new Camera(Vec3d(278, 273, -800), Vec3d.FRONT, Vec3d.UP, 0.0f, 13.0f)
 
     val matAir = new TransparentMaterial(Color.BLACK, 0.0, 0.0, 1.0)
-    val matBlackDiffuse = new DiffuseMaterial(Color.BLACK)
-    val cmatWhite = new DiffuseMaterial(new Color(0.737f, 0.728f, 0.767f))
-    val cmatRed = new DiffuseMaterial(new Color(0.642f, 0.063f, 0.061f))
-    val cmatGreen = new DiffuseMaterial(new Color(0.159f, 0.373f, 0.101f))
-    val cmatLight = new LightMaterial(new Color(34.0f, 23.6f, 8.0f), 1.0f, Attenuation.radius(10))
+    val matBlackDiffuse = DiffuseMaterial(Color.BLACK)
+    val cmatWhite = DiffuseMaterial(new Color(0.737f, 0.728f, 0.767f))
+    val cmatRed = DiffuseMaterial(new Color(0.642f, 0.063f, 0.061f))
+    val cmatGreen = DiffuseMaterial(new Color(0.159f, 0.373f, 0.101f))
+    val cmatLight = new LightMaterial(new Color(34.0f, 23.6f, 8.0f), Attenuation.radius(10))
 
     val roomWidth = 552.5
     val roomHeight = 548.8

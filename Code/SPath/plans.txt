@@ -60,3 +60,7 @@ pathtracer TODOs
 - Extract air scattering code
 - Extract russian roulett code
 - Allow Jobs in the jobpool to park if no executable jobs are available
+- "prominent lights": light sources chosen to be checked after every ray
+	- point lights at first because they are simpler than area lights for this
+		- point lights always have the same probability, so it can be multiplied into the intensity directly
+	- later consider area lights which need to be adjusted by their hit probability

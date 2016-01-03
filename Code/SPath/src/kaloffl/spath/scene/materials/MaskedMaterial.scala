@@ -9,7 +9,7 @@ import kaloffl.spath.scene.SurfaceInfo
 class MaskedMaterial(
     val matA: Material,
     val matB: Material,
-    val mask: Mask) extends Material {
+    val mask: Mask) extends Material(Color.BLACK, DummyFunction) {
 
   def useA(num: Int, factor: Double): Boolean = {
     0 == (num * factor).toInt - ((num - 1) * factor).toInt

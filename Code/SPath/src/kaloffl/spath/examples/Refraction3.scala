@@ -21,10 +21,10 @@ object Refraction3 {
 
     val glassColor = Color(0.2f, 0.4f, 0.5f)
 
-    val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
+    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
+    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 2, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.WHITE * 2, Attenuation.none)
 
     val matAir = new TransparentMaterial(Color.WHITE, 0, 0.0, 1.0)
 

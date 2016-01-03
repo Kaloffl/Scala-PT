@@ -26,22 +26,22 @@ object Scatter5 {
 
     val matPaper = new TransparentMaterial(Color(0.01f, 0.01f, 0.01f), 10, 500, 1.557, 0.01)
 
-    val matRedDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
-    val matGreenDiffuse = new DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
-    val matBlueDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
-    val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
+    val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
+    val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
+    val matBlueDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
+    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
+    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 16, Attenuation.none)
-    val matSkyLight = new LightMaterial(Color(0.9f, 0.95f, 0.975f), 0.5f, Attenuation.none)
-    val matRedLight = new LightMaterial(Color.RED, 256, Attenuation.none)
-    val matGreenLight = new LightMaterial(Color.GREEN, 16, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.WHITE * 16, Attenuation.none)
+    val matSkyLight = new LightMaterial(Color(0.9f, 0.95f, 0.975f) * 0.5f, Attenuation.none)
+    val matRedLight = new LightMaterial(Color.RED * 256, Attenuation.none)
+    val matGreenLight = new LightMaterial(Color.GREEN * 16, Attenuation.none)
 
     val matRedGlass = new TransparentMaterial(Color(0.1f, 0.5f, 0.5f), 1, 0.1, 1.7)
-    val matClearGlass = new RefractiveMaterial(Color.WHITE, 1.7, 0.0)
+    val matClearGlass = RefractiveMaterial(Color.WHITE, 1.7, 0.0)
     val matWhiteGlass = new TransparentMaterial(Color.BLACK, 0.0, 0.1, 1.7)
 
-    val matMirror = new ReflectiveMaterial(Color.WHITE, 0.0001)
+    val matMirror = ReflectiveMaterial(Color.WHITE, 0.0001)
 
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)

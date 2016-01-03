@@ -26,10 +26,10 @@ object Refraction4 {
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer
 
-    val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
+    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
+    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 2, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.WHITE * 2, Attenuation.none)
 
     val matAir = new TransparentMaterial(Color.WHITE, 0, 0.0, 1.0)
 

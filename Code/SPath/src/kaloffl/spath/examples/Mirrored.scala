@@ -21,22 +21,22 @@ object Mirrored {
     val display = new Display(1280, 720)
     val pathTracer = new PathTracer
 
-    val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matMirror = new ReflectiveMaterial(Color.WHITE, 0)
+    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
+    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
+    val matMirror = ReflectiveMaterial(Color.WHITE, 0)
     val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.002, 1.0)
 
     val coloredSpheres = SceneNode(Array(
       SceneNode(
         new Sphere(Vec3d(0.0, 2.5, 0.0), 2.0f),
-        new DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))),
+        DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))),
 
       SceneNode(
         AABB(Vec3d(0, -0.5, 0), Vec3d(16, 1, 24)),
-        new ReflectiveMaterial(Color(0.2f, 0.8f, 0.2f), 0.4f)),
+        ReflectiveMaterial(Color(0.2f, 0.8f, 0.2f), 0.4f)),
       SceneNode(
         AABB(Vec3d(0, 32.5, 0), Vec3d(16, 1, 24)),
-        new LightMaterial(Color.WHITE, 1f, Attenuation.none)),
+        new LightMaterial(Color.WHITE, Attenuation.none)),
       SceneNode(
         AABB(Vec3d(8.5f, 16, 0), Vec3d(1, 32, 24)),
         matMirror),

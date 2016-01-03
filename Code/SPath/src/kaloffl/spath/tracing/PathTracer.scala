@@ -77,11 +77,7 @@ class PathTracer(val scene: Scene) extends Tracer {
           air = scene.air
         }
         ray = new Ray(point, newDir)
-        //        if (intersection.material.isInstanceOf[DiffuseMaterial]) {
-        //          color *= info.reflectance * absorbed * diffuse.toFloat * 2
-        //        } else {
         color *= info.reflectance * absorbed
-        //        }
       }
       i += 1
     }

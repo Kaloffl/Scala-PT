@@ -36,13 +36,13 @@ object Scatter {
       new TransparentMaterial(glassColor, 128, 0.0, refraction),
       new TransparentMaterial(glassColor, 256, 0.0, refraction))
 
-    val matRedDiffuse = new DiffuseMaterial(Color(0.9f, 0.6f, 0.6f))
-    val matGreenDiffuse = new DiffuseMaterial(Color(0.6f, 0.9f, 0.6f))
-    val matBlueDiffuse = new DiffuseMaterial(Color(0.6f, 0.6f, 0.9f))
-    val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
+    val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.6f, 0.6f))
+    val matGreenDiffuse = DiffuseMaterial(Color(0.6f, 0.9f, 0.6f))
+    val matBlueDiffuse = DiffuseMaterial(Color(0.6f, 0.6f, 0.9f))
+    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
+    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 2, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.WHITE * 2, Attenuation.none)
 
     val mask = new GridMask(2, 0.04, Vec3d(0.5, 0.5, 0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matWhiteDiffuse, matBlueDiffuse, mask)

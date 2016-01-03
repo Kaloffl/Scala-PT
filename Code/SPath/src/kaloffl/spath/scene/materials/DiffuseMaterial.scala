@@ -7,19 +7,6 @@ import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Vec2d
 import kaloffl.spath.scene.SurfaceInfo
 
-class DiffuseMaterial(val color: Color) extends Material {
-
-  override def getInfo(
-    worldPos: Vec3d,
-    surfaceNormal: Vec3d,
-    incomingNormal: Vec3d,
-    depth: Double,
-    refractivityIndex: Double,
-    context: Context): SurfaceInfo = {
-
-    new SurfaceInfo(
-      color,
-      Color.BLACK,
-      surfaceNormal.weightedHemisphere(Vec2d.random(context.random)))
-  }
+object DiffuseMaterial {
+  def apply(color: Color) = new Material(color, DiffuseFunction)
 }

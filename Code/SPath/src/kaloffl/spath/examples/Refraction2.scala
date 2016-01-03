@@ -35,13 +35,13 @@ object Refraction2 {
     val matGlass9 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.9)
     val matGlassA = new TransparentMaterial(glassColor, absorbtion, scatter, 2.0)
 
-    val matRedDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
-    val matGreenDiffuse = new DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
-    val matBlueDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
-    val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
+    val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
+    val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
+    val matBlueDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
+    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
+    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 2, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.WHITE * 2, Attenuation.none)
 
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)

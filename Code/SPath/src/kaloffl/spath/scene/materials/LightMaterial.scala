@@ -9,31 +9,22 @@ import kaloffl.spath.scene.SurfaceInfo
 
 class LightMaterial(
     val color: Color,
-    emittance: Float,
-    val attenuation: Attenuation) extends Material {
+    val attenuation: Attenuation) extends Material(color, DummyFunction) {
 
-  val emitted = color * emittance
+  override def minEmittance = color
 
-  override def minEmittance = emitted
+  override def getEmittance(worldPos: Vec3d,
+                            surfaceNormal: Vec3d,
+                            incomingNormal: Vec3d,
+                            depth: Double,
+                            context: Context): Color = color
 
-  override def getEmittance(
-    worldPos: Vec3d,
-    surfaceNormal: Vec3d,
-    incomingNormal: Vec3d,
-    depth: Double,
-    context: Context): Color = emitted
-
-  override def getInfo(
-    worldPos: Vec3d,
-    surfaceNormal: Vec3d,
-    incomingNormal: Vec3d,
-    depth: Double,
-    refractivityIndex: Double,
-    context: Context): SurfaceInfo = {
-
-    new SurfaceInfo(
-      Color.WHITE,
-      emitted,
-      surfaceNormal.randomHemisphere(Vec2d.random(context.random)))
+  override def getInfo(worldPos: Vec3d,
+                       surfaceNormal: Vec3d,
+                       incomingNormal: Vec3d,
+                       depth: Double,
+                       airRefractivityIndex: Double,
+                       context: Context): SurfaceInfo = {
+    return new SurfaceInfo(Color.BLACK, color, Vec3d.ORIGIN)
   }
 }

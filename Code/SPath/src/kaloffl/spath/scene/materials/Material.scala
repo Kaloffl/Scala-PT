@@ -6,7 +6,7 @@ import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Attenuation
 import kaloffl.spath.scene.SurfaceInfo
 
-trait Material {
+class Material(reflectance: Color, scatterFunction: ScatterFunction) {
 
   def minEmittance: Color = Color.BLACK
 
@@ -15,23 +15,34 @@ trait Material {
 
   def refractivityIndex: Double = 1.0
 
-  def getAbsorbtion(
-    worldPos: Vec3d,
-    context: Context): Color = Color.BLACK
+  def getAbsorbtion(worldPos: Vec3d,
+                    context: Context): Color = Color.BLACK
 
-  def getEmittance(
-    worldPos: Vec3d,
-    surfaceNormal: Vec3d,
-    incomingNormal: Vec3d,
-    depth: Double,
-    context: Context): Color = Color.BLACK
+  def getEmittance(worldPos: Vec3d,
+                   surfaceNormal: Vec3d,
+                   incomingNormal: Vec3d,
+                   depth: Double,
+                   context: Context): Color = Color.BLACK
 
-  def getInfo(
-    worldPos: Vec3d,
-    surfaceNormal: Vec3d,
-    incomingNormal: Vec3d,
-    depth: Double,
-    airRefractivityIndex: Double,
-    context: Context): SurfaceInfo
+  def getInfo(worldPos: Vec3d,
+              surfaceNormal: Vec3d,
+              incomingNormal: Vec3d,
+              depth: Double,
+              airRefractivityIndex: Double,
+              context: Context): SurfaceInfo = {
+    new SurfaceInfo(
+      reflectance,
+      getEmittance(
+        worldPos,
+        surfaceNormal,
+        incomingNormal,
+        depth,
+        context),
+      scatterFunction.outDirection(
+        incomingNormal,
+        surfaceNormal,
+        airRefractivityIndex,
+        context.random))
+  }
 
 }

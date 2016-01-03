@@ -23,17 +23,17 @@ object Scatter4 {
 
     val matPaper = new TransparentMaterial(Color(0.01f, 0.01f, 0.01f), 10, 500, 1.557, 0.01)
 
-    val matRedDiffuse = new DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
-    val matGreenDiffuse = new DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
-    val matBlueDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
-    val matBlackDiffuse = new DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = new DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
+    val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
+    val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
+    val matBlueDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
+    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
+    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE, 16, Attenuation.none)
-    val matRedLight = new LightMaterial(Color.RED, 256, Attenuation.none)
-    val matGreenLight = new LightMaterial(Color.GREEN, 16, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.WHITE * 16, Attenuation.none)
+    val matRedLight = new LightMaterial(Color.RED * 256, Attenuation.none)
+    val matGreenLight = new LightMaterial(Color.GREEN * 16, Attenuation.none)
 
-    val matMirror = new ReflectiveMaterial(Color(0.5f, 0.5f, 0.5f), 0.001)
+    val matMirror = ReflectiveMaterial(Color(0.5f, 0.5f, 0.5f), 0.001)
 
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
@@ -65,7 +65,7 @@ object Scatter4 {
     val up = Vec3d.UP
     val camera = new Camera(Vec3d(0, 3, 9), front, up, 0.01, 9)
 
-    val glassScene = new Scene(glassTest, camera, matAir, new LightMaterial(Color.WHITE, 1, Attenuation.none))
+    val glassScene = new Scene(glassTest, camera, matAir, new LightMaterial(Color.WHITE, Attenuation.none))
 
     pathTracer.render(display, glassScene, bounces = 128)
   }
