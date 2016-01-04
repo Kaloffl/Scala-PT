@@ -103,7 +103,7 @@ object CornellBox {
         new AABB(Vec3d(roomWidth, 0, 0), Vec3d(roomWidth + 1, roomHeight, roomDepth)),
         cmatRed)))
 
-    val cornellScene = new Scene(cornellBox, cornellCam, matAir, matBlackDiffuse, lights = Array(light))
+    val cornellScene = new Scene(cornellBox, cornellCam, matAir, matBlackDiffuse)
 
     pathTracer.render(display, cornellScene, passes = 60000, bounces = 12)
   }

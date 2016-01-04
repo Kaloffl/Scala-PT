@@ -6,6 +6,7 @@ import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.math.Color
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.Material
+import kaloffl.spath.math.Ray
 
 class PathTracer(val scene: Scene) extends Tracer {
 
@@ -49,8 +50,8 @@ class PathTracer(val scene: Scene) extends Tracer {
           // FIXME Rays hitting the corner of a room and then not hitting the wall 
           // because they are too close are escaping the scene.
           val dist = scene.skyDistance
-          val point = ray.start + ray.normal * dist
-          val emitted = scene.sky.getEmittance(
+          val point = ray.atDistance(dist)
+          val emitted = scene.skyMaterial.getEmittance(
             point, -ray.normal, ray.normal, dist, context)
           val absorbtionScale = if (java.lang.Double.isInfinite(dist)) {
             0.0f

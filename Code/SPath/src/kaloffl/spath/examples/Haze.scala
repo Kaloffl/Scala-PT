@@ -68,7 +68,7 @@ object Haze {
         AABB(Vec3d(0, -0.5, 0), Vec3d(24, 1, 24)),
         matBlackWhiteCheckered)))
 
-    val hazeScene = new Scene(hazeObjects, camera, matAir, matBlackDiffuse, lights = Array(light))
+    val hazeScene = new Scene(hazeObjects, camera, matAir, matBlackDiffuse)
     pathTracer.render(display, hazeScene, bounces = 12)
   }
 }

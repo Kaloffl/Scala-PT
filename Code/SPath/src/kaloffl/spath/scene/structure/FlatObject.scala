@@ -2,7 +2,7 @@ package kaloffl.spath.scene.structure
 
 import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.scene.shapes.Shape
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.shapes.AABB
 
@@ -12,7 +12,7 @@ class FlatObject(val shapes: Array[Shape], val material: Material) extends Scene
     this(Array(shape), material)
   }
 
-  override val enclosingAABB = AABB[Shape](shapes, _.enclosingAABB)
+  override val enclosingAABB = AABB.enclosing[Shape](shapes, _.enclosingAABB)
 
   override def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     var closestDist = maxDepth

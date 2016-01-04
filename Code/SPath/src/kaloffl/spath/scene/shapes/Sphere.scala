@@ -1,7 +1,7 @@
 package kaloffl.spath.scene.shapes
 
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
 import kaloffl.spath.math.Vec2d
 
@@ -43,9 +43,5 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
 
   override def enclosingAABB: AABB = {
     AABB(position, Vec3d(radius * 2))
-  }
-
-  override def randomSurfacePoint(rng: DoubleSupplier): Vec3d = {
-    return Vec3d.randomNormal(Vec2d.random(rng)) * radius + position
   }
 }

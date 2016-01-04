@@ -1,7 +1,7 @@
 package kaloffl.spath.scene.shapes
 
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
 
 /**
@@ -18,6 +18,4 @@ trait Shape extends Intersectable with Enclosable {
    * points from the center of the sphere through the given point)
    */
   def getNormal(point: Vec3d): Vec3d
-
-  def randomSurfacePoint(rng: DoubleSupplier): Vec3d
 }

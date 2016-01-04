@@ -81,7 +81,7 @@ object Simple {
     val up = Vec3d(1, 0, -1).normalize.cross(forward).normalize
     val lowCamera = new Camera(position, forward, up, 0.0f, 13);
 
-    val colorfulScene = new Scene(coloredSpheres, lowCamera, matAir, matBlackDiffuse, lights = Array(light))
+    val colorfulScene = new Scene(coloredSpheres, lowCamera, matAir, matBlackDiffuse)
 
     pathTracer.render(display, colorfulScene, bounces = 12)
   }

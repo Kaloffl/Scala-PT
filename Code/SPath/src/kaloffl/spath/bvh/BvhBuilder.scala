@@ -77,7 +77,7 @@ class SplittingJob[T <: Enclosable with Intersectable](
     // If the array is small enough we create a leaf and return
     if (objects.length <= Bvh.MAX_LEAF_SIZE) {
       val elements = objects.toArray
-      val hull = AABB[T](elements, _.enclosingAABB)
+      val hull = AABB.enclosing[T](elements, _.enclosingAABB)
       consumer(new BvhNode[T](null, elements, hull, level))
       return
     }
@@ -167,9 +167,7 @@ class MergeJob[T <: Intersectable](level: Int, consumer: BvhNode[T] ⇒ Unit) ex
 
   override def execute: Unit = {
     val children = Array(left, right)
-    // TODO put the hull construction into a different function. The apply 
-    // function is not a good choice here
-    val bb = AABB[BvhNode[T]](children, _.hull) 
+    val bb = AABB.enclosing[BvhNode[T]](children, _.hull) 
 
     // Every two levels we collapse the previous level into the current one to
     // create a 4-way tree instead of a binary one.

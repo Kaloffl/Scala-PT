@@ -75,7 +75,7 @@ object Colorful {
 
     val lowCamera = new Camera(Vec3d(0, 2.5, 13), Vec3d.BACK, Vec3d.UP, 0.0f, 13);
 
-    val colorfulScene = new Scene(coloredSpheres, lowCamera, matAir, matBlackDiffuse, lights = Array(light))
+    val colorfulScene = new Scene(coloredSpheres, lowCamera, matAir, matBlackDiffuse)
 
     pathTracer.render(display, colorfulScene, bounces = 6)
   }

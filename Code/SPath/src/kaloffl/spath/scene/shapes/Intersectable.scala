@@ -1,6 +1,6 @@
 package kaloffl.spath.scene.shapes
 
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 
 trait Intersectable {
   /**

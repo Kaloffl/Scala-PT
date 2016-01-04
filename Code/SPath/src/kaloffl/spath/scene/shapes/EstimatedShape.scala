@@ -1,7 +1,7 @@
 package kaloffl.spath.scene.shapes
 
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
 
 trait EstimatedShape extends Shape {
@@ -26,6 +26,8 @@ trait EstimatedShape extends Shape {
       depthSum = aabb.getIntersectionDepth(ray)
       if (java.lang.Double.isInfinite(depthSum)) return Double.PositiveInfinity
       val innerRay = new Ray(ray.start + ray.normal * (depthSum + 0.01), ray.normal)
+      // this is getting the intersection depth of the back of the aabb because 
+      // the ray is inside the hull at this point
       maxDepth = aabb.getIntersectionDepth(innerRay)
     } else {
       maxDepth = aabb.getIntersectionDepth(ray)
@@ -34,7 +36,7 @@ trait EstimatedShape extends Shape {
     }
     var counter = 0
     while (counter < 200) {
-      val pos = ray.start + ray.normal * depthSum
+      val pos = ray.atDistance(depthSum)
       val depth = estimateDepth(pos)
       depthSum += depth
 
@@ -48,6 +50,4 @@ trait EstimatedShape extends Shape {
     }
     return Double.PositiveInfinity
   }
-
-  override def randomSurfacePoint(rng: DoubleSupplier): Vec3d = enclosingAABB.randomSurfacePoint(rng)
 }

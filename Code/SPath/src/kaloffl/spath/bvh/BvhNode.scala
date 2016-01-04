@@ -1,6 +1,6 @@
 package kaloffl.spath.bvh
 
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape

@@ -5,7 +5,7 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.Intersection
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 import kaloffl.spath.scene.shapes.Intersectable
 
 object Bvh {

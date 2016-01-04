@@ -1,7 +1,7 @@
 package kaloffl.spath.scene.shapes
 
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
 
 /**
@@ -15,7 +15,7 @@ object AABB {
     new AABB(center - size / 2, center + size / 2)
   }
 
-  def apply[T](objects: Array[T], unbox: T ⇒ AABB): AABB = {
+  def enclosing[T](objects: Array[T], unbox: T ⇒ AABB): AABB = {
     var i = 0
     var minX = Double.MaxValue
     var minY = Double.MaxValue
@@ -114,12 +114,4 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
   }
 
   override def enclosingAABB: AABB = this
-
-  override def randomSurfacePoint(rng: DoubleSupplier): Vec3d = {
-    // TODO optimize
-    val side = Vec3d.DIRECTIONS((rng.getAsDouble * 6).toInt)
-    val x = side.ortho
-    val y = side.cross(x)
-    return center + (side * size / 2) + (x * (rng.getAsDouble - 0.5) * size) + (y * (rng.getAsDouble - 0.5) * size)
-  }
 }

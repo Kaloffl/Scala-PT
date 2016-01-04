@@ -1,12 +1,12 @@
 package kaloffl.spath.scene.structure
 
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.shapes.AABB
 
 class HierarchicalObject(val children: Array[SceneNode]) extends SceneNode {
 
-  val hull = AABB[SceneNode](children, _.enclosingAABB)
+  val hull = AABB.enclosing[SceneNode](children, _.enclosingAABB)
 
   def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     var closestIntersection = Intersection.nullIntersection

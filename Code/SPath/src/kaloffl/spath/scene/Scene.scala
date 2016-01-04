@@ -5,7 +5,7 @@ import kaloffl.spath.bvh.Bvh
 import kaloffl.spath.math.Color
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.tracing.Intersection
-import kaloffl.spath.tracing.Ray
+import kaloffl.spath.math.Ray
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.scene.structure.FlatObject
@@ -19,10 +19,9 @@ import kaloffl.spath.math.Vec3d
 class Scene(
     val root: SceneNode,
     val camera: Camera,
-    val air: Material,
-    val sky: Material,
-    val skyDistance: Double = Double.PositiveInfinity,
-    val lights: Array[FlatObject] = Array()) {
+    val airMedium: Material,
+    val skyMaterial: Material,
+    val skyDistance: Double = Double.PositiveInfinity) {
 
   /**
    * Tries to find an Intersection of the given ray with the objects in the
@@ -30,15 +29,5 @@ class Scene(
    */
   def getIntersection(ray: Ray, maxDist: Double): Intersection = {
     root.getIntersection(ray, maxDist)
-  }
-
-  def getRandomLightRay(rng: DoubleSupplier): Ray = {
-    // TODO sky light
-    if (0 == lights.length) return null;
-    val light = lights((rng.getAsDouble * lights.length).toInt)
-    val shape = light.shapes((rng.getAsDouble * light.shapes.length).toInt)
-    val start = shape.randomSurfacePoint(rng)
-    val dir = shape.getNormal(start) //.randomHemisphere(Vec2d.random(rng))
-    return new Ray(start, dir)
   }
 }
