@@ -55,25 +55,27 @@ class PathTracer {
     for (i ← 0 until numberOfWorkers) {
       val x = i % cols * width
       val y = i / cols * height
-      val w = if(x + 1 == cols) display.width - x else width
-      val h = if(y + 1 == rows) display.height - y else height
+      val w = if (x + 1 == cols) display.width - x else width
+      val h = if (y + 1 == rows) display.height - y else height
       tracingWorkers(i) = new TracingWorker(x, y, w, h, scene, random)
     }
 
     var pass = 0
     val pool = new JobPool
-    while (pass < passes) {
+    while (pass < passes && tracingWorkers.exists(!_.done)) {
       println("Starting pass #" + pass)
 
       val before = System.nanoTime
       tracingWorkers.foreach { worker ⇒
-        pool.submit(new Job {
-          def canExecute = true
-          def execute = {
-            worker.render(bounces, pass, display)
-            worker.draw(display)
-          }
-        })
+        if (!worker.done) {
+          pool.submit(new Job {
+            def canExecute = true
+            def execute = {
+              worker.render(bounces, pass, display)
+              worker.draw(display)
+            }
+          })
+        }
       }
       pool.execute
 

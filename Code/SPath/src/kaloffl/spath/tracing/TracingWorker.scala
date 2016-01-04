@@ -39,6 +39,7 @@ class TracingWorker(
 
   // the number of passes that have been rendered
   var samplesTaken: Int = 0
+  var done = false
 
   def sampleToDistribution(s: Int): Double = {
     return random.getAsDouble - 0.5
@@ -48,6 +49,8 @@ class TracingWorker(
    * Renders a pass and adds the color to the samples array
    */
   def render(maxBounces: Int, pass: Int, display: RenderTarget): Unit = {
+    if (done) return
+
     samplesTaken += 1
 
     val dWidth = display.width
@@ -60,15 +63,25 @@ class TracingWorker(
     val context = new Context(random, pass, maxBounces, display)
 
     val maxIndex = width * height
+    var difference = 0f
     for (index ← 0 until maxIndex) {
       val x = (index % width - displayOffsetX) / dHeight
       val y = (displayOffsetY - index / width) / dHeight
       val ray = scene.camera.createRay(random, x, y)
       val color = tracer.trace(ray, maxBounces, scene.airMedium, context)
       val sampleIndex = index * 3
+
+      val prevSample = samplesTaken - 1
+      difference += Math.abs(color.r2 - samples(sampleIndex) / prevSample)
+      difference += Math.abs(color.g2 - samples(sampleIndex + 1) / prevSample)
+      difference += Math.abs(color.b2 - samples(sampleIndex + 2) / prevSample)
+
       samples(sampleIndex) += color.r2
       samples(sampleIndex + 1) += color.g2
       samples(sampleIndex + 2) += color.b2
+    }
+    if (difference / maxIndex < 1 / 255f) {
+      done = true
     }
   }
 

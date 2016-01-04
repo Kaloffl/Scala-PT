@@ -54,7 +54,6 @@ pathtracer TODOs
 	- BVH construction
 - selective splitting (split one ray into multiple in high-variance areas to accelerate convergence)
 - single scatter optimization for air/fog scattering
-- adaptive rendering (declare chunks of the render done if variance is low)
 - photon mapping?
 - automatic creation of Attenuation factor for lights (needed for direct lighting solutions & bidirectional tracing)
 - Extract air scattering code
