@@ -40,7 +40,7 @@ pathtracer TODOs
 	- octree based voxel volume
 	- shape combinators (union, subtraction, intersection)
 	- model/shape rotation, translation & scaling
-	- textured objects
+	- texture material
 	- normalmaps for objects
 	- portals
 - spectral tracing

@@ -32,25 +32,16 @@ class TracingWorker(
     val scene: Scene,
     val random: DoubleSupplier) {
 
-  // The sum of determined colors is stored in this array per-channel-per-pixel
-  val samples: Array[Float] = new Array[Float](width * height * 3)
-  val camera: Camera = scene.camera
+  // The sum of determined colors is stored in this array
+  // r1, g1, b1, r2, g2, b2, ...
+  val samples = new Array[Float](width * height * 3)
   val tracer = new PathTracer(scene)
-  //  val tracer = new BidirectionalPathTracer(scene)
 
   // the number of passes that have been rendered
   var samplesTaken: Int = 0
 
   def sampleToDistribution(s: Int): Double = {
-    val max = Math.sqrt(3000)
-    return (s + random.getAsDouble - 0.5) / max
-
-    //    if (left + width > 640) return 0 //random.getAsDouble
-    //
-    //    if (0 == s) return 1
-    //    val n = s / 2 + 2 * (Math.log(s / 2 + 2) / Math.log(2) - 1).toInt
-    //    val p = Math.pow(2, (Math.log(n + 1) / Math.log(2)).toInt)
-    //    return (n + 1 - p) / (p + 1) * (2 * (s & 0x01) - 1)
+    return random.getAsDouble - 0.5
   }
 
   /**
@@ -64,16 +55,15 @@ class TracingWorker(
     val r = Math.sqrt(pass).toInt
     val dx = sampleToDistribution(Math.min(r, pass - r * r))
     val dy = sampleToDistribution(Math.min(r, r * r + 2 * r - pass))
-    val displayOffsetX = dWidth * 0.5f + dx - left
-    val displayOffsetY = dHeight * 0.5f + dy - top
+    val displayOffsetX = dWidth * 0.5 + dx - left
+    val displayOffsetY = dHeight * 0.5 + dy - top
     val context = new Context(random, pass, maxBounces, display)
 
     val maxIndex = width * height
     for (index ← 0 until maxIndex) {
       val x = (index % width - displayOffsetX) / dHeight
       val y = (displayOffsetY - index / width) / dHeight
-      val ray = camera.createRay(random, x, y)
-
+      val ray = scene.camera.createRay(random, x, y)
       val color = tracer.trace(ray, maxBounces, scene.air, context)
       val sampleIndex = index * 3
       samples(sampleIndex) += color.r2
