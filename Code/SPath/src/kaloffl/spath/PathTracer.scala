@@ -55,7 +55,9 @@ class PathTracer {
     for (i ← 0 until numberOfWorkers) {
       val x = i % cols * width
       val y = i / cols * height
-      tracingWorkers(i) = new TracingWorker(x, y, width, height, scene, random)
+      val w = if(x + 1 == cols) display.width - x else width
+      val h = if(y + 1 == rows) display.height - y else height
+      tracingWorkers(i) = new TracingWorker(x, y, w, h, scene, random)
     }
 
     var pass = 0
