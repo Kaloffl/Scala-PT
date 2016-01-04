@@ -105,7 +105,7 @@ class TracingWorker(
       val red = toColorChannelInt(samples(i3))
       val green = toColorChannelInt(samples(i3 + 1))
       val blue = toColorChannelInt(samples(i3 + 2))
-      val color = red << 16 | green << 8 | blue
+      val color = 0xff << 24 | red << 16 | green << 8 | blue
 
       display.setPixel(x, y, color)
     }
