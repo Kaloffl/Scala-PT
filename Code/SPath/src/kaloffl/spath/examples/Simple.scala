@@ -1,27 +1,26 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.PathTracer
 import kaloffl.spath.Display
-import kaloffl.spath.scene.Camera
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.RenderEngine
+import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
-import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.structure.FlatObject
 import kaloffl.spath.scene.materials.ReflectiveMaterial
-import kaloffl.spath.math.Attenuation
+import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.structure.FlatObject
+import kaloffl.spath.scene.structure.SceneNode
 
 object Simple {
 
   def main(args: Array[String]): Unit = {
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
     val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
@@ -81,8 +80,12 @@ object Simple {
     val up = Vec3d(1, 0, -1).normalize.cross(forward).normalize
     val lowCamera = new Camera(position, forward, up, 0.0f, 13);
 
-    val colorfulScene = new Scene(coloredSpheres, lowCamera, matAir, matBlackDiffuse)
+    val colorfulScene = new Scene(
+        root = coloredSpheres, 
+        camera = lowCamera, 
+        airMedium = matAir, 
+        skyMaterial = matBlackDiffuse)
 
-    pathTracer.render(display, colorfulScene, bounces = 12)
+    RenderEngine.render(target = display, scene = colorfulScene, bounces = 12)
   }
 }

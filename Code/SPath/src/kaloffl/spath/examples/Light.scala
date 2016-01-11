@@ -1,27 +1,26 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.math.Color
-import kaloffl.spath.scene.Camera
-import kaloffl.spath.PathTracer
 import kaloffl.spath.Display
-import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.shapes.AABB
+import kaloffl.spath.RenderEngine
+import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Color
+import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.DirectionalLightMaterial
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
-import kaloffl.spath.math.Attenuation
+import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.shapes.AABB
+import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.structure.SceneNode
 
 object Light {
 
   def main(args: Array[String]): Unit = {
 
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val colorRed = Color(0.9f, 0.1f, 0.1f)
     val colorGreen = Color(0.1f, 0.9f, 0.1f)
@@ -106,8 +105,12 @@ object Light {
     val up = front.cross(Vec3d.RIGHT).normalize
     val camera = new Camera(Vec3d(0, 5, 13), front, up, 0.1, Vec3d(0, -2.5, -13).length)
 
-    val lightsScene = new Scene(coloredLights, camera, matAir, new DirectionalLightMaterial(Color.WHITE * 2, Vec3d(1, 3, 0).normalize, 1))
+    val lightsScene = new Scene(
+        root = coloredLights, 
+        camera = camera, 
+        airMedium = matAir, 
+        skyMaterial = new DirectionalLightMaterial(Color.WHITE * 2, Vec3d(1, 3, 0).normalize, 1))
 
-    pathTracer.render(display, lightsScene, bounces = 12)
+    RenderEngine.render(target = display, scene = lightsScene, bounces = 12)
   }
 }

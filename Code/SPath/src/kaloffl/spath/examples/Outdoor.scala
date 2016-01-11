@@ -1,27 +1,26 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.scene.Scene
 import kaloffl.spath.Display
-import kaloffl.spath.PathTracer
-import kaloffl.spath.math.Vec3d
+import kaloffl.spath.RenderEngine
+import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
+import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
-import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.shapes.AABB
+import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.materials.CheckeredMask
+import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.DirectionalLightMaterial
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.MaskedMaterial
-import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.materials.CheckeredMask
-import kaloffl.spath.math.Attenuation
+import kaloffl.spath.scene.shapes.AABB
+import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.structure.SceneNode
 
 object Outdoor {
 
   def main(args: Array[String]): Unit = {
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val lowCamera = new Camera(Vec3d(0, 2.5, 13), Vec3d.BACK, Vec3d.UP, 0.0f, 13);
 
@@ -57,8 +56,12 @@ object Outdoor {
         new Sphere(Vec3d(-3, 1, 3), 1),
         matWhiteDiffuse)))
 
-    val outdoorScene = new Scene(outdoor, lowCamera, matAir, new DirectionalLightMaterial(Color.WHITE * 0.125f, Vec3d.DOWN, 1))
+    val outdoorScene = new Scene(
+        root = outdoor, 
+        camera = lowCamera, 
+        airMedium = matAir, 
+        skyMaterial = new DirectionalLightMaterial(Color.WHITE * 0.125f, Vec3d.DOWN, 1))
 
-    pathTracer.render(display, outdoorScene, bounces = 12)
+    RenderEngine.render(target = display, scene = outdoorScene, bounces = 12)
   }
 }

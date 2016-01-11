@@ -1,25 +1,24 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.scene.Scene
 import kaloffl.spath.Display
-import kaloffl.spath.PathTracer
+import kaloffl.spath.RenderEngine
+import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Color
+import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.materials.DiffuseMaterial
+import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.materials.ReflectiveMaterial
+import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.Camera
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.math.Color
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.materials.ReflectiveMaterial
-import kaloffl.spath.math.Attenuation
 
 object Mirrored {
 
   def main(args: Array[String]): Unit = {
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
@@ -52,8 +51,12 @@ object Mirrored {
 
     val lowCamera = new Camera(Vec3d(0, 2.5, 10), Vec3d.BACK, Vec3d.UP, 0.03f, 10);
 
-    val colorfulScene = new Scene(coloredSpheres, lowCamera, matAir, matBlackDiffuse)
+    val colorfulScene = new Scene(
+        root = coloredSpheres, 
+        camera = lowCamera, 
+        airMedium = matAir, 
+        skyMaterial = matBlackDiffuse)
 
-    pathTracer.render(display, colorfulScene, bounces = 80)
+    RenderEngine.render(target = display, scene = colorfulScene, bounces = 80)
   }
 }

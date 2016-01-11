@@ -1,28 +1,25 @@
 package kaloffl.spath.examples
 
+import kaloffl.spath.Display
+import kaloffl.spath.RenderEngine
+import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Color
+import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.PathTracer
-import java.util.function.DoubleSupplier
-import kaloffl.spath.Display
-import kaloffl.spath.math.Color
-import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.structure.FlatObject
-import kaloffl.spath.math.Attenuation
+import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.shapes.Triangle
+import kaloffl.spath.scene.structure.FlatObject
+import kaloffl.spath.scene.structure.SceneNode
 
 object CornellBox {
 
   def main(args: Array[String]): Unit = {
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val cornellCam = new Camera(Vec3d(278, 273, -800), Vec3d.FRONT, Vec3d.UP, 0.0f, 13.0f)
 
@@ -103,8 +100,16 @@ object CornellBox {
         new AABB(Vec3d(roomWidth, 0, 0), Vec3d(roomWidth + 1, roomHeight, roomDepth)),
         cmatRed)))
 
-    val cornellScene = new Scene(cornellBox, cornellCam, matAir, matBlackDiffuse)
+    val cornellScene = new Scene(
+        root = cornellBox, 
+        camera = cornellCam, 
+        airMedium = matAir, 
+        skyMaterial = matBlackDiffuse)
 
-    pathTracer.render(display, cornellScene, passes = 60000, bounces = 12)
+    RenderEngine.render(
+        target = display, 
+        scene = cornellScene, 
+        passes = 60000, 
+        bounces = 12)
   }
 }

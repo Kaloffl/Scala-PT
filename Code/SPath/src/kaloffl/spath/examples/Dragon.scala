@@ -1,7 +1,7 @@
 package kaloffl.spath.examples
 
 import kaloffl.spath.Display
-import kaloffl.spath.PathTracer
+import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
 import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
@@ -10,17 +10,16 @@ import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.materials.ReflectiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.materials.ReflectiveMaterial
 import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.structure.SceneNode
 
 object Dragon {
 
   def main(args: Array[String]): Unit = {
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.0, 1.0)
     val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
@@ -61,8 +60,12 @@ object Dragon {
     val dragonTop = dragonForward.cross(dragonSide.normalize).normalize
     val dragonCam = new Camera(camPos, dragonForward.normalize, dragonTop, 0.1, dragonForward.length)
 
-    val dragonScene = new Scene(objects, dragonCam, matAir, matSky)
+    val dragonScene = new Scene(
+        root = objects, 
+        camera = dragonCam, 
+        airMedium = matAir, 
+        skyMaterial = matSky)
 
-    pathTracer.render(display, dragonScene, bounces = 12)
+    RenderEngine.render(target = display, scene = dragonScene, bounces = 12)
   }
 }

@@ -1,7 +1,7 @@
 package kaloffl.spath.examples
 
 import kaloffl.spath.Display
-import kaloffl.spath.PathTracer
+import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
 import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
@@ -18,7 +18,6 @@ object Bunny {
 
   def main(args: Array[String]): Unit = {
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1)
     val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
@@ -35,8 +34,12 @@ object Bunny {
     val bunnyTop = bunnyForward.cross(Vec3d.RIGHT).normalize
     val bunnyCam = new Camera(Vec3d(0, 4.5, 9), bunnyForward.normalize, bunnyTop, 0.2, bunnyForward.length)
 
-    val bunnyScene = new Scene(SceneNode(Array(floor, bunny)), bunnyCam, matAir, matSky)
+    val bunnyScene = new Scene(
+        root = SceneNode(Array(floor, bunny)), 
+        camera = bunnyCam, 
+        airMedium = matAir, 
+        skyMaterial = matSky)
 
-    pathTracer.render(display, bunnyScene, bounces = 12)
+    RenderEngine.render(target = display, scene = bunnyScene, bounces = 12)
   }
 }

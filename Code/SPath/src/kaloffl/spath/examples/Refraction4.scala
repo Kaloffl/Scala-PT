@@ -1,21 +1,22 @@
 package kaloffl.spath.examples
 
+import java.util.concurrent.ThreadLocalRandom
+import java.util.function.DoubleSupplier
+
 import kaloffl.spath.Display
-import kaloffl.spath.PathTracer
+import kaloffl.spath.RenderEngine
+import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
+import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
-import java.util.function.DoubleSupplier
-import java.util.concurrent.ThreadLocalRandom
-import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.math.Attenuation
-import kaloffl.spath.math.Vec2d
+import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.shapes.AABB
+import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.structure.SceneNode
 
 object Refraction4 {
   def main(args: Array[String]): Unit = {
@@ -24,7 +25,6 @@ object Refraction4 {
     }
 
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
@@ -66,8 +66,12 @@ object Refraction4 {
     val up = front.cross(Vec3d.LEFT).normalize
     val camera = new Camera(Vec3d(0, 14, -14), front.normalize, up, 0.0, 3)
 
-    val glassScene = new Scene(SceneNode(environment ++ objects), camera, matAir, matBlackDiffuse)
+    val glassScene = new Scene(
+        root = SceneNode(environment ++ objects), 
+        camera = camera, 
+        airMedium = matAir, 
+        skyMaterial = matBlackDiffuse)
 
-    pathTracer.render(display, glassScene, bounces = 12)
+    RenderEngine.render(target = display, scene = glassScene, bounces = 12)
   }
 }

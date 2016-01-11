@@ -1,8 +1,8 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.scene.Scene
 import kaloffl.spath.Display
-import kaloffl.spath.PathTracer
+import kaloffl.spath.RenderEngine
+import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.materials.TransparentMaterial
@@ -23,7 +23,6 @@ object EstimatedShapes {
 
   def main(args: Array[String]): Unit = {
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val matPaper = new TransparentMaterial(Color(0.01f, 0.01f, 0.01f), 10, 500, 1.557, 0.01)
 
@@ -80,8 +79,12 @@ object EstimatedShapes {
     val up = Vec3d.LEFT.cross(front)
     val camera = new Camera(Vec3d(0, 1.5, 2.5), front, up, 0.015, 3)
 
-    val glassScene = new Scene(glassTest, camera, matAir, matBlackDiffuse)
+    val glassScene = new Scene(
+        root = glassTest, 
+        camera = camera, 
+        airMedium = matAir, 
+        skyMaterial = matBlackDiffuse)
 
-    pathTracer.render(display, glassScene, bounces = 4)
+    RenderEngine.render(target = display, scene = glassScene, bounces = 4)
   }
 }

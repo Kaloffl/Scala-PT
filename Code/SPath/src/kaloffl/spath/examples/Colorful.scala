@@ -1,26 +1,24 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.PathTracer
 import kaloffl.spath.Display
-import kaloffl.spath.scene.Camera
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.RenderEngine
+import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
-import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.shapes.AABB
+import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.FlatObject
-import kaloffl.spath.scene.shapes.Shape
-import kaloffl.spath.math.Attenuation
+import kaloffl.spath.scene.structure.SceneNode
 
 object Colorful {
 
   def main(args: Array[String]): Unit = {
     val display = new Display(1280, 720)
-    val pathTracer = new PathTracer
 
     val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
     val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
@@ -73,10 +71,14 @@ object Colorful {
         AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)),
         matWhiteDiffuse)))
 
-    val lowCamera = new Camera(Vec3d(0, 2.5, 13), Vec3d.BACK, Vec3d.UP, 0.0f, 13);
+    val lowCamera = new Camera(Vec3d(0, 2.5, 13), Vec3d.BACK, Vec3d.UP, 0f, 13)
 
-    val colorfulScene = new Scene(coloredSpheres, lowCamera, matAir, matBlackDiffuse)
+    val colorfulScene = new Scene(
+        root = coloredSpheres, 
+        camera = lowCamera, 
+        airMedium = matAir, 
+        skyMaterial = matBlackDiffuse)
 
-    pathTracer.render(display, colorfulScene, bounces = 6)
+    RenderEngine.render(target = display, scene = colorfulScene, bounces = 6)
   }
 }
