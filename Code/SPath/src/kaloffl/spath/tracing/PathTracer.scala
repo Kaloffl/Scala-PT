@@ -25,11 +25,13 @@ class PathTracer(val scene: Scene) extends Tracer {
 
     while (i < maxBounces) {
       // russian roulett ray termination
-      val survivability = Math.min(1, Math.max(color.r2, Math.max(color.g2, color.b2)) * (maxBounces - i))
-      if (context.random.getAsDouble > survivability) {
-        return Color.BLACK
-      } else {
-        color /= survivability
+      val survivability = Math.max(color.r2, Math.max(color.g2, color.b2)) * (maxBounces - i)
+      if (survivability < 1) {
+        if (context.random.getAsDouble > survivability) {
+          return Color.BLACK
+        } else {
+          color /= survivability
+        }
       }
 
       // First we determine the distance it will take the ray to hit an air 

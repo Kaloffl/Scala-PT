@@ -15,11 +15,11 @@ class JfxDisplay(
     override val width: Int,
     override val height: Int) extends RenderTarget {
 
-  override def setPixel(x: Int, y: Int, color: Int) = {
+  override def setPixel(x: Int, y: Int, color: Int) {
     ActualDisplay.instance.backBuffer.getPixelWriter.setArgb(x, y, color)
   }
 
-  override def update = {
+  override def commit {
     Platform.runLater(new Runnable{
       override def run {
         ActualDisplay.instance.view.setImage(ActualDisplay.instance.backBuffer)

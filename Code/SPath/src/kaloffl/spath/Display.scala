@@ -39,7 +39,7 @@ class Display(override val width: Int, override val height: Int) extends RenderT
   /**
    * Displays the current image to the screen
    */
-  def update: Unit = {
+  override def commit: Unit = {
     val graphicsContext = strategy.getDrawGraphics
 
     graphicsContext.drawImage(buffer, 0, 0, null)

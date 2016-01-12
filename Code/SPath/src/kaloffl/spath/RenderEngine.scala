@@ -1,13 +1,14 @@
 package kaloffl.spath
 
-import java.util.Arrays
 import java.util.concurrent.ThreadLocalRandom
-import java.util.function.Consumer
+import java.util.function.DoubleSupplier
+
+import scala.util.Sorting
+
+import kaloffl.jobs.Job
+import kaloffl.jobs.JobPool
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.tracing.TracingWorker
-import java.util.function.DoubleSupplier
-import kaloffl.jobs.JobPool
-import kaloffl.jobs.Job
 
 /**
  * The Engine that can render an image of a given scene. This object handles
@@ -24,7 +25,7 @@ object RenderEngine {
   // wait on the last one. By having more chunks, workers that finish faster can
   // work on more chunks than the slow workers.
   val processors = Runtime.getRuntime.availableProcessors
-  val numberOfWorkers = if (1 == processors) 1 else  processors * processors * 4
+  val numberOfWorkers = if (1 == processors) 1 else processors * processors * 4
   val rows = Math.sqrt(numberOfWorkers).toInt
   val cols = numberOfWorkers / rows
 
@@ -62,22 +63,36 @@ object RenderEngine {
 
     var pass = 0
     val pool = new JobPool
+    val order = Array.tabulate(numberOfWorkers)(i ⇒ i)
+    val costs = new Array[Long](numberOfWorkers)
     while (pass < passes && tracingWorkers.exists(!_.done)) {
       println("Starting pass #" + pass)
 
       val before = System.nanoTime
-      tracingWorkers.foreach { worker ⇒
+      for (i ← 0 until numberOfWorkers) {
+        val worker = tracingWorkers(order(i))
         if (!worker.done) {
           pool.submit(new Job {
-            def canExecute = true
-            def execute = {
+            override def execute = {
+              val start = System.nanoTime
               worker.render(bounces, pass, target)
               worker.draw(target)
+              costs(order(i)) += System.nanoTime - start
             }
           })
         }
       }
       pool.execute
+
+      // A small optimization: we sort the parts that will take the longest to
+      // the front so that they will be done first. That way we have the small
+      // parts left to easily fill time for threads that are done early.
+      // This way we get the best saturation for all working threads.
+      if (pass == 10) {
+        // On the tenth pass the numbers should have stabilized enough to 
+        // determine which parts are the most expensive and should be done first
+        Sorting.stableSort(order, (o1: Int, o2: Int) ⇒ costs(o1) > costs(o2))
+      }
 
       val after = System.nanoTime
       val duration = after - before
@@ -87,9 +102,10 @@ object RenderEngine {
         println("rendertime: " + Math.floor(duration / 10000.0) / 100.0 + "ms")
       }
 
-      // After each rendering pass, the result is displayed to the user so he 
-      // can see the progress.
-      target.update
+      // After each rendering pass, the workers will have written their results
+      // into the target and all that's left is calling commit to signal that 
+      // the pass is done.
+      target.commit
       pass += 1;
     }
   }

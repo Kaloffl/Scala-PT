@@ -71,8 +71,6 @@ class SplittingJob[T <: Enclosable with Intersectable](
     consumer: BvhNode[T] ⇒ Unit,
     level: Int) extends Job {
 
-  override def canExecute = true
-
   override def execute: Unit = {
     // If the array is small enough we create a leaf and return
     if (objects.length <= Bvh.MAX_LEAF_SIZE) {

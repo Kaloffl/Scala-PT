@@ -22,12 +22,15 @@ class CountLatch(initialValue: Int) {
   def getCount = counter.get
 
   def await: Unit = {
-    // TODO I think this list concatenation is not save and should be synchronized
-    waiting = Thread.currentThread() +: waiting
+    counter.synchronized {
+      waiting = Thread.currentThread() +: waiting
+    }
     while (0 != counter.get) {
       LockSupport.park
     }
-    waiting = Seq[Thread]()
+    counter.synchronized {
+      waiting = Seq[Thread]()
+    }
   }
 
   def wakeThreads: Unit = {
