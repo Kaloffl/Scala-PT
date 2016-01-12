@@ -4,9 +4,6 @@ import java.util.Arrays
 import java.util.Comparator
 import scala.reflect.ClassTag
 
-/**
- * @author Lars
- */
 class SubArray[T](
     val array: Array[T],
     val from: Int,
@@ -17,6 +14,11 @@ class SubArray[T](
   def slice(from: Int, until: Int): SubArray[T] = {
     new SubArray(array, this.from + from, this.from + until)
   }
+
+  def after(i: Int) = new SubArray(array, i + 1, until)
+  def startingAt(i: Int) = new SubArray(array, i, until)
+  def before(i: Int) = new SubArray(array, from, i)
+  def endingWith(i: Int) = new SubArray(array, from, i + 1)
 
   def map[R: ClassTag](f: T ⇒ R): SubArray[R] = {
     val length = this.length

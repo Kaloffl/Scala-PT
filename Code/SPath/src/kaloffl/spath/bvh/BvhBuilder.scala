@@ -22,34 +22,26 @@ object BvhBuilder {
    * around the children.
    */
   def buildBvh(objects: Array[Shape], material: Material): ShapeBvh = {
-    println("Building a BVH for " + objects.length + " objects.")
-    val start = System.nanoTime
-
-    val pool = new JobPool
-
-    var root: BvhNode[Shape] = null
-    pool.submit(new SplittingJob[Shape](pool, new SubArray(objects), root = _, 0))
-    pool.execute
-
-    val duration = System.nanoTime - start
-
-    println("Done.")
-    if (duration > 1000000000) {
-      println("buildtime: " + Math.floor(duration / 10000000.0) / 100.0 + "s")
-    } else {
-      println("buildtime: " + Math.floor(duration / 10000.0) / 100.0 + "ms")
-    }
-    return new ShapeBvh(root, material);
+    return new ShapeBvh(buildTree(objects), material);
   }
-  
+
   def buildBvh(objects: Array[SceneNode]): ObjectBvh = {
+    return new ObjectBvh(buildTree(objects));
+  }
+
+  def buildTree[T <: Enclosable with Intersectable](objects: Array[T]): BvhNode[T] = {
     println("Building a BVH for " + objects.length + " objects.")
     val start = System.nanoTime
 
     val pool = new JobPool
 
-    var root: BvhNode[SceneNode] = null
-    pool.submit(new SplittingJob[SceneNode](pool, new SubArray(objects), root = _, 0))
+    var root: BvhNode[T] = null
+    pool.submit(
+      new SplittingJob[T](
+        jobPool = pool,
+        objects = new SubArray(objects),
+        consumer = { root = _ },
+        level = 0))
     pool.execute
 
     val duration = System.nanoTime - start
@@ -60,9 +52,8 @@ object BvhBuilder {
     } else {
       println("buildtime: " + Math.floor(duration / 10000.0) / 100.0 + "ms")
     }
-    return new ObjectBvh(root);
+    return root
   }
-  
 }
 
 class SplittingJob[T <: Enclosable with Intersectable](
@@ -144,8 +135,8 @@ class SplittingJob[T <: Enclosable with Intersectable](
       }
     }
 
-    val objectsA = objects.slice(0, splittingIndex + 1)
-    val objectsB = objects.slice(splittingIndex + 1, objects.length)
+    val objectsA = objects.endingWith(splittingIndex)
+    val objectsB = objects.after(splittingIndex)
 
     val merge = new MergeJob(level, consumer)
 
@@ -165,7 +156,7 @@ class MergeJob[T <: Intersectable](level: Int, consumer: BvhNode[T] ⇒ Unit) ex
 
   override def execute: Unit = {
     val children = Array(left, right)
-    val bb = AABB.enclosing[BvhNode[T]](children, _.hull) 
+    val bb = AABB.enclosing[BvhNode[T]](children, _.hull)
 
     // Every two levels we collapse the previous level into the current one to
     // create a 4-way tree instead of a binary one.
