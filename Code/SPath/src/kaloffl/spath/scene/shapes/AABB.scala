@@ -15,26 +15,17 @@ object AABB {
     new AABB(center - size / 2, center + size / 2)
   }
 
-  def enclosing[T](objects: Array[T], unbox: T ⇒ AABB): AABB = {
-    var i = 0
-    var minX = Double.MaxValue
-    var minY = Double.MaxValue
-    var minZ = Double.MaxValue
-    var maxX = Double.MinValue
-    var maxY = Double.MinValue
-    var maxZ = Double.MinValue
+  def enclosing[T](objects: Array[T], enclose: T ⇒ AABB): AABB = {
+    if(0 == objects.length) return new AABB(Vec3d.ORIGIN, Vec3d.ORIGIN)
+    var min = enclose(objects(0)).min
+    var max = enclose(objects(0)).max
+    var i = 1
     while (i < objects.length) {
-      val objBB = unbox(objects(i))
-      minX = Math.min(minX, objBB.min.x)
-      minY = Math.min(minY, objBB.min.y)
-      minZ = Math.min(minZ, objBB.min.z)
-      maxX = Math.max(maxX, objBB.max.x)
-      maxY = Math.max(maxY, objBB.max.y)
-      maxZ = Math.max(maxZ, objBB.max.z)
+      val objBB = enclose(objects(i))
+      min = min.min(objBB.min)
+      max = max.max(objBB.max)
       i += 1
     }
-    val min = Vec3d(minX, minY, minZ)
-    val max = Vec3d(maxX, maxY, maxZ)
     return new AABB(min, max)
   }
 }
@@ -62,7 +53,7 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
     if (minDst == dist1.z) return Vec3d.FRONT;
     if (minDst == dist2.z) return Vec3d.BACK;
     throw new RuntimeException(
-      "Could not determine AABB normal for point: " + point + ". AABB bounds are max: " + max + ", min: " + min + ".")
+      s"Could not determine AABB normal for point: $point. AABB bounds are max: $max, min: $min.")
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {
@@ -92,16 +83,32 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
     return tmin
   }
 
+  /**
+   * Returns a new AABB that exactly encloses this and the given AABB
+   */
   def enclose(other: AABB): AABB = {
-    val sharedMin = Vec3d(
-      Math.min(min.x, other.min.x),
-      Math.min(min.y, other.min.y),
-      Math.min(min.z, other.min.z))
-    val sharedMax = Vec3d(
-      Math.max(max.x, other.max.x),
-      Math.max(max.y, other.max.y),
-      Math.max(max.z, other.max.z))
-    return new AABB(sharedMin, sharedMax)
+    return new AABB(min.min(other.min), max.max(other.max))
+  }
+
+  /**
+   * Returns the overlapping space of two AABBs. If they don't overlap, an AABB
+   * with no size positioned at the origin vector is returned. If performance 
+   * wasn't such an issue, this method would return an Option[AABB].
+   */
+  def overlap(other: AABB): AABB = {
+    val x1 = Math.max(min.x, other.min.x)
+    val y1 = Math.max(min.y, other.min.y)
+    val z1 = Math.max(min.z, other.min.z)
+
+    val x2 = Math.min(max.x, other.max.x)
+    val y2 = Math.min(max.y, other.max.y)
+    val z2 = Math.min(max.z, other.max.z)
+
+    if (x1 < x2 && y1 < y2 && z1 < z2) {
+      new AABB(Vec3d(x1, y2, z2), Vec3d(x2, y2, z2))
+    } else {
+      new AABB(Vec3d.ORIGIN, Vec3d.ORIGIN)
+    }
   }
 
   def surfaceArea: Double = {
@@ -110,7 +117,9 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
   }
 
   def contains(v: Vec3d): Boolean = {
-    return min.x <= v.x && v.x <= max.x && min.y <= v.y && v.y <= max.y && min.z <= v.z && v.z <= max.z
+    return min.x <= v.x && v.x <= max.x && 
+           min.y <= v.y && v.y <= max.y && 
+           min.z <= v.z && v.z <= max.z
   }
 
   override def enclosingAABB: AABB = this

@@ -36,6 +36,36 @@ case class Vec3d(val x: Double, val y: Double, val z: Double) {
   def max = Math.max(x, Math.max(y, z))
   def abs = Vec3d(Math.abs(x), Math.abs(y), Math.abs(z))
 
+  /**
+   * Calculates a Vector with the smallest x, y and z values of both vectors.
+   * If one of the two vectors has all three of the smallest values it will
+   * be returned and no new instance needs to be created.
+   */
+  def min(v: Vec3d): Vec3d = {
+    if (x <= v.x && y <= v.y && z <= v.z) {
+      return this
+    }
+    if (x > v.x && y > v.y && z > v.z) {
+      return v
+    }
+    return Vec3d(Math.min(x, v.x), Math.min(y, v.y), Math.min(z, v.z))
+  }
+
+  /**
+   * Calculates a Vector with the largest x, y and z values of both vectors.
+   * If one of the two vectors has all three of the largest values it will
+   * be returned and no new instance needs to be created.
+   */
+  def max(v: Vec3d): Vec3d = {
+    if (x >= v.x && y >= v.y && z >= v.z) {
+      return this
+    }
+    if (x < v.x && y < v.y && z < v.z) {
+      return v
+    }
+    return Vec3d(Math.max(x, v.x), Math.max(y, v.y), Math.max(z, v.z))
+  }
+
   def pow(v: Vec3d): Vec3d = {
     Vec3d(Math.pow(x, v.x), Math.pow(y, v.y), Math.pow(z, v.z))
   }

@@ -55,8 +55,8 @@ object RenderEngine {
     for (i ← 0 until numberOfWorkers) {
       val x = i % cols * width
       val y = i / cols * height
-      val w = if (x + 1 == cols) target.width - x else width
-      val h = if (y + 1 == rows) target.height - y else height
+      val w = if ((i + 1) % cols == 0) target.width - x else width
+      val h = if (i >= cols * (rows - 1)) target.height - y else height
       tracingWorkers(i) = new TracingWorker(x, y, w, h, scene, random)
     }
 

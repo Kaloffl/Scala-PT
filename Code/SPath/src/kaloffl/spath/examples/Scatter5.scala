@@ -21,7 +21,7 @@ import kaloffl.spath.scene.structure.SceneNode
 
 object Scatter5 {
   def main(args: Array[String]): Unit = {
-    val display = new Display(1280, 720)
+    val display = new Display(700, 700)
 
     val matPaper = new TransparentMaterial(Color(0.01f, 0.01f, 0.01f), 10, 500, 1.557, 0.01)
 

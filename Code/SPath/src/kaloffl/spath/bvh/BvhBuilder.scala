@@ -103,19 +103,18 @@ class SplittingJob[T <: Enclosable with Intersectable](
         objects.sort(orderings(orderingIndex))
       }
 
-      // first calculate the surface areas from the back to the front
-      val rightSurfaceAreas = new Array[Double](objects.length);
+      // first calculate the enclosing AABBs from the back to the front
+      val backToFront = new Array[AABB](objects.length);
       {
-        var i = objects.length - 1
-        var accumulator = objects(i).enclosingAABB
+        var i = objects.length - 2
+        backToFront(i + 1) = objects(i + 1).enclosingAABB
         val end = 0
         while (i > end) {
-          accumulator = accumulator.enclose(objects(i).enclosingAABB)
-          rightSurfaceAreas(i) = accumulator.surfaceArea
+          backToFront(i) = backToFront(i + 1).enclose(objects(i).enclosingAABB)
           i -= 1
         }
       }
-      // then iterate from the front to the back, calculate the surface area 
+      // then iterate from the front to the back, calculate the surface areas 
       // on the fly and compare the score to find the best splitting point
       {
         var i = 0
@@ -124,8 +123,9 @@ class SplittingJob[T <: Enclosable with Intersectable](
         while (i < end) {
           accumulator = accumulator.enclose(objects(i).enclosingAABB)
           val scoreA = accumulator.surfaceArea * i
-          val scoreB = rightSurfaceAreas(i + 1) * (end - i)
-          val score = scoreA + scoreB
+          val scoreB = backToFront(i + 1).surfaceArea * (end - i)
+          val scoreC = accumulator.overlap(backToFront(i + 1)).surfaceArea
+          val score = scoreA + scoreB + scoreC
           if (score < lowestCost) {
             lowestCost = score
             splittingIndex = i

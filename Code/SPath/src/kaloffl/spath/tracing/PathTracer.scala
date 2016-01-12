@@ -20,7 +20,7 @@ class PathTracer(val scene: Scene) extends Tracer {
 
     // list of materials in which the rays entered
     var mediaIndex = 0
-    val media = new Array[Material](maxBounces)
+    val media = new Array[Material](maxBounces + 1)
     media(0) = startMedium
 
     while (i < maxBounces) {
@@ -41,14 +41,14 @@ class PathTracer(val scene: Scene) extends Tracer {
       // Now try to find an object in the scene that is closer than the determined 
       // scatter depth. If none is found and the scatter depth is not infinity, 
       // the ray will be scattered.
-      val intersection = scene.getIntersection(ray, scatterDist)
+      // The added epsilon value will help prevent rays scattering close to a 
+      // surface and no properly intersecting with it afterwards.
+      val intersection = scene.getIntersection(ray, scatterDist + 0.0001)
       if (!intersection.hitObject) {
         // if no object was hit, the ray will either scatter or hit the sky. At 
         // the moment the sky will only really work if the air is clear and the 
         // scatter probability is 0.
         if (java.lang.Double.isInfinite(scatterDist)) {
-          // FIXME Rays hitting the corner of a room and then not hitting the wall 
-          // because they are too close are escaping the scene.
           val dist = scene.skyDistance
           val point = ray.atDistance(dist)
           val emitted = scene.skyMaterial.getEmittance(
