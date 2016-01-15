@@ -19,7 +19,6 @@ import kaloffl.spath.scene.structure.SceneNode
 object Dragon {
 
   def main(args: Array[String]): Unit = {
-    val display = new Display(1280, 720)
 
     val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.0, 1.0)
     val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
@@ -36,9 +35,7 @@ object Dragon {
       PlyImporter.load("D:/temp/dragon.ply", Vec3d(40), Vec3d(0.5, -2, 0)),
       matYellowMetal)
 
-    val floor = SceneNode(
-      AABB(Vec3d(0, -0.5, 0), Vec3d(16, 1, 16)),
-      matFloor)
+    val floor = SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(16, 1, 16)), matFloor)
 
     val objects = SceneNode(Array(
       dragon,
@@ -58,14 +55,19 @@ object Dragon {
     val dragonForward = dragonHead - camPos
     val dragonSide = Vec3d(dragonForward.z, 0, -dragonForward.x)
     val dragonTop = dragonForward.cross(dragonSide.normalize).normalize
-    val dragonCam = new Camera(camPos, dragonForward.normalize, dragonTop, 0.1, dragonForward.length)
 
-    val dragonScene = new Scene(
-        root = objects, 
-        camera = dragonCam, 
-        airMedium = matAir, 
-        skyMaterial = matSky)
-
-    RenderEngine.render(target = display, scene = dragonScene, bounces = 12)
+    RenderEngine.render(
+      bounces = 12,
+      target = new Display(1280, 720),
+      scene = new Scene(
+        airMedium = matAir,
+        skyMaterial = matSky,
+        root = objects,
+        camera = new Camera(
+          position = camPos,
+          forward = dragonForward.normalize,
+          up = dragonTop,
+          aperture = 0.1,
+          focalLength = dragonForward.length)))
   }
 }

@@ -20,9 +20,6 @@ import kaloffl.spath.scene.structure.SceneNode
 object Outdoor {
 
   def main(args: Array[String]): Unit = {
-    val display = new Display(1280, 720)
-
-    val lowCamera = new Camera(Vec3d(0, 2.5, 13), Vec3d.BACK, Vec3d.UP, 0.0f, 13);
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
@@ -30,38 +27,33 @@ object Outdoor {
     val checkeredMask = new CheckeredMask(2)
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matWhiteLight = new LightMaterial(Color.WHITE * 2, Attenuation.radius(1))
+    val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.radius(1))
     val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.001, 1.0)
+    val matSky = new DirectionalLightMaterial(Color.White * 0.125f, Vec3d.Down, 1)
 
     val outdoor = SceneNode(Array(
       SceneNode(
         AABB(Vec3d(0, -0.25, 0), Vec3d(10, 0.5, 10)),
         matBlackWhiteCheckered),
 
-      SceneNode(
-        new Sphere(Vec3d(3, 1, -3), 1),
-        matWhiteDiffuse),
-      SceneNode(
-        new Sphere(Vec3d(3, 1, 3), 1),
-        matWhiteDiffuse),
+      SceneNode(new Sphere(Vec3d(3, 1, -3), 1), matWhiteDiffuse),
+      SceneNode(new Sphere(Vec3d(3, 1, 3), 1), matWhiteDiffuse),
 
-      SceneNode(
-        new Sphere(Vec3d(0, 2, 0), 1),
-        matWhiteLight),
+      SceneNode(new Sphere(Vec3d(0, 2, 0), 1), matWhiteLight),
 
-      SceneNode(
-        new Sphere(Vec3d(-3, 1, -3), 1),
-        matWhiteDiffuse),
-      SceneNode(
-        new Sphere(Vec3d(-3, 1, 3), 1),
-        matWhiteDiffuse)))
+      SceneNode(new Sphere(Vec3d(-3, 1, -3), 1), matWhiteDiffuse),
+      SceneNode(new Sphere(Vec3d(-3, 1, 3), 1), matWhiteDiffuse)))
 
-    val outdoorScene = new Scene(
-        root = outdoor, 
-        camera = lowCamera, 
-        airMedium = matAir, 
-        skyMaterial = new DirectionalLightMaterial(Color.WHITE * 0.125f, Vec3d.DOWN, 1))
-
-    RenderEngine.render(target = display, scene = outdoorScene, bounces = 12)
+    RenderEngine.render(
+      bounces = 12,
+      target = new Display(1280, 720),
+      scene = new Scene(
+        root = outdoor,
+        airMedium = matAir,
+        skyMaterial = matSky,
+        camera = new Camera(
+          position = Vec3d(0, 2.5, 13),
+          forward = Vec3d.Back,
+          up = Vec3d.Up)))
   }
 }

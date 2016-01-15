@@ -8,7 +8,7 @@ import kaloffl.spath.scene.SurfaceInfo
 
 class Material(reflectance: Color, scatterFunction: ScatterFunction) {
 
-  def minEmittance: Color = Color.BLACK
+  def minEmittance: Color = Color.Black
 
   def absorbtionCoefficient: Double = 0.0
   def scatterPropability: Double = 0.0
@@ -16,13 +16,13 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
   def refractivityIndex: Double = 1.0
 
   def getAbsorbtion(worldPos: Vec3d,
-                    context: Context): Color = Color.BLACK
+                    context: Context): Color = Color.Black
 
   def getEmittance(worldPos: Vec3d,
                    surfaceNormal: Vec3d,
                    incomingNormal: Vec3d,
                    depth: Double,
-                   context: Context): Color = Color.BLACK
+                   context: Context): Color = Color.Black
 
   def getInfo(worldPos: Vec3d,
               surfaceNormal: Vec3d,

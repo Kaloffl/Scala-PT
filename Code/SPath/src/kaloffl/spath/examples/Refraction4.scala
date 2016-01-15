@@ -24,35 +24,18 @@ object Refraction4 {
       override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
     }
 
-    val display = new Display(1280, 720)
-
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-
-    val matWhiteLight = new LightMaterial(Color.WHITE * 2, Attenuation.none)
-
-    val matAir = new TransparentMaterial(Color.WHITE, 0, 0.0, 1.0)
+    val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.none)
+    val matAir = new TransparentMaterial(Color.White, 0, 0.0, 1.0)
 
     val environment = Array(
-      SceneNode(
-        AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)),
-        matWhiteLight),
-
-      SceneNode(
-        AABB(Vec3d(0, -0.5, 0), Vec3d(32, 1, 32)),
-        matWhiteDiffuse),
-      SceneNode(
-        AABB(Vec3d(16.5f, 8, 0), Vec3d(1, 16, 32)),
-        matWhiteDiffuse),
-      SceneNode(
-        AABB(Vec3d(-16.5f, 8, 0), Vec3d(1, 16, 32)),
-        matWhiteDiffuse),
-      SceneNode(
-        AABB(Vec3d(0, 8, -16.5f), Vec3d(32, 16, 1)),
-        matWhiteDiffuse),
-      SceneNode(
-        AABB(Vec3d(0, 8, 16.5), Vec3d(32, 16, 1)),
-        matWhiteDiffuse))
+      SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),
+      SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(32, 1, 32)), matWhiteDiffuse),
+      SceneNode(AABB(Vec3d(16.5f, 8, 0), Vec3d(1, 16, 32)), matWhiteDiffuse),
+      SceneNode(AABB(Vec3d(-16.5f, 8, 0), Vec3d(1, 16, 32)), matWhiteDiffuse),
+      SceneNode(AABB(Vec3d(0, 8, -16.5f), Vec3d(32, 16, 1)), matWhiteDiffuse),
+      SceneNode(AABB(Vec3d(0, 8, 16.5), Vec3d(32, 16, 1)), matWhiteDiffuse))
 
     val minHeight = 1.0
     val maxHeight = 4.0
@@ -63,15 +46,18 @@ object Refraction4 {
     }).toArray
 
     val front = Vec3d(0, -11, 9)
-    val up = front.cross(Vec3d.LEFT).normalize
-    val camera = new Camera(Vec3d(0, 14, -14), front.normalize, up, 0.0, 3)
+    val up = front.cross(Vec3d.Left).normalize
 
-    val glassScene = new Scene(
-        root = SceneNode(environment ++ objects), 
-        camera = camera, 
-        airMedium = matAir, 
-        skyMaterial = matBlackDiffuse)
-
-    RenderEngine.render(target = display, scene = glassScene, bounces = 12)
+    RenderEngine.render(
+      bounces = 12,
+      target = new Display(1280, 720),
+      scene = new Scene(
+        root = SceneNode(environment ++ objects),
+        airMedium = matAir,
+        skyMaterial = matBlackDiffuse,
+        camera = new Camera(
+          position = Vec3d(0, 14, -14),
+          forward = front.normalize,
+          up = up)))
   }
 }

@@ -20,18 +20,17 @@ import kaloffl.spath.scene.structure.SceneNode
 object Refraction {
 
   def main(args: Array[String]): Unit = {
-    val display = new Display(1280, 720)
 
-    val matWhiteGlass0 = RefractiveMaterial(Color.WHITE, 1.0, 0.0)
-    val matWhiteGlass1 = RefractiveMaterial(Color.WHITE, 1.1, 0.0)
-    val matWhiteGlass2 = RefractiveMaterial(Color.WHITE, 1.2, 0.0)
-    val matWhiteGlass3 = RefractiveMaterial(Color.WHITE, 1.3, 0.0)
-    val matWhiteGlass4 = RefractiveMaterial(Color.WHITE, 1.4, 0.0)
-    val matWhiteGlass5 = RefractiveMaterial(Color.WHITE, 1.5, 0.0)
-    val matWhiteGlass6 = RefractiveMaterial(Color.WHITE, 1.6, 0.0)
-    val matWhiteGlass7 = RefractiveMaterial(Color.WHITE, 1.7, 0.0)
-    val matWhiteGlass8 = RefractiveMaterial(Color.WHITE, 1.8, 0.0)
-    val matWhiteGlass9 = RefractiveMaterial(Color.WHITE, 1.9, 0.0)
+    val matWhiteGlass0 = RefractiveMaterial(Color.White, 1.0, 0.0)
+    val matWhiteGlass1 = RefractiveMaterial(Color.White, 1.1, 0.0)
+    val matWhiteGlass2 = RefractiveMaterial(Color.White, 1.2, 0.0)
+    val matWhiteGlass3 = RefractiveMaterial(Color.White, 1.3, 0.0)
+    val matWhiteGlass4 = RefractiveMaterial(Color.White, 1.4, 0.0)
+    val matWhiteGlass5 = RefractiveMaterial(Color.White, 1.5, 0.0)
+    val matWhiteGlass6 = RefractiveMaterial(Color.White, 1.6, 0.0)
+    val matWhiteGlass7 = RefractiveMaterial(Color.White, 1.7, 0.0)
+    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8, 0.0)
+    val matWhiteGlass9 = RefractiveMaterial(Color.White, 1.9, 0.0)
 
     val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
     val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
@@ -39,106 +38,59 @@ object Refraction {
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.WHITE * 2, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.none)
 
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matAir = new TransparentMaterial(Color.BLACK, 0.1, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.Black, 0.1, 0.0, 1.0)
 
     val glassTest = SceneNode(Array(
-      SceneNode(
-        new Sphere(Vec3d(-9, 1, 0), 1),
-        matWhiteGlass0),
-      SceneNode(
-        new Sphere(Vec3d(-7, 1, 0), 1),
-        matWhiteGlass1),
-      SceneNode(
-        new Sphere(Vec3d(-5, 1, 0), 1),
-        matWhiteGlass2),
-      SceneNode(
-        new Sphere(Vec3d(-3, 1, 0), 1),
-        matWhiteGlass3),
-      SceneNode(
-        new Sphere(Vec3d(-1, 1, 0), 1),
-        matWhiteGlass4),
-      SceneNode(
-        new Sphere(Vec3d(1, 1, 0), 1),
-        matWhiteGlass5),
-      SceneNode(
-        new Sphere(Vec3d(3, 1, 0), 1),
-        matWhiteGlass6),
-      SceneNode(
-        new Sphere(Vec3d(5, 1, 0), 1),
-        matWhiteGlass7),
-      SceneNode(
-        new Sphere(Vec3d(7, 1, 0), 1),
-        matWhiteGlass8),
-      SceneNode(
-        new Sphere(Vec3d(9, 1, 0), 1),
-        matWhiteGlass9),
+      SceneNode(new Sphere(Vec3d(-9, 1, 0), 1), matWhiteGlass0),
+      SceneNode(new Sphere(Vec3d(-7, 1, 0), 1), matWhiteGlass1),
+      SceneNode(new Sphere(Vec3d(-5, 1, 0), 1), matWhiteGlass2),
+      SceneNode(new Sphere(Vec3d(-3, 1, 0), 1), matWhiteGlass3),
+      SceneNode(new Sphere(Vec3d(-1, 1, 0), 1), matWhiteGlass4),
+      SceneNode(new Sphere(Vec3d(1, 1, 0), 1), matWhiteGlass5),
+      SceneNode(new Sphere(Vec3d(3, 1, 0), 1), matWhiteGlass6),
+      SceneNode(new Sphere(Vec3d(5, 1, 0), 1), matWhiteGlass7),
+      SceneNode(new Sphere(Vec3d(7, 1, 0), 1), matWhiteGlass8),
+      SceneNode(new Sphere(Vec3d(9, 1, 0), 1), matWhiteGlass9),
 
-      SceneNode(
-        AABB(Vec3d(-9, 1, 4), Vec3d(1.5)),
-        matWhiteGlass0),
-      SceneNode(
-        AABB(Vec3d(-7, 1, 4), Vec3d(1.5)),
-        matWhiteGlass1),
-      SceneNode(
-        AABB(Vec3d(-5, 1, 4), Vec3d(1.5)),
-        matWhiteGlass2),
-      SceneNode(
-        AABB(Vec3d(-3, 1, 4), Vec3d(1.5)),
-        matWhiteGlass3),
-      SceneNode(
-        AABB(Vec3d(-1, 1, 4), Vec3d(1.5)),
-        matWhiteGlass4),
-      SceneNode(
-        AABB(Vec3d(1, 1, 4), Vec3d(1.5)),
-        matWhiteGlass5),
-      SceneNode(
-        AABB(Vec3d(3, 1, 4), Vec3d(1.5)),
-        matWhiteGlass6),
-      SceneNode(
-        AABB(Vec3d(5, 1, 4), Vec3d(1.5)),
-        matWhiteGlass7),
-      SceneNode(
-        AABB(Vec3d(7, 1, 4), Vec3d(1.5)),
-        matWhiteGlass8),
-      SceneNode(
-        AABB(Vec3d(9, 1, 4), Vec3d(1.5)),
-        matWhiteGlass9),
+      SceneNode(AABB(Vec3d(-9, 1, 4), Vec3d(1.5)), matWhiteGlass0),
+      SceneNode(AABB(Vec3d(-7, 1, 4), Vec3d(1.5)), matWhiteGlass1),
+      SceneNode(AABB(Vec3d(-5, 1, 4), Vec3d(1.5)), matWhiteGlass2),
+      SceneNode(AABB(Vec3d(-3, 1, 4), Vec3d(1.5)), matWhiteGlass3),
+      SceneNode(AABB(Vec3d(-1, 1, 4), Vec3d(1.5)), matWhiteGlass4),
+      SceneNode(AABB(Vec3d(1, 1, 4), Vec3d(1.5)), matWhiteGlass5),
+      SceneNode(AABB(Vec3d(3, 1, 4), Vec3d(1.5)), matWhiteGlass6),
+      SceneNode(AABB(Vec3d(5, 1, 4), Vec3d(1.5)), matWhiteGlass7),
+      SceneNode(AABB(Vec3d(7, 1, 4), Vec3d(1.5)), matWhiteGlass8),
+      SceneNode(AABB(Vec3d(9, 1, 4), Vec3d(1.5)), matWhiteGlass9),
 
-      SceneNode(
-        AABB(Vec3d(0, 8.5, 4), Vec3d(20, 1, 24)),
-        matWhiteLight),
+      SceneNode(AABB(Vec3d(0, 8.5, 4), Vec3d(20, 1, 24)), matWhiteLight),
 
-      SceneNode(
-        AABB(Vec3d(0, -0.5, 4), Vec3d(20, 1, 24)),
-        matBlackWhiteCheckered),
-      SceneNode(
-        AABB(Vec3d(10.5f, 4, 4), Vec3d(1, 8, 24)),
-        matRedDiffuse),
-      SceneNode(
-        AABB(Vec3d(-10.5f, 4, 4), Vec3d(1, 8, 24)),
-        matBlueDiffuse),
-      SceneNode(
-        AABB(Vec3d(0, 4, -8.5f), Vec3d(20, 8, 1)),
-        matGreenDiffuse),
-      SceneNode(
-        AABB(Vec3d(0, 4, 16.5), Vec3d(20, 8, 1)),
-        matWhiteDiffuse)))
+      SceneNode(AABB(Vec3d(0, -0.5, 4), Vec3d(20, 1, 24)), matBlackWhiteCheckered),
+      SceneNode(AABB(Vec3d(10.5f, 4, 4), Vec3d(1, 8, 24)), matRedDiffuse),
+      SceneNode(AABB(Vec3d(-10.5f, 4, 4), Vec3d(1, 8, 24)), matBlueDiffuse),
+      SceneNode(AABB(Vec3d(0, 4, -8.5f), Vec3d(20, 8, 1)), matGreenDiffuse),
+      SceneNode(AABB(Vec3d(0, 4, 16.5), Vec3d(20, 8, 1)), matWhiteDiffuse)))
 
     val front = Vec3d(0, -2.5, -13).normalize
-    val up = front.cross(Vec3d.RIGHT).normalize
-    val camera = new Camera(Vec3d(0, 5, 13), front, up, 0.1, Vec3d(0, -2.5, -13).length)
+    val up = front.cross(Vec3d.Right).normalize
 
-    val glassScene = new Scene(
-        root = glassTest, 
-        camera = camera, 
-        airMedium = matAir, 
-        skyMaterial = matBlackDiffuse)
-
-    RenderEngine.render(target = display, scene = glassScene, bounces = 12)
+    RenderEngine.render(
+      bounces = 12,
+      target = new Display(1280, 720),
+      scene = new Scene(
+        root = glassTest,
+        airMedium = matAir,
+        skyMaterial = matBlackDiffuse,
+        camera = new Camera(
+          position = Vec3d(0, 5, 13),
+          forward = front,
+          up = up,
+          aperture = 0.1,
+          focalLength = Vec3d(0, -2.5, -13).length)))
   }
 }

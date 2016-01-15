@@ -54,18 +54,18 @@ case class Vec2d(val x: Double, val y: Double) {
  * Useful standard vectors are predefined here.
  */
 object Vec2d {
-  val ORIGIN: Vec2d = Vec2d(0, 0)
-  val UNIT: Vec2d = Vec2d(1, 1)
-  val NEGATIVE: Vec2d = Vec2d(-1, -1)
+  val Origin: Vec2d = Vec2d(0, 0)
+  val Unit: Vec2d = Vec2d(1, 1)
+  val Negative: Vec2d = Vec2d(-1, -1)
 
-  val NORMAL = UNIT.normalize
+  val Normal = Unit.normalize
 
-  val LEFT: Vec2d = Vec2d(1, 0)
-  val RIGHT: Vec2d = Vec2d(-1, 0)
-  val UP: Vec2d = Vec2d(0, 1)
-  val DOWN: Vec2d = Vec2d(0, -1)
+  val Left: Vec2d = Vec2d(1, 0)
+  val Right: Vec2d = Vec2d(-1, 0)
+  val Up: Vec2d = Vec2d(0, 1)
+  val Down: Vec2d = Vec2d(0, -1)
 
-  def apply(): Vec2d = ORIGIN
+  def apply(): Vec2d = Origin
   def apply(d: Double): Vec2d = new Vec2d(d, d)
 
   def random(rng: DoubleSupplier): Vec2d = Vec2d(rng.getAsDouble, rng.getAsDouble)

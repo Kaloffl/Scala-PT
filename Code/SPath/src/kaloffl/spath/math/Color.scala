@@ -81,12 +81,12 @@ class Color(val r2: Float, val g2: Float, val b2: Float) {
 
 object Color {
 
-  val BLACK = Color(0, 0, 0)
-  val WHITE = Color(1, 1, 1)
+  val Black = Color(0, 0, 0)
+  val White = Color(1, 1, 1)
 
-  val RED = Color(1, 0, 0)
-  val GREEN = Color(0, 1, 0)
-  val BLUE = Color(0, 0, 1)
+  val Red = Color(1, 0, 0)
+  val Green = Color(0, 1, 0)
+  val Blue = Color(0, 0, 1)
 
   def apply(r: Float, g: Float, b: Float) = new Color(r * r, g * g, b * b)
   def apply(v: Vec3d) = new Color(v.x.toFloat, v.y.toFloat, v.z.toFloat)

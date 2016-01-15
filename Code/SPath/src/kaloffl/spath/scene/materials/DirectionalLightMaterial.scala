@@ -28,7 +28,7 @@ class DirectionalLightMaterial(
       if (1 == angle) {
         return color
       }
-      return Color.BLACK
+      return Color.Black
     }
     return color * (1 - (1 - angle) / (1 - limit))
   }
@@ -40,8 +40,8 @@ class DirectionalLightMaterial(
                        airRefractivityIndex: Double,
                        context: Context): SurfaceInfo = {
     return new SurfaceInfo(
-      Color.BLACK,
+      Color.Black,
       getEmittance(worldPos, surfaceNormal, incomingNormal, depth, context),
-      Vec3d.ORIGIN)
+      Vec3d.Origin)
   }
 }

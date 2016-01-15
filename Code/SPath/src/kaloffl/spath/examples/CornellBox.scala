@@ -19,12 +19,9 @@ import kaloffl.spath.scene.structure.SceneNode
 object CornellBox {
 
   def main(args: Array[String]): Unit = {
-    val display = new Display(1280, 720)
 
-    val cornellCam = new Camera(Vec3d(278, 273, -800), Vec3d.FRONT, Vec3d.UP, 0.0f, 13.0f)
-
-    val matAir = new TransparentMaterial(Color.BLACK, 0.0, 0.0, 1.0)
-    val matBlackDiffuse = DiffuseMaterial(Color.BLACK)
+    val matAir = new TransparentMaterial(Color.Black, 0.0, 0.0, 1.0)
+    val matBlackDiffuse = DiffuseMaterial(Color.Black)
     val cmatWhite = DiffuseMaterial(new Color(0.737f, 0.728f, 0.767f))
     val cmatRed = DiffuseMaterial(new Color(0.642f, 0.063f, 0.061f))
     val cmatGreen = DiffuseMaterial(new Color(0.159f, 0.373f, 0.101f))
@@ -100,16 +97,17 @@ object CornellBox {
         new AABB(Vec3d(roomWidth, 0, 0), Vec3d(roomWidth + 1, roomHeight, roomDepth)),
         cmatRed)))
 
-    val cornellScene = new Scene(
-        root = cornellBox, 
-        camera = cornellCam, 
-        airMedium = matAir, 
-        skyMaterial = matBlackDiffuse)
-
     RenderEngine.render(
-        target = display, 
-        scene = cornellScene, 
-        passes = 60000, 
-        bounces = 12)
+      passes = 60000,
+      bounces = 12,
+      target = new Display(1280, 720),
+      scene = new Scene(
+        root = cornellBox,
+        airMedium = matAir,
+        skyMaterial = matBlackDiffuse,
+        camera = new Camera(
+          position = Vec3d(278, 273, -800),
+          forward = Vec3d.Front,
+          up = Vec3d.Up)))
   }
 }

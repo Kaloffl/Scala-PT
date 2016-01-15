@@ -80,9 +80,9 @@ class TracingWorker(
       samples(sampleIndex + 1) += color.g2
       samples(sampleIndex + 2) += color.b2
     }
-    if (difference / maxIndex < 1 / 255f) {
-      done = true
-    }
+//    if (difference / maxIndex < 1 / 255f) {
+//      done = true
+//    }
   }
 
   /**

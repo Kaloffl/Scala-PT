@@ -15,18 +15,14 @@ import kaloffl.spath.scene.materials.RefractiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.structure.FlatObject
 import kaloffl.spath.scene.structure.SceneNode
 
 object Haze {
 
   def main(args: Array[String]): Unit = {
 
-    val display = new Display(1280, 720)
-
     val front = Vec3d(0, -2.5, -13).normalize
-    val up = front.cross(Vec3d.RIGHT).normalize
-    val camera = new Camera(Vec3d(0, 5, 13), front, up, 0.1, Vec3d(0, -2.5, -13).length)
+    val up = front.cross(Vec3d.Right).normalize
 
     val matCyanDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.9f))
     val matPinkDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
@@ -36,42 +32,33 @@ object Haze {
     val checkeredMask = new CheckeredMask(2)
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matWhiteGlass8 = RefractiveMaterial(Color.WHITE, 1.8, 0.0)
+    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8, 0.0)
     val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.001, 1.0)
-
-    val light = new FlatObject(
-      new Sphere(Vec3d(0, 4, 0), 1),
-      new LightMaterial(Color(1, 0.9f, 0.8f) * 2, Attenuation.radius(1)))
+    val matLight = new LightMaterial(Color(1, 0.9f, 0.8f) * 2, Attenuation.radius(1))
 
     val hazeObjects = SceneNode(Array(
+      SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matWhiteGlass8),
+      SceneNode(new Sphere(Vec3d(-2.5f, 2.0f, -5.0f), 2.0f), matCyanDiffuse),
+      SceneNode(new Sphere(Vec3d(5.0f, 2.0f, 0.0f), 2.0f), matPinkDiffuse),
+      SceneNode(new Sphere(Vec3d(2.5f, 1.0f, 6.0f), 1.0f), matWhiteDiffuse),
+      SceneNode(new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f), matBlackDiffuse),
 
-      SceneNode(
-        new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f),
-        matWhiteGlass8),
-      SceneNode(
-        new Sphere(Vec3d(-2.5f, 2.0f, -5.0f), 2.0f),
-        matCyanDiffuse),
-      SceneNode(
-        new Sphere(Vec3d(5.0f, 2.0f, 0.0f), 2.0f),
-        matPinkDiffuse),
-      SceneNode(
-        new Sphere(Vec3d(2.5f, 1.0f, 6.0f), 1.0f),
-        matWhiteDiffuse),
-      SceneNode(
-        new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f),
-        matBlackDiffuse),
+      SceneNode(new Sphere(Vec3d(0, 4, 0), 1), matLight),
 
-      light,
+      SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(24, 1, 24)), matBlackWhiteCheckered)))
 
-      SceneNode(
-        AABB(Vec3d(0, -0.5, 0), Vec3d(24, 1, 24)),
-        matBlackWhiteCheckered)))
-
-    val hazeScene = new Scene(
-        root = hazeObjects, 
-        camera = camera, 
-        airMedium = matAir, 
-        skyMaterial = matBlackDiffuse)
-    RenderEngine.render(target = display, scene = hazeScene, bounces = 12)
+    RenderEngine.render(
+      bounces = 12,
+      target = new Display(1280, 720),
+      scene = new Scene(
+        root = hazeObjects,
+        airMedium = matAir,
+        skyMaterial = matBlackDiffuse,
+        camera = new Camera(
+          position = Vec3d(0, 5, 13),
+          forward = front,
+          up = up,
+          aperture = 0.1,
+          focalLength = Vec3d(0, -2.5, -13).length)))
   }
 }

@@ -25,6 +25,6 @@ class LightMaterial(
                        depth: Double,
                        airRefractivityIndex: Double,
                        context: Context): SurfaceInfo = {
-    return new SurfaceInfo(Color.BLACK, color, Vec3d.ORIGIN)
+    return new SurfaceInfo(Color.Black, color, Vec3d.Origin)
   }
 }

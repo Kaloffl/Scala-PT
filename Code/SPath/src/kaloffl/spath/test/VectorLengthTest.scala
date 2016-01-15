@@ -15,7 +15,7 @@ object VectorLengthTest {
     }
 
     for (i ← 0 until 100) {
-      val vec = Vec3d.UP.weightedHemisphere(Vec2d.random(rng))
+      val vec = Vec3d.Up.weightedHemisphere(Vec2d.random(rng))
       val len = vec.length
       if (len < 0.99 || len > 1.01) {
         println(len)

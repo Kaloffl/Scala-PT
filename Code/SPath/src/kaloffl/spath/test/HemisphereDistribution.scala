@@ -27,12 +27,12 @@ class HemisphereDistribution extends Application {
 
     val gridPane = new GridPane
 
-    gridPane.add(createChart(Vec3d.UP, 0, 0), 0, 0)
-    gridPane.add(createChart(Vec3d.DOWN, 0, 1), 0, 1)
-    gridPane.add(createChart(Vec3d.LEFT, 1, 0), 1, 0)
-    gridPane.add(createChart(Vec3d.RIGHT, 1, 1), 1, 1)
-    gridPane.add(createChart(Vec3d.FRONT, 2, 0), 2, 0)
-    gridPane.add(createChart(Vec3d.BACK, 2, 1), 2, 1)
+    gridPane.add(createChart(Vec3d.Up, 0, 0), 0, 0)
+    gridPane.add(createChart(Vec3d.Down, 0, 1), 0, 1)
+    gridPane.add(createChart(Vec3d.Left, 1, 0), 1, 0)
+    gridPane.add(createChart(Vec3d.Right, 1, 1), 1, 1)
+    gridPane.add(createChart(Vec3d.Front, 2, 0), 2, 0)
+    gridPane.add(createChart(Vec3d.Back, 2, 1), 2, 1)
 
     val scene = new Scene(gridPane, 900, 600)
     primaryStage.setScene(scene)

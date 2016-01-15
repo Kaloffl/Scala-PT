@@ -22,45 +22,39 @@ object Hemisphere {
     val rng = new DoubleSupplier() {
       override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
     }
-    val display = new Display(1280, 720)
 
-    val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
-    val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
-    val matBlueDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
-    val matYellowDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.1f))
-    val matCyanDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.9f))
-    val matPinkDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
-    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matGrayDiffuse = DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
-    val matAir = new TransparentMaterial(Color.WHITE, 0.0, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.White, 0.0, 0.0, 1.0)
+    val matSky = new DirectionalLightMaterial(Color.White * 2, Vec3d(0, 1, -3).normalize, 0.5f)
 
     val diffuseMaterials = Array(
-      matRedDiffuse,
-      matGreenDiffuse,
-      matBlueDiffuse,
-      matYellowDiffuse,
-      matCyanDiffuse,
-      matPinkDiffuse,
-      matWhiteDiffuse,
-      matGrayDiffuse,
-      matBlackDiffuse)
+        DiffuseMaterial(Color(0.9f, 0.1f, 0.1f)),
+        DiffuseMaterial(Color(0.1f, 0.9f, 0.1f)),
+        DiffuseMaterial(Color(0.1f, 0.1f, 0.9f)),
+        DiffuseMaterial(Color(0.9f, 0.9f, 0.1f)),
+        DiffuseMaterial(Color(0.1f, 0.9f, 0.9f)),
+        DiffuseMaterial(Color(0.9f, 0.1f, 0.9f)),
+        DiffuseMaterial(Color(0.1f, 0.1f, 0.1f)),
+        DiffuseMaterial(Color(0.9f, 0.9f, 0.9f)),
+        DiffuseMaterial(Color(0.5f, 0.5f, 0.5f)))
 
     val hemisphere = SceneNode((for (i ← 0 to 2000) yield {
       val weight = Math.cos(rng.getAsDouble * Math.PI / 2)
-      val rhs = Vec3d.BACK.weightedHemisphere(Vec2d.random(rng))
+      val rhs = Vec3d.Back.weightedHemisphere(Vec2d.random(rng))
       SceneNode(
         new Sphere(rhs, 0.025f),
         diffuseMaterials((rng.getAsDouble * diffuseMaterials.length).toInt))
     }).toArray)
 
-    val closerLowCam = new Camera(Vec3d(0, 0, 2.2), Vec3d(0, 0, -1).normalize, Vec3d.LEFT, 0, 3)
-
-    val hemisphereScene = new Scene(
-        root = hemisphere, 
-        camera = closerLowCam, 
-        airMedium = matAir, 
-        skyMaterial = new DirectionalLightMaterial(Color.WHITE * 2, Vec3d(0, 1, -3).normalize, 0.5f))
-    RenderEngine.render(target = display, scene = hemisphereScene, bounces = 12)
+    RenderEngine.render(
+      bounces = 12,
+      target = new Display(1280, 720),
+      scene = new Scene(
+        root = hemisphere,
+        airMedium = matAir,
+        skyMaterial = matSky,
+        camera = new Camera(
+          position = Vec3d(0, 0, 2.2),
+          forward = Vec3d(0, 0, -1).normalize,
+          up = Vec3d.Left)))
   }
 }

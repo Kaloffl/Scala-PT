@@ -11,6 +11,8 @@ import kaloffl.spath.scene.shapes.Intersectable
 import kaloffl.spath.scene.structure.SceneNode
 
 object BvhBuilder {
+  
+  val MaxLeafSize = 8
 
   /**
    * Takes a list of shapes and creates a Bounding Volume Hierarchy out of
@@ -64,7 +66,7 @@ class SplittingJob[T <: Enclosable with Intersectable](
 
   override def execute: Unit = {
     // If the array is small enough we create a leaf and return
-    if (objects.length <= Bvh.MAX_LEAF_SIZE) {
+    if (objects.length <= BvhBuilder.MaxLeafSize) {
       val elements = objects.toArray
       val hull = AABB.enclosing[T](elements, _.enclosingAABB)
       consumer(new BvhNode[T](null, elements, hull, level))

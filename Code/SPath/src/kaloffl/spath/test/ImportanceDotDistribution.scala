@@ -61,13 +61,13 @@ class ImportanceDotDistribution extends Application {
       override def handle(l: Long) {
         addToSeries(rngSeries, random.getAsDouble)
         //        while (true) {
-        val newDir = Vec3d.UP.randomHemisphere(Vec2d.random(random))
-        val diffuse = newDir.dot(Vec3d.UP)
+        val newDir = Vec3d.Up.randomHemisphere(Vec2d.random(random))
+        val diffuse = newDir.dot(Vec3d.Up)
         addToSeries(normalSeries, diffuse)
 
         if (diffuse > random.getAsDouble) {
           addToSeries(referenceSeries, diffuse)
-          addToSeries(weighted1Series, Vec3d.UP.weightedHemisphere(Vec2d.random(random)).dot(Vec3d.UP))
+          addToSeries(weighted1Series, Vec3d.Up.weightedHemisphere(Vec2d.random(random)).dot(Vec3d.Up))
         }
         //        }
       }

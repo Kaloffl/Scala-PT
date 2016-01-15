@@ -159,22 +159,22 @@ case class Vec3d(val x: Double, val y: Double, val z: Double) {
  * Useful standard vectors are predefined here.
  */
 object Vec3d {
-  val ORIGIN: Vec3d = Vec3d(0, 0, 0)
-  val UNIT: Vec3d = Vec3d(1, 1, 1)
-  val NEGATIVE: Vec3d = Vec3d(-1, -1, -1)
+  val Origin: Vec3d = Vec3d(0, 0, 0)
+  val Unit: Vec3d = Vec3d(1, 1, 1)
+  val Negative: Vec3d = Vec3d(-1, -1, -1)
 
-  val NORMAL = UNIT.normalize
+  val Normal = Unit.normalize
 
-  val LEFT: Vec3d = Vec3d(1, 0, 0)
-  val RIGHT: Vec3d = Vec3d(-1, 0, 0)
-  val UP: Vec3d = Vec3d(0, 1, 0)
-  val DOWN: Vec3d = Vec3d(0, -1, 0)
-  val FRONT: Vec3d = Vec3d(0, 0, 1)
-  val BACK: Vec3d = Vec3d(0, 0, -1)
+  val Left: Vec3d = Vec3d(1, 0, 0)
+  val Right: Vec3d = Vec3d(-1, 0, 0)
+  val Up: Vec3d = Vec3d(0, 1, 0)
+  val Down: Vec3d = Vec3d(0, -1, 0)
+  val Front: Vec3d = Vec3d(0, 0, 1)
+  val Back: Vec3d = Vec3d(0, 0, -1)
 
-  val DIRECTIONS = Array(LEFT, RIGHT, UP, DOWN, FRONT, BACK)
+  val DIRECTIONS = Array(Left, Right, Up, Down, Front, Back)
 
-  def apply(): Vec3d = ORIGIN
+  def apply(): Vec3d = Origin
   def apply(d: Double): Vec3d = new Vec3d(d, d, d)
 
   def randomNormal(random: Vec2d): Vec3d = {

@@ -9,7 +9,7 @@ import kaloffl.spath.scene.SurfaceInfo
 class MaskedMaterial(
     val matA: Material,
     val matB: Material,
-    val mask: Mask) extends Material(Color.BLACK, DummyFunction) {
+    val mask: Mask) extends Material(Color.Black, DummyFunction) {
 
   def useA(num: Int, factor: Double): Boolean = {
     0 == (num * factor).toInt - ((num - 1) * factor).toInt
@@ -59,7 +59,7 @@ trait Mask {
   def maskAmount(pos: Vec3d): Float
 }
 
-class CheckeredMask(val size: Double, val offset: Vec3d = Vec3d.ORIGIN) extends Mask {
+class CheckeredMask(val size: Double, val offset: Vec3d = Vec3d.Origin) extends Mask {
   override def maskAmount(pos: Vec3d): Float = {
     val mx = pos.x * size + offset.x
     val my = pos.y * size + offset.y
@@ -72,7 +72,7 @@ class CheckeredMask(val size: Double, val offset: Vec3d = Vec3d.ORIGIN) extends 
   }
 }
 
-class GridMask(val size: Double, thickness: Double, val offset: Vec3d = Vec3d.ORIGIN) extends Mask {
+class GridMask(val size: Double, thickness: Double, val offset: Vec3d = Vec3d.Origin) extends Mask {
   override def maskAmount(pos: Vec3d): Float = {
     val mx = Math.abs(pos.x * size + offset.x) % 1
     val my = Math.abs(pos.y * size + offset.y) % 1

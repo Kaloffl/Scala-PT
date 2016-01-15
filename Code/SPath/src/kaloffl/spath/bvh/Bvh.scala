@@ -8,11 +8,6 @@ import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.math.Ray
 import kaloffl.spath.scene.shapes.Intersectable
 
-object Bvh {
-  // TODO move constant into BvhBuilder file
-  val MAX_LEAF_SIZE = 8
-}
-
 abstract class Bvh[T <: Intersectable](root: BvhNode[T]) extends SceneNode {
   override def enclosingAABB: AABB = root.hull
 }
@@ -22,7 +17,7 @@ class ShapeBvh[T <: Shape](val root: BvhNode[T], material: Material) extends Bvh
   override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
     val stack = new ValuedArrayStack[BvhNode[T]]()
     val rootDepth = root.hullDepth(ray)
-    if (rootDepth > maxDist) return Intersection.nullIntersection
+    if (rootDepth > maxDist) return Intersection.NullIntersection
 
     var closestShape = null.asInstanceOf[T]
     var closestDepth = maxDist
@@ -60,9 +55,9 @@ class ObjectBvh[T <: SceneNode](val root: BvhNode[T]) extends Bvh[T](root) {
   override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
     val stack = new ValuedArrayStack[BvhNode[T]]()
     val rootDepth = root.hullDepth(ray)
-    if (rootDepth > maxDist) return Intersection.nullIntersection
+    if (rootDepth > maxDist) return Intersection.NullIntersection
 
-    var closestIntersection = Intersection.nullIntersection
+    var closestIntersection = Intersection.NullIntersection
     var closestDist = maxDist
 
     stack add (root, rootDepth)

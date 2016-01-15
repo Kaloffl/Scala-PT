@@ -14,7 +14,7 @@ class PathTracer(val scene: Scene) extends Tracer {
                      maxBounces: Int,
                      startMedium: Material,
                      context: Context): Color = {
-    var color = Color.WHITE
+    var color = Color.White
     var ray = startRay
     var i = 0
 
@@ -28,7 +28,7 @@ class PathTracer(val scene: Scene) extends Tracer {
       val survivability = Math.max(color.r2, Math.max(color.g2, color.b2)) * (maxBounces - i)
       if (survivability < 1) {
         if (context.random.getAsDouble > survivability) {
-          return Color.BLACK
+          return Color.Black
         } else {
           color /= survivability
         }
@@ -76,7 +76,7 @@ class PathTracer(val scene: Scene) extends Tracer {
         val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, depth, media(mediaIndex).refractivityIndex, context)
         val absorbed = (media(mediaIndex).getAbsorbtion(point, context) * (media(mediaIndex).absorbtionCoefficient * -depth).toFloat).exp
 
-        if (info.emittance != Color.BLACK) {
+        if (info.emittance != Color.Black) {
           return color * info.emittance * absorbed
         }
 
@@ -101,6 +101,6 @@ class PathTracer(val scene: Scene) extends Tracer {
       }
       i += 1
     }
-    return Color.BLACK
+    return Color.Black
   }
 }

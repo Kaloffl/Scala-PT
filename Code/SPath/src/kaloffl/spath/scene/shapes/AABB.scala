@@ -16,7 +16,7 @@ object AABB {
   }
 
   def enclosing[T](objects: Array[_ <: T], enclose: T ⇒ AABB): AABB = {
-    if(0 == objects.length) return new AABB(Vec3d.ORIGIN, Vec3d.ORIGIN)
+    if(0 == objects.length) return new AABB(Vec3d.Origin, Vec3d.Origin)
     var min = enclose(objects(0)).min
     var max = enclose(objects(0)).max
     var i = 1
@@ -46,12 +46,12 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
     val dist1 = (point - max).abs
     val dist2 = (point - min).abs
     val minDst = Math.min(dist1.min, dist2.min)
-    if (minDst == dist1.x) return Vec3d.LEFT;
-    if (minDst == dist2.x) return Vec3d.RIGHT;
-    if (minDst == dist1.y) return Vec3d.UP;
-    if (minDst == dist2.y) return Vec3d.DOWN;
-    if (minDst == dist1.z) return Vec3d.FRONT;
-    if (minDst == dist2.z) return Vec3d.BACK;
+    if (minDst == dist1.x) return Vec3d.Left
+    if (minDst == dist2.x) return Vec3d.Right
+    if (minDst == dist1.y) return Vec3d.Up
+    if (minDst == dist2.y) return Vec3d.Down
+    if (minDst == dist1.z) return Vec3d.Front
+    if (minDst == dist2.z) return Vec3d.Back
     throw new RuntimeException(
       s"Could not determine AABB normal for point: $point. AABB bounds are max: $max, min: $min.")
   }
@@ -107,7 +107,7 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
     if (x1 < x2 && y1 < y2 && z1 < z2) {
       new AABB(Vec3d(x1, y2, z2), Vec3d(x2, y2, z2))
     } else {
-      new AABB(Vec3d.ORIGIN, Vec3d.ORIGIN)
+      new AABB(Vec3d.Origin, Vec3d.Origin)
     }
   }
 

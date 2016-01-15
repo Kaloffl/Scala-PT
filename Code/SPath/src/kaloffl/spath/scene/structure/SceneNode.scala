@@ -1,14 +1,12 @@
 package kaloffl.spath.scene.structure
 
-import kaloffl.spath.bvh.Bvh
 import kaloffl.spath.bvh.BvhBuilder
+import kaloffl.spath.math.Ray
 import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.shapes.AABB
+import kaloffl.spath.scene.shapes.Enclosable
+import kaloffl.spath.scene.shapes.Intersectable
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.tracing.Intersection
-import kaloffl.spath.math.Ray
-import kaloffl.spath.scene.shapes.Intersectable
-import kaloffl.spath.scene.shapes.Enclosable
 
 object SceneNode {
 
@@ -17,7 +15,7 @@ object SceneNode {
   }
 
   def apply(shapes: Array[_ <: Shape], material: Material): SceneNode = {
-    if (shapes.length > Bvh.MAX_LEAF_SIZE) {
+    if (shapes.length > BvhBuilder.MaxLeafSize) {
       BvhBuilder.buildBvh(shapes, material)
     } else {
       new FlatObject(shapes, material)
@@ -25,7 +23,7 @@ object SceneNode {
   }
 
   def apply(objects: Array[_ <: SceneNode]): SceneNode = {
-    if(objects.length < Bvh.MAX_LEAF_SIZE) {
+    if(objects.length < BvhBuilder.MaxLeafSize) {
       new HierarchicalObject(objects)
     } else {
       BvhBuilder.buildBvh(objects)

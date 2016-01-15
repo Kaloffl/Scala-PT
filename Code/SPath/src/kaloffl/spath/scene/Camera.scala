@@ -14,8 +14,8 @@ class Camera(
     val position: Vec3d,
     val forward: Vec3d,
     val up: Vec3d,
-    val aperture: Double,
-    val focalLength: Double) {
+    val aperture: Double = 0.0,
+    val focalLength: Double = 10) {
 
   val right = forward.cross(up).normalize
 
