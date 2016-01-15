@@ -15,7 +15,7 @@ object AABB {
     new AABB(center - size / 2, center + size / 2)
   }
 
-  def enclosing[T](objects: Array[T], enclose: T ⇒ AABB): AABB = {
+  def enclosing[T](objects: Array[_ <: T], enclose: T ⇒ AABB): AABB = {
     if(0 == objects.length) return new AABB(Vec3d.ORIGIN, Vec3d.ORIGIN)
     var min = enclose(objects(0)).min
     var max = enclose(objects(0)).max

@@ -6,7 +6,7 @@ import kaloffl.spath.math.Ray
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.shapes.AABB
 
-class FlatObject(val shapes: Array[Shape], val material: Material) extends SceneNode {
+class FlatObject(val shapes: Array[_ <: Shape], val material: Material) extends SceneNode {
 
   def this(shape: Shape, material: Material) {
     this(Array(shape), material)

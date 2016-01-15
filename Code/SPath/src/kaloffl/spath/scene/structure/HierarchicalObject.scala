@@ -4,7 +4,7 @@ import kaloffl.spath.math.Ray
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.shapes.AABB
 
-class HierarchicalObject(val children: Array[SceneNode]) extends SceneNode {
+class HierarchicalObject(val children: Array[_ <: SceneNode]) extends SceneNode {
 
   val hull = AABB.enclosing[SceneNode](children, _.enclosingAABB)
 

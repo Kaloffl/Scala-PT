@@ -16,7 +16,7 @@ object SceneNode {
     new FlatObject(shape, material)
   }
 
-  def apply(shapes: Array[Shape], material: Material): SceneNode = {
+  def apply(shapes: Array[_ <: Shape], material: Material): SceneNode = {
     if (shapes.length > Bvh.MAX_LEAF_SIZE) {
       BvhBuilder.buildBvh(shapes, material)
     } else {
@@ -24,7 +24,7 @@ object SceneNode {
     }
   }
 
-  def apply(objects: Array[SceneNode]): SceneNode = {
+  def apply(objects: Array[_ <: SceneNode]): SceneNode = {
     if(objects.length < Bvh.MAX_LEAF_SIZE) {
       new HierarchicalObject(objects)
     } else {

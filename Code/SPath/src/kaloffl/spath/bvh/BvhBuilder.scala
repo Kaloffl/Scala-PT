@@ -21,11 +21,11 @@ object BvhBuilder {
    * splitting is done in places where the two smallest AABBs will be created
    * around the children.
    */
-  def buildBvh(objects: Array[Shape], material: Material): ShapeBvh = {
+  def buildBvh[T <: Shape](objects: Array[T], material: Material): ShapeBvh[T] = {
     return new ShapeBvh(buildTree(objects), material);
   }
 
-  def buildBvh(objects: Array[SceneNode]): ObjectBvh = {
+  def buildBvh[T <: SceneNode](objects: Array[T]): ObjectBvh[T] = {
     return new ObjectBvh(buildTree(objects));
   }
 

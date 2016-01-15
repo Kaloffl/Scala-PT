@@ -11,15 +11,47 @@ class SubArray[T](
 
   def this(array: Array[T]) = this(array, 0, array.length)
 
+  /**
+   * Creates a new SubArray beginning at the given 'from' and ending at the 
+   * given 'until'
+   */
   def slice(from: Int, until: Int): SubArray[T] = {
+    val nf = this.from + from
+    if(nf > array.length) throw new ArrayIndexOutOfBoundsException()
+    val nu = this.from + until
+    if(nu > array.length) throw new ArrayIndexOutOfBoundsException()
+    if(nu <= nf) throw new RuntimeException("SubArray has no or negative size")
     new SubArray(array, this.from + from, this.from + until)
   }
 
-  def after(i: Int) = new SubArray(array, i + 1, until)
-  def startingAt(i: Int) = new SubArray(array, i, until)
-  def before(i: Int) = new SubArray(array, from, i)
-  def endingWith(i: Int) = new SubArray(array, from, i + 1)
+  /**
+   * Returns a new SubArray beginning one index after the given i and going
+   * until the same end as the parent
+   */
+  def after(i: Int) = slice(i + 1, length)
 
+  /**
+   * Returns a new SubArray beginning at the given i and going until the same
+   * end as the parent
+   */
+  def startingAt(i: Int) = slice(i, length)
+
+  /**
+   * Returns a new SubArray with the same beginning as the parent and going
+   * until the given i
+   */
+  def before(i: Int) = slice(0, i)
+
+  /**
+   * Returns a new SubArray with the same beginning as the parent and going
+   * one further than the given i
+   */
+  def endingWith(i: Int) = slice(0, i + 1)
+
+  /**
+   * Creates a new array with the length of the current slice and eagerly maps 
+   * the objects into it.
+   */
   def map[R: ClassTag](f: T ⇒ R): SubArray[R] = {
     val length = this.length
     val newArray = new Array[R](length)
@@ -31,6 +63,11 @@ class SubArray[T](
     return new SubArray(newArray, 0, length)
   }
 
+  /**
+   * Creates a new array of the length of this slice and copies the values into 
+   * it. The exception is when this slice spans the whole length of the internal
+   * array. Then the original array is returned.
+   */
   def toArray: Array[T] = {
     if (0 == from && until == array.length) return array
     return array.slice(from, until)

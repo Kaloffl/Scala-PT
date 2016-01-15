@@ -17,14 +17,14 @@ abstract class Bvh[T <: Intersectable](root: BvhNode[T]) extends SceneNode {
   override def enclosingAABB: AABB = root.hull
 }
 
-class ShapeBvh(root: BvhNode[Shape], material: Material) extends Bvh(root) {
+class ShapeBvh[T <: Shape](val root: BvhNode[T], material: Material) extends Bvh[T](root) {
 
   override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
-    val stack = new ValuedArrayStack[BvhNode[Shape]]()
+    val stack = new ValuedArrayStack[BvhNode[T]]()
     val rootDepth = root.hullDepth(ray)
     if (rootDepth > maxDist) return Intersection.nullIntersection
 
-    var closestShape: Shape = null
+    var closestShape = null.asInstanceOf[T]
     var closestDepth = maxDist
 
     stack add (root, rootDepth)
@@ -55,10 +55,10 @@ class ShapeBvh(root: BvhNode[Shape], material: Material) extends Bvh(root) {
   }
 }
 
-class ObjectBvh(root: BvhNode[SceneNode]) extends Bvh(root) {
+class ObjectBvh[T <: SceneNode](val root: BvhNode[T]) extends Bvh[T](root) {
 
   override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
-    val stack = new ValuedArrayStack[BvhNode[SceneNode]]()
+    val stack = new ValuedArrayStack[BvhNode[T]]()
     val rootDepth = root.hullDepth(ray)
     if (rootDepth > maxDist) return Intersection.nullIntersection
 
