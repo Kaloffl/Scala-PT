@@ -1,32 +1,48 @@
 package kaloffl.spath.bvh
 
-import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Shape
-import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.math.Ray
+import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Intersectable
 
-abstract class Bvh[T <: Intersectable](root: BvhNode[T]) extends SceneNode {
-  override def enclosingAABB: AABB = root.hull
-}
+class Bvh[T <: Intersectable](
+    val children: Array[Bvh[T]],
+    val elements: Array[T],
+    val hull: AABB,
+    val level: Int) {
 
-class ShapeBvh[T <: Shape](val root: BvhNode[T], material: Material) extends Bvh[T](root) {
+  def isLeaf = (null != elements)
 
-  override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
-    val stack = new ValuedArrayStack[BvhNode[T]]()
-    val rootDepth = root.hullDepth(ray)
-    if (rootDepth > maxDist) return Intersection.NullIntersection
+  def hullDepth(ray: Ray): Double = {
+    if (hull.contains(ray.start)) return 0.0
+    return hull.getIntersectionDepth(ray)
+  }
+
+  def intersectElements(ray: Ray, maxDepth: Double): (T, Double) = {
+    var closestObject = null.asInstanceOf[T]
+    var closestDist = maxDepth
+    var i = 0
+    while (i < elements.length) {
+      val depth = elements(i).getIntersectionDepth(ray)
+      if (depth < closestDist) {
+        closestDist = depth
+        closestObject = elements(i)
+      }
+      i += 1
+    }
+    return (closestObject, closestDist)
+  }
+
+  def findClosestObject(ray: Ray, maxDist: Double): (T, Double) = {
+    val stack = new ValuedArrayStack[Bvh[T]]()
 
     var closestShape = null.asInstanceOf[T]
     var closestDepth = maxDist
 
-    stack add (root, rootDepth)
+    stack add (this, hullDepth(ray))
     while (!stack.empty) {
       val (node, depth) = stack.pop
       if (depth >= closestDepth) {
-        return new Intersection(closestDepth, material, closestShape)
+        return (closestShape, closestDepth)
       }
       if (node.isLeaf) {
         val (shape, depth) = node.intersectElements(ray, maxDist)
@@ -46,49 +62,6 @@ class ShapeBvh[T <: Shape](val root: BvhNode[T], material: Material) extends Bvh
         }
       }
     }
-    return new Intersection(closestDepth, material, closestShape)
+    return (closestShape, closestDepth)
   }
 }
-
-class ObjectBvh[T <: SceneNode](val root: BvhNode[T]) extends Bvh[T](root) {
-
-  override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
-    val stack = new ValuedArrayStack[BvhNode[T]]()
-    val rootDepth = root.hullDepth(ray)
-    if (rootDepth > maxDist) return Intersection.NullIntersection
-
-    var closestIntersection = Intersection.NullIntersection
-    var closestDist = maxDist
-
-    stack add (root, rootDepth)
-    while (!stack.empty) {
-      val (node, depth) = stack.pop
-      if (depth >= closestIntersection.depth) {
-        return closestIntersection
-      }
-      if (node.isLeaf) {
-        var i = 0
-        while (i < node.elements.length) {
-          val intersection = node.elements(i).getIntersection(ray, closestDist)
-          if (intersection.hitObject) {
-            closestIntersection = intersection
-            closestDist = intersection.depth
-          }
-          i += 1
-        }
-      } else {
-        var i = 0
-        while (i < node.children.length) {
-          val child = node.children(i)
-          val depth = child.hullDepth(ray)
-          if (depth < closestDist) {
-            stack add (child, depth)
-          }
-          i += 1
-        }
-      }
-    }
-    return closestIntersection
-  }
-}
-

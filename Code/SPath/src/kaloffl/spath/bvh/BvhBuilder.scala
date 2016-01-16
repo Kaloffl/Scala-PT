@@ -3,19 +3,19 @@ package kaloffl.spath.bvh
 import java.util.Comparator
 import kaloffl.jobs.Job
 import kaloffl.jobs.JobPool
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.materials.Material
+import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Enclosable
 import kaloffl.spath.scene.shapes.Intersectable
+import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.structure.SceneNode
 
 object BvhBuilder {
-  
+
   val MaxLeafSize = 8
 
   /**
-   * Takes a list of shapes and creates a Bounding Volume Hierarchy out of
+   * Takes an array of objects and creates a Bounding Volume Hierarchy out of
    * Axis Aligned Bounding Boxes for quick intersection checking with all the
    * shapes.<br>
    * The algorithm iterates top-down on the array of shapes. It will continue
@@ -23,21 +23,13 @@ object BvhBuilder {
    * splitting is done in places where the two smallest AABBs will be created
    * around the children.
    */
-  def buildBvh[T <: Shape](objects: Array[T], material: Material): ShapeBvh[T] = {
-    return new ShapeBvh(buildTree(objects), material);
-  }
-
-  def buildBvh[T <: SceneNode](objects: Array[T]): ObjectBvh[T] = {
-    return new ObjectBvh(buildTree(objects));
-  }
-
-  def buildTree[T <: Enclosable with Intersectable](objects: Array[T]): BvhNode[T] = {
+  def buildTree[T <: Enclosable with Intersectable](objects: Array[T]): Bvh[T] = {
     println("Building a BVH for " + objects.length + " objects.")
     val start = System.nanoTime
 
     val pool = new JobPool
 
-    var root: BvhNode[T] = null
+    var root: Bvh[T] = null
     pool.submit(
       new SplittingJob[T](
         jobPool = pool,
@@ -61,7 +53,7 @@ object BvhBuilder {
 class SplittingJob[T <: Enclosable with Intersectable](
     jobPool: JobPool,
     objects: SubArray[T],
-    consumer: BvhNode[T] ⇒ Unit,
+    consumer: Bvh[T] ⇒ Unit,
     level: Int) extends Job {
 
   override def execute: Unit = {
@@ -69,7 +61,7 @@ class SplittingJob[T <: Enclosable with Intersectable](
     if (objects.length <= BvhBuilder.MaxLeafSize) {
       val elements = objects.toArray
       val hull = AABB.enclosing[T](elements, _.enclosingAABB)
-      consumer(new BvhNode[T](null, elements, hull, level))
+      consumer(new Bvh[T](null, elements, hull, level))
       return
     }
     // otherwise we look for the best place to split the array
@@ -149,16 +141,16 @@ class SplittingJob[T <: Enclosable with Intersectable](
   }
 }
 
-class MergeJob[T <: Intersectable](level: Int, consumer: BvhNode[T] ⇒ Unit) extends Job {
+class MergeJob[T <: Intersectable](level: Int, consumer: Bvh[T] ⇒ Unit) extends Job {
 
-  var left: BvhNode[T] = null
-  var right: BvhNode[T] = null
+  var left: Bvh[T] = null
+  var right: Bvh[T] = null
 
   override def canExecute = (null != left && null != right)
 
   override def execute: Unit = {
     val children = Array(left, right)
-    val bb = AABB.enclosing[BvhNode[T]](children, _.hull)
+    val bb = AABB.enclosing[Bvh[T]](children, _.hull)
 
     // Every two levels we collapse the previous level into the current one to
     // create a 4-way tree instead of a binary one.
@@ -167,9 +159,9 @@ class MergeJob[T <: Intersectable](level: Int, consumer: BvhNode[T] ⇒ Unit) ex
         if (null != node.children) node.children
         else Array(node)
       }
-      consumer(new BvhNode(collapsed, null, bb, level))
+      consumer(new Bvh(collapsed, null, bb, level))
     } else {
-      consumer(new BvhNode(children, null, bb, level))
+      consumer(new Bvh(children, null, bb, level))
     }
   }
 }

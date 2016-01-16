@@ -6,11 +6,7 @@ import kaloffl.spath.math.Ray
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.shapes.AABB
 
-class FlatObject(val shapes: Array[_ <: Shape], val material: Material) extends SceneNode {
-
-  def this(shape: Shape, material: Material) {
-    this(Array(shape), material)
-  }
+class ShapeList(val shapes: Array[_ <: Shape], val material: Material) extends SceneNode {
 
   override val enclosingAABB = AABB.enclosing[Shape](shapes, _.enclosingAABB)
 

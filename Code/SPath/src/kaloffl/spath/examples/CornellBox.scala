@@ -13,7 +13,6 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.shapes.Triangle
-import kaloffl.spath.scene.structure.FlatObject
 import kaloffl.spath.scene.structure.SceneNode
 
 object CornellBox {
@@ -49,7 +48,7 @@ object CornellBox {
     val t110 = Vec3d(423, 330, 247)
     val t111 = Vec3d(472, 330, 406)
 
-    val light = new FlatObject(
+    val light = SceneNode(
       new AABB(Vec3d(213, roomHeight - 0.01, 227), Vec3d(343, roomHeight + 0.99, 332)),
       cmatLight)
 

@@ -1,16 +1,9 @@
 package kaloffl.spath.scene
 
-import java.util.function.DoubleSupplier
-import kaloffl.spath.bvh.Bvh
-import kaloffl.spath.math.Color
-import kaloffl.spath.scene.shapes.Shape
-import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.math.Ray
-import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.structure.FlatObject
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.Intersection
 
 /**
  * A scene holds all the objects that might be displayed, as well as the camera
