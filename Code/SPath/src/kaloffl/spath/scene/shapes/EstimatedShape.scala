@@ -3,6 +3,7 @@ package kaloffl.spath.scene.shapes
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
+import kaloffl.spath.math.Vec2d
 
 trait EstimatedShape extends Shape {
 
@@ -16,6 +17,13 @@ trait EstimatedShape extends Shape {
       estimateDepth(point + xDir) - estimateDepth(point - xDir),
       estimateDepth(point + yDir) - estimateDepth(point - yDir),
       estimateDepth(point + zDir) - estimateDepth(point - zDir)).normalize
+  }
+
+  override def getTextureCoordinate(point: Vec3d): Vec2d = {
+    val normal = getNormal(point)
+    return Vec2d(
+      Math.acos(normal.x / Math.sqrt(1.0 - normal.z * normal.z)) / 2 / Math.PI,
+      (normal.z + 1) / 2)
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {

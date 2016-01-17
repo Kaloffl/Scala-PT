@@ -3,6 +3,7 @@ package kaloffl.spath.scene.shapes
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
+import kaloffl.spath.math.Vec2d
 
 /**
  * AABB stands for Axis Aligned Bounding Box and is a very simple and
@@ -54,6 +55,21 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
     if (minDst == dist2.z) return Vec3d.Back
     throw new RuntimeException(
       s"Could not determine AABB normal for point: $point. AABB bounds are max: $max, min: $min.")
+  }
+  
+  override def getTextureCoordinate(point: Vec3d): Vec2d = {
+    val dist1 = (point - max).abs
+    val dist2 = (point - min).abs
+    val minDst = Math.min(dist1.min, dist2.min)
+    val t = (point - min) / (max - min)
+    if (minDst == dist1.x) return Vec2d(t.y, t.z)
+    if (minDst == dist2.x) return Vec2d(t.y, t.z)
+    if (minDst == dist1.y) return Vec2d(t.x, t.z)
+    if (minDst == dist2.y) return Vec2d(t.x, t.z)
+    if (minDst == dist1.z) return Vec2d(t.x, t.y)
+    if (minDst == dist2.z) return Vec2d(t.x, t.y)
+    throw new RuntimeException(
+      s"Could not determine Texture Coordinate for point: $point. AABB bounds are max: $max, min: $min.")
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {

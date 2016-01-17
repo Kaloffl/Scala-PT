@@ -1,11 +1,10 @@
 package kaloffl.spath.scene.materials
 
 import kaloffl.spath.math.Color
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.SurfaceInfo
 import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Vec2d
-import kaloffl.spath.scene.SurfaceInfo
 
 class DirectionalLightMaterial(
     val color: Color,
@@ -20,7 +19,6 @@ class DirectionalLightMaterial(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,
     incomingNormal: Vec3d,
-    depth: Double,
     context: Context): Color = {
 
     val angle = Math.max(limit, incomingNormal.dot(dir).toFloat)
@@ -36,12 +34,12 @@ class DirectionalLightMaterial(
   override def getInfo(worldPos: Vec3d,
                        surfaceNormal: Vec3d,
                        incomingNormal: Vec3d,
-                       depth: Double,
+                       textureCoordinate: Vec2d,
                        airRefractivityIndex: Double,
                        context: Context): SurfaceInfo = {
     return new SurfaceInfo(
       Color.Black,
-      getEmittance(worldPos, surfaceNormal, incomingNormal, depth, context),
+      getEmittance(worldPos, surfaceNormal, incomingNormal, context),
       Vec3d.Origin)
   }
 }

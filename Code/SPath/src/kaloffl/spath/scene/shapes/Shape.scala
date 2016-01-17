@@ -3,6 +3,7 @@ package kaloffl.spath.scene.shapes
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
+import kaloffl.spath.math.Vec2d
 
 /**
  * The general contract of a shape that can be rendered by the path tracer.
@@ -18,4 +19,10 @@ trait Shape extends Intersectable with Enclosable {
    * points from the center of the sphere through the given point)
    */
   def getNormal(point: Vec3d): Vec3d
+  
+  /**
+   * Returns the texture coordinate corresponding to the given point. The point 
+   * should lie on the surface of this shape.
+   */
+  def getTextureCoordinate(point: Vec3d): Vec2d
 }

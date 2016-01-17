@@ -54,7 +54,7 @@ class PathTracer(val scene: Scene) extends Tracer {
           val dist = scene.skyDistance
           val point = ray.atDistance(dist)
           val emitted = scene.skyMaterial.getEmittance(
-            point, -ray.normal, ray.normal, dist, context)
+            point, -ray.normal, ray.normal, context)
           val absorbtionScale = if (java.lang.Double.isInfinite(dist)) {
             0.0f
           } else {
@@ -73,7 +73,8 @@ class PathTracer(val scene: Scene) extends Tracer {
         val depth = intersection.depth
         val point = ray.atDistance(depth)
         val surfaceNormal = intersection.shape.getNormal(point)
-        val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, depth, media(mediaIndex).refractivityIndex, context)
+        val textureCoordinate = intersection.shape.getTextureCoordinate(point)
+        val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, textureCoordinate, media(mediaIndex).refractivityIndex, context)
         val absorbed = (media(mediaIndex).getAbsorbtion(point, context) * (media(mediaIndex).absorbtionCoefficient * -depth).toFloat).exp
 
         if (info.emittance != Color.Black) {

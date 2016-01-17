@@ -5,6 +5,7 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Attenuation
 import kaloffl.spath.scene.SurfaceInfo
+import kaloffl.spath.math.Vec2d
 
 class MaskedMaterial(
     val matA: Material,
@@ -28,13 +29,12 @@ class MaskedMaterial(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,
     incomingNormal: Vec3d,
-    depth: Double,
     context: Context): Color = {
 
     if (useA(context.passNum, mask.maskAmount(worldPos))) {
-      matA.getEmittance(worldPos, surfaceNormal, incomingNormal, depth, context)
+      matA.getEmittance(worldPos, surfaceNormal, incomingNormal, context)
     } else {
-      matB.getEmittance(worldPos, surfaceNormal, incomingNormal, depth, context)
+      matB.getEmittance(worldPos, surfaceNormal, incomingNormal, context)
     }
   }
 
@@ -42,14 +42,14 @@ class MaskedMaterial(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,
     incomingNormal: Vec3d,
-    depth: Double,
+    textureCoordinate: Vec2d,
     refractivityIndex: Double,
     context: Context): SurfaceInfo = {
 
     if (useA(context.passNum, mask.maskAmount(worldPos))) {
-      matA.getInfo(worldPos, surfaceNormal, incomingNormal, depth, refractivityIndex, context)
+      matA.getInfo(worldPos, surfaceNormal, incomingNormal, textureCoordinate, refractivityIndex, context)
     } else {
-      matB.getInfo(worldPos, surfaceNormal, incomingNormal, depth, refractivityIndex, context)
+      matB.getInfo(worldPos, surfaceNormal, incomingNormal, textureCoordinate, refractivityIndex, context)
     }
   }
 

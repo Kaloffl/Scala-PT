@@ -3,6 +3,7 @@ package kaloffl.spath.scene.shapes
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
+import kaloffl.spath.math.Vec2d
 
 /**
  * @author Lars
@@ -30,6 +31,12 @@ class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape {
     return new AABB(min, max)
   }
 
+  
+  override def getTextureCoordinate(point: Vec3d): Vec2d = {
+    val relative = (point - vertA) / (edgeA + edgeB)
+    return Vec2d(relative.x, relative.y)
+  }
+  
   override def getIntersectionDepth(ray: Ray): Double = {
     val P = ray.normal.cross(edgeB)
     val d = edgeA.dot(P)

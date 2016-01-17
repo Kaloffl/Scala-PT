@@ -5,6 +5,7 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Attenuation
 import kaloffl.spath.scene.SurfaceInfo
+import kaloffl.spath.math.Vec2d
 
 class Material(reflectance: Color, scatterFunction: ScatterFunction) {
 
@@ -21,13 +22,12 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
   def getEmittance(worldPos: Vec3d,
                    surfaceNormal: Vec3d,
                    incomingNormal: Vec3d,
-                   depth: Double,
                    context: Context): Color = Color.Black
 
   def getInfo(worldPos: Vec3d,
               surfaceNormal: Vec3d,
               incomingNormal: Vec3d,
-              depth: Double,
+              textureCoordinate: Vec2d,
               airRefractivityIndex: Double,
               context: Context): SurfaceInfo = {
     new SurfaceInfo(
@@ -36,7 +36,6 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
         worldPos,
         surfaceNormal,
         incomingNormal,
-        depth,
         context),
       scatterFunction.outDirection(
         incomingNormal,
