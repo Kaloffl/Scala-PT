@@ -26,8 +26,6 @@ object Scatter2 {
 
     val glassColor = Color(0.2f, 0.4f, 0.5f)
 
-    val matBlueDiffuse = DiffuseMaterial(Color(0.6f, 0.6f, 0.9f))
-    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.none)
     val matAir = new TransparentMaterial(Color.Black)
@@ -61,7 +59,6 @@ object Scatter2 {
       tracer = new PathTracer(new Scene(
         root = SceneNode(environment ++ objects),
         airMedium = matAir,
-        skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 14, -14),
           forward = front.normalize,

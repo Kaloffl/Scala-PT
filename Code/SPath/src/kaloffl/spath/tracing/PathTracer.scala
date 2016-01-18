@@ -53,7 +53,7 @@ class PathTracer(val scene: Scene) extends Tracer {
         if (java.lang.Double.isInfinite(scatterDist)) {
           val dist = scene.skyDistance
           val point = ray.atDistance(dist)
-          val emitted = scene.skyMaterial.getEmittance(point, -ray.normal, ray.normal, context)
+          val emitted = scene.skyMaterial.getEmittance(ray.normal)
           val absorbed =
             if (java.lang.Double.isInfinite(dist)) {
               Color.White

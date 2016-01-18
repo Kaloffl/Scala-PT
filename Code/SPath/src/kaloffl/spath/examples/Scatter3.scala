@@ -21,7 +21,6 @@ object Scatter3 {
   def main(args: Array[String]): Unit = {
 
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
     val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f, 0.0)
     val matAir = new TransparentMaterial(
@@ -62,7 +61,6 @@ object Scatter3 {
       tracer = new PathTracer(new Scene(
         root = SceneNode(hazeObjects ++ blocks),
         airMedium = matAir,
-        skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 5, 13),
           forward = front,

@@ -15,11 +15,6 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
 
   def getAbsorbtion(worldPos: Vec3d, context: Context): Color = Color.Black
 
-  def getEmittance(worldPos: Vec3d,
-                   surfaceNormal: Vec3d,
-                   incomingNormal: Vec3d,
-                   context: Context): Color = Color.Black
-
   def getInfo(incomingNormal: Vec3d,
               worldPos: ⇒ Vec3d,
               surfaceNormal: ⇒ Vec3d,
@@ -28,11 +23,7 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
               context: Context): SurfaceInfo = {
     new SurfaceInfo(
       reflectance,
-      getEmittance(
-        worldPos,
-        surfaceNormal,
-        incomingNormal,
-        context),
+      Color.Black,
       scatterFunction.outDirections(
         incomingNormal,
         surfaceNormal,

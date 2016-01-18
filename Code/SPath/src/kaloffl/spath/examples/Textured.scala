@@ -18,7 +18,10 @@ import kaloffl.spath.scene.materials.TextureMask
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.scene.materials.UniformSky
+import kaloffl.spath.scene.materials.TextureMask
+import kaloffl.spath.scene.materials.DiffuseMaterial
 
 object Textured {
 
@@ -29,39 +32,37 @@ object Textured {
     val matVoid = new TransparentMaterial(
       color = Color.Black,
       scatterProbability = 0,
-      refractiveIndex = 0.99f,
+      refractiveIndex = 1,
       roughness = 0)
     val matAir1 = new TransparentMaterial(
       color = atmosphereColor * 4e-6f,
       scatterProbability = 8e-8,
-      refractiveIndex = 1.0f,
+      refractiveIndex = 1,
       roughness = 0)
     val matAir2 = new TransparentMaterial(
       color = atmosphereColor * 2e-6f,
       scatterProbability = 4e-8,
-      refractiveIndex = 0.998f,
+      refractiveIndex = 1,
       roughness = 0)
     val matAir3 = new TransparentMaterial(
       color = atmosphereColor * 1e-6f,
       scatterProbability = 2e-8,
-      refractiveIndex = 0.996f,
+      refractiveIndex = 1,
       roughness = 0)
     val matAir4 = new TransparentMaterial(
       color = atmosphereColor * 5e-7f,
       scatterProbability = 1e-8,
-      refractiveIndex = 0.994f,
+      refractiveIndex = 1,
       roughness = 0)
     val matAir5 = new TransparentMaterial(
       color = atmosphereColor * 25e-8f,
       scatterProbability = 5e-9,
-      refractiveIndex = 0.992f,
+      refractiveIndex = 1,
       roughness = 0)
     val matLight = new LightMaterial(Color.White * 40, Attenuation.none)
 
     val matWhite = DiffuseMaterial(Color.White)
     val matGray = DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
-
-    val matSpace = new LightMaterial(Color.White / 64, Attenuation.none)
 
     val matWater = new TransparentMaterial(
       color = Color(4, 2, 0.5f) * 0.34f,
@@ -96,10 +97,10 @@ object Textured {
     RenderEngine.render(
       bounces = 20,
       target = new Display(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = new RecursivePathTracer(new Scene(
         root = world,
         airMedium = matVoid,
-        skyMaterial = matSpace,
+        skyMaterial = new UniformSky(Color.White / 64),
         camera = new Camera(
           position = position,
           forward = Vec3d.Front,

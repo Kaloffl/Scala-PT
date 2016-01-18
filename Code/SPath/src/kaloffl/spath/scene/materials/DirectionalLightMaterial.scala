@@ -12,11 +12,7 @@ class DirectionalLightMaterial(val color: Color,
 
   val dir = -direction
 
-  override def getEmittance(worldPos: Vec3d,
-                            surfaceNormal: Vec3d,
-                            incomingNormal: Vec3d,
-                            context: Context): Color = {
-
+  def getEmittance(incomingNormal: Vec3d): Color = {
     val angle = Math.max(limit, incomingNormal.dot(dir).toFloat)
     if (1 == limit) {
       if (1 == angle) {
@@ -35,7 +31,7 @@ class DirectionalLightMaterial(val color: Color,
                        context: Context): SurfaceInfo = {
     return new SurfaceInfo(
       Color.Black,
-      getEmittance(worldPos, surfaceNormal, incomingNormal, context),
+      getEmittance(incomingNormal),
       TerminatedScattering)
   }
 }

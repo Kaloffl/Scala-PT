@@ -11,11 +11,6 @@ class LightMaterial(
     val color: Color,
     val attenuation: Attenuation) extends Material(color, DummyFunction) {
 
-  override def getEmittance(worldPos: Vec3d,
-                            surfaceNormal: Vec3d,
-                            incomingNormal: Vec3d,
-                            context: Context): Color = color
-
   override def getInfo(incomingNormal: Vec3d,
                        worldPos: ⇒ Vec3d,
                        surfaceNormal: ⇒ Vec3d,

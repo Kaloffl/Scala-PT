@@ -64,7 +64,6 @@ object Indirect {
       tracer = new PathTracer(new Scene(
         root = coloredSpheres,
         airMedium = matAir,
-        skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = position,
           forward = forward,

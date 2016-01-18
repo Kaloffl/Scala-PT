@@ -15,6 +15,8 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.scene.materials.DirectionalSky
+import kaloffl.spath.scene.materials.DiffuseMaterial
 
 object Hemisphere {
 
@@ -24,7 +26,7 @@ object Hemisphere {
     }
 
     val matAir = new TransparentMaterial(Color.Black)
-    val matSky = new DirectionalLightMaterial(
+    val matSky = new DirectionalSky(
       color = Color.White * 2,
       direction = Vec3d(0, 1, -3).normalize,
       limit = 0.5f)

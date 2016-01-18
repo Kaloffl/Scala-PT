@@ -4,6 +4,8 @@ import kaloffl.spath.math.Ray
 import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.Intersection
+import kaloffl.spath.scene.materials.SkyMaterial
+import kaloffl.spath.scene.materials.BlackSky
 
 /**
  * A scene holds all the objects that might be displayed, as well as the camera
@@ -12,13 +14,13 @@ import kaloffl.spath.tracing.Intersection
 class Scene(val root: SceneNode,
             val camera: Camera,
             val initialMediaStack: Array[Material],
-            val skyMaterial: Material,
+            val skyMaterial: SkyMaterial = BlackSky,
             val skyDistance: Double = Double.PositiveInfinity) {
 
   def this(root: SceneNode,
            camera: Camera,
            airMedium: Material,
-           skyMaterial: Material,
+           skyMaterial: SkyMaterial,
            skyDistance: Double) {
     this(root, camera, Array(airMedium), skyMaterial, skyDistance)
   }
@@ -26,8 +28,14 @@ class Scene(val root: SceneNode,
   def this(root: SceneNode,
            camera: Camera,
            airMedium: Material,
-           skyMaterial: Material) {
+           skyMaterial: SkyMaterial) {
     this(root, camera, Array(airMedium), skyMaterial)
+  }
+  
+  def this(root: SceneNode,
+           camera: Camera,
+           airMedium: Material) {
+    this(root, camera, Array(airMedium))
   }
 
   /**

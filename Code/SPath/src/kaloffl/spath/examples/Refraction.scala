@@ -86,7 +86,6 @@ object Refraction {
       tracer = new PathTracer(new Scene(
         root = glassTest,
         airMedium = matAir,
-        skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 5, 13),
           forward = front.normalize,

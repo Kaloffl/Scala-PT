@@ -54,7 +54,6 @@ object EstimatedShapes {
       target = new Display(1280, 720),
       tracer = new PathTracer(new Scene(
         airMedium = matAir,
-        skyMaterial = matBlackDiffuse,
         root = glassTest,
         camera = new Camera(
           position = Vec3d(0, 1.5, 2.5),

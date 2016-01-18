@@ -17,6 +17,8 @@ import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.scene.materials.UniformSky
+import kaloffl.spath.scene.materials.DiffuseMaterial
 
 object Scatter5 {
   def main(args: Array[String]): Unit = {
@@ -24,7 +26,6 @@ object Scatter5 {
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
     val matWhiteLight = new LightMaterial(Color.White * 16, Attenuation.none)
-    val matSkyLight = new LightMaterial(Color(0.9f, 0.95f, 0.975f) * 0.5f, Attenuation.none)
 
     val matRedGlass = new TransparentMaterial(
       color = Color(0.1f, 0.5f, 0.5f),
@@ -73,7 +74,7 @@ object Scatter5 {
       tracer = new PathTracer(new Scene(
         root = glassTest,
         airMedium = matAir,
-        skyMaterial = matSkyLight,
+        skyMaterial = new UniformSky(Color(0.9f, 0.95f, 0.975f) * 0.5f),
         camera = new Camera(
           position = Vec3d(0, 60, 60),
           forward = front,

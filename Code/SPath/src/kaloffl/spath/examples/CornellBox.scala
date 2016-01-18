@@ -21,7 +21,6 @@ object CornellBox {
   def main(args: Array[String]): Unit = {
 
     val matAir = new TransparentMaterial(Color.Black)
-    val matBlackDiffuse = DiffuseMaterial(Color.Black)
     val cmatWhite = DiffuseMaterial(new Color(0.737f, 0.728f, 0.767f))
     val cmatRed = DiffuseMaterial(new Color(0.642f, 0.063f, 0.061f))
     val cmatGreen = DiffuseMaterial(new Color(0.159f, 0.373f, 0.101f))
@@ -104,7 +103,6 @@ object CornellBox {
       tracer = new PathTracer(new Scene(
         root = cornellBox,
         airMedium = matAir,
-        skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(278, 273, -800),
           forward = Vec3d.Front,

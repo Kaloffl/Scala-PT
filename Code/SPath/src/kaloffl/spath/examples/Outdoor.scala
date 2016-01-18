@@ -17,6 +17,8 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.scene.materials.DirectionalSky
+import kaloffl.spath.scene.materials.DiffuseMaterial
 
 object Outdoor {
 
@@ -32,7 +34,7 @@ object Outdoor {
     val matAir = new TransparentMaterial(
       color = Color(0.08f, 0.09f, 0.095f),
       scatterProbability = 0.001f)
-    val matSky = new DirectionalLightMaterial(
+    val matSky = new DirectionalSky(
       color = Color.White * 0.125f,
       direction = Vec3d.Down,
       limit = 1)

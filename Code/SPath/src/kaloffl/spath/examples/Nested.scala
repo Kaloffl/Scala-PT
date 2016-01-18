@@ -13,13 +13,13 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.scene.materials.UniformSky
 
 object Nested {
 
   def main(args: Array[String]): Unit = {
 
     val matAir = new TransparentMaterial(Color(0.02f, 0.01f, 0.005f))
-    val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
     val matGlassRed = new TransparentMaterial(
       color = Color(0.1f, 0.9f, 0.9f) * 2,
       refractiveIndex = 1.3f)
@@ -46,7 +46,7 @@ object Nested {
       tracer = new PathTracer(new Scene(
         root = SceneNode(Array(floor, boxRed, boxGreen, boxBlue)),
         airMedium = matAir,
-        skyMaterial = matSky,
+        skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
         camera = new Camera(
           position = Vec3d(0, 4.5, 9),
           forward = bunnyForward.normalize,

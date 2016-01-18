@@ -16,13 +16,13 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.scene.materials.UniformSky
 
 object Dragon {
 
   def main(args: Array[String]): Unit = {
 
     val matAir = new TransparentMaterial(Color(0.02f, 0.01f, 0.005f))
-    val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
     val matGlass = new TransparentMaterial(
       color = Color(0.5f, 0.8f, 0.8f) * 7,
       scatterProbability = 1.5,
@@ -65,7 +65,7 @@ object Dragon {
       target = new Display(1280, 720),
       tracer = new PathTracer(new Scene(
         airMedium = matAir,
-        skyMaterial = matSky,
+        skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
         root = objects,
         camera = new Camera(
           position = camPos,

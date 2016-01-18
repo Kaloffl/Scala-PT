@@ -57,7 +57,6 @@ object VisualBvh {
       tracer = new PathTracer(new Scene(
         root = SceneNode(Array(boxes, light)),
         airMedium = matAir,
-        skyMaterial = matFloor,
         camera = new Camera(
           position = Vec3d(0.5, 2.5, 0.4),
           forward = bunnyForward.normalize,

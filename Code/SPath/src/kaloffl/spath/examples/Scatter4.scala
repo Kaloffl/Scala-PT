@@ -14,6 +14,10 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.scene.materials.DiffuseMaterial
+import kaloffl.spath.scene.materials.DiffuseMaterial
+import kaloffl.spath.scene.materials.UniformSky
+import kaloffl.spath.scene.materials.DiffuseMaterial
 
 object Scatter4 {
   def main(args: Array[String]): Unit = {
@@ -25,12 +29,9 @@ object Scatter4 {
       roughness = 0.01)
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matWhiteLight = new LightMaterial(Color.White * 16, Attenuation.none)
     val matRedLight = new LightMaterial(Color.Red * 256, Attenuation.none)
     val matGreenLight = new LightMaterial(Color.Green * 16, Attenuation.none)
-    val matMirror = ReflectiveMaterial(Color(0.5f, 0.5f, 0.5f), 0.001)
     val matAir = new TransparentMaterial(Color.Black)
-    val matSky = new LightMaterial(Color.White, Attenuation.none)
 
     val glassTest = SceneNode(Array(
       SceneNode(AABB(Vec3d(0, 4.5, 0), Vec3d(10, 3, 0.001)), matPaper),
@@ -47,7 +48,7 @@ object Scatter4 {
       tracer = new PathTracer(new Scene(
         root = glassTest,
         airMedium = matAir,
-        skyMaterial = matSky,
+        skyMaterial = new UniformSky(Color.White),
         camera = new Camera(
           position = Vec3d(0, 3, 9),
           forward = front,

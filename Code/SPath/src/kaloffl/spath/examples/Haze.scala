@@ -58,7 +58,6 @@ object Haze {
       tracer = new PathTracer(new Scene(
         root = hazeObjects,
         airMedium = matAir,
-        skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 5, 13),
           forward = front,

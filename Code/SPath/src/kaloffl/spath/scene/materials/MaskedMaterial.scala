@@ -16,19 +16,6 @@ class MaskedMaterial(
     0 == (num * factor).toInt - ((num - 1) * factor).toInt
   }
 
-  override def getEmittance(
-    worldPos: Vec3d,
-    surfaceNormal: Vec3d,
-    incomingNormal: Vec3d,
-    context: Context): Color = {
-
-    if (useA(context.passNum, mask.maskAmount(worldPos, Vec2d()))) {
-      matA.getEmittance(worldPos, surfaceNormal, incomingNormal, context)
-    } else {
-      matB.getEmittance(worldPos, surfaceNormal, incomingNormal, context)
-    }
-  }
-
   override def getInfo(incomingNormal: Vec3d,
                        worldPos: ⇒ Vec3d,
                        surfaceNormal: ⇒ Vec3d,
@@ -36,7 +23,7 @@ class MaskedMaterial(
                        refractiveIndex: Float,
                        context: Context): SurfaceInfo = {
 
-    if (useA(context.passNum, mask.maskAmount(worldPos, textureCoordinate))) {
+    if (context.random.getAsDouble < mask.maskAmount(worldPos, textureCoordinate)) {
       matA.getInfo(
         incomingNormal,
         worldPos,

@@ -73,7 +73,6 @@ object Scatter {
       tracer = new PathTracer(new Scene(
         root = SceneNode(environment ++ objects),
         airMedium = matAir,
-        skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 14, -14),
           forward = front.normalize,

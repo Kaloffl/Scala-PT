@@ -20,8 +20,6 @@ object Mirrored {
 
   def main(args: Array[String]): Unit = {
 
-    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matMirror = ReflectiveMaterial(Color.White)
     val matAir = new TransparentMaterial(
       color = Color(0.02f, 0.01f, 0.005f),
@@ -49,7 +47,6 @@ object Mirrored {
       tracer = new PathTracer(new Scene(
         root = coloredSpheres,
         airMedium = matAir,
-        skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 2.5, 10),
           forward = Vec3d.Back,
