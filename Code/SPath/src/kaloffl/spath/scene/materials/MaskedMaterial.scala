@@ -16,15 +16,6 @@ class MaskedMaterial(
     0 == (num * factor).toInt - ((num - 1) * factor).toInt
   }
 
-  override def minEmittance: Color = {
-    val meA = matA.minEmittance
-    val meB = matB.minEmittance
-    new Color(
-      Math.min(meA.r2, meB.r2),
-      Math.min(meA.g2, meB.g2),
-      Math.min(meA.b2, meB.b2))
-  }
-
   override def getEmittance(
     worldPos: Vec3d,
     surfaceNormal: Vec3d,

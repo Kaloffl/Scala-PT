@@ -12,8 +12,6 @@ class DirectionalLightMaterial(val color: Color,
 
   val dir = -direction
 
-  override def minEmittance = color
-
   override def getEmittance(worldPos: Vec3d,
                             surfaceNormal: Vec3d,
                             incomingNormal: Vec3d,

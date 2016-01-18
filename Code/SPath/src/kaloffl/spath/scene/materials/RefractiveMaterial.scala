@@ -9,11 +9,7 @@ import kaloffl.spath.scene.SurfaceInfo
 
 object RefractiveMaterial {
 
-  def apply(color: Color,
-            refractivityIndex: Double,
-            glossiness: Double = 0) =
-    new Material(
-      color,
-      new RefractFunction(refractivityIndex, glossiness))
+  def apply(color: Color, refractivityIndex: Double, glossiness: Double = 0) =
+    new Material(color, new RefractFunction(refractivityIndex, glossiness))
 
 }
