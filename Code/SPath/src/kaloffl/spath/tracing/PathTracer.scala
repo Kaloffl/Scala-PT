@@ -12,16 +12,15 @@ class PathTracer(val scene: Scene) extends Tracer {
 
   override def trace(startRay: Ray,
                      maxBounces: Int,
-                     startMedium: Material,
                      context: Context): Color = {
     var color = Color.White
     var ray = startRay
     var i = 0
 
     // list of materials in which the rays entered
-    var mediaIndex = 0
+    var mediaIndex = scene.initialMediaStack.length - 1
     val media = new Array[Material](maxBounces + 1)
-    media(0) = startMedium
+    System.arraycopy(scene.initialMediaStack, 0, media, 0, scene.initialMediaStack.length)
 
     while (i < maxBounces) {
       // russian roulett ray termination
@@ -73,8 +72,13 @@ class PathTracer(val scene: Scene) extends Tracer {
         val depth = intersection.depth
         val point = ray.atDistance(depth)
         val surfaceNormal = intersection.shape.getNormal(point)
-        val textureCoordinate = intersection.shape.getTextureCoordinate(point)
-        val info = intersection.material.getInfo(point, surfaceNormal, ray.normal, textureCoordinate, media(mediaIndex).refractivityIndex, context)
+        val info = intersection.material.getInfo(
+          incomingNormal = ray.normal,
+          worldPos = point,
+          surfaceNormal = surfaceNormal,
+          textureCoordinate = intersection.shape.getTextureCoordinate(point),
+          airRefractivityIndex = media(mediaIndex).refractivityIndex,
+          context = context)
         val absorbed = (media(mediaIndex).getAbsorbtion(point, context) * (media(mediaIndex).absorbtionCoefficient * -depth).toFloat).exp
 
         if (info.emittance != Color.Black) {

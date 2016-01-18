@@ -68,7 +68,7 @@ class TracingWorker(
       val x = (index % width - displayOffsetX) / dHeight
       val y = (displayOffsetY - index / width) / dHeight
       val ray = scene.camera.createRay(random, x, y)
-      val color = tracer.trace(ray, maxBounces, scene.airMedium, context)
+      val color = tracer.trace(ray, maxBounces, context)
       val sampleIndex = index * 3
 
       val prevSample = samplesTaken - 1

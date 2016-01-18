@@ -6,20 +6,18 @@ import kaloffl.spath.scene.SurfaceInfo
 import kaloffl.spath.tracing.Context
 import kaloffl.spath.math.Vec2d
 
-class DirectionalLightMaterial(
-    val color: Color,
-    direction: Vec3d,
-    val limit: Float) extends Material(color, DummyFunction) {
+class DirectionalLightMaterial(val color: Color,
+                               direction: Vec3d,
+                               val limit: Float) extends Material(color, DummyFunction) {
 
   val dir = -direction
 
   override def minEmittance = color
 
-  override def getEmittance(
-    worldPos: Vec3d,
-    surfaceNormal: Vec3d,
-    incomingNormal: Vec3d,
-    context: Context): Color = {
+  override def getEmittance(worldPos: Vec3d,
+                            surfaceNormal: Vec3d,
+                            incomingNormal: Vec3d,
+                            context: Context): Color = {
 
     val angle = Math.max(limit, incomingNormal.dot(dir).toFloat)
     if (1 == limit) {
@@ -31,10 +29,10 @@ class DirectionalLightMaterial(
     return color * (1 - (1 - angle) / (1 - limit))
   }
 
-  override def getInfo(worldPos: Vec3d,
-                       surfaceNormal: Vec3d,
-                       incomingNormal: Vec3d,
-                       textureCoordinate: Vec2d,
+  override def getInfo(incomingNormal: Vec3d,
+                       worldPos: ⇒ Vec3d,
+                       surfaceNormal: ⇒ Vec3d,
+                       textureCoordinate: ⇒ Vec2d,
                        airRefractivityIndex: Double,
                        context: Context): SurfaceInfo = {
     return new SurfaceInfo(

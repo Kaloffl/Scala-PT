@@ -18,10 +18,10 @@ class LightMaterial(
                             incomingNormal: Vec3d,
                             context: Context): Color = color
 
-  override def getInfo(worldPos: Vec3d,
-                       surfaceNormal: Vec3d,
-                       incomingNormal: Vec3d,
-                       textureCoordinate: Vec2d,
+  override def getInfo(incomingNormal: Vec3d,
+                       worldPos: ⇒ Vec3d,
+                       surfaceNormal: ⇒ Vec3d,
+                       textureCoordinate: ⇒ Vec2d,
                        airRefractivityIndex: Double,
                        context: Context): SurfaceInfo = {
     return new SurfaceInfo(Color.Black, color, Vec3d.Origin)

@@ -12,7 +12,6 @@ import kaloffl.spath.scene.SurfaceInfo
  */
 object ReflectiveMaterial {
 
-  def apply(color: Color,
-            glossiness: Double) =
+  def apply(color: Color, glossiness: Double) =
     new Material(color, new GlossyReflectFunction(glossiness))
 }

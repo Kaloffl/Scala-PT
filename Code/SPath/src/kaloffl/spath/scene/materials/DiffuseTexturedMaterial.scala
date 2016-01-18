@@ -9,14 +9,17 @@ import kaloffl.spath.scene.SurfaceInfo
 
 class DiffuseTexturedMaterial(texture: Texture) extends Material(Color.Black, DiffuseFunction) {
 
-  override def getInfo(worldPos: Vec3d,
-                       surfaceNormal: Vec3d,
-                       incomingNormal: Vec3d,
-                       textureCoordinate: Vec2d,
+  override def getInfo(incomingNormal: Vec3d,
+                       worldPos: ⇒ Vec3d,
+                       surfaceNormal: ⇒ Vec3d,
+                       textureCoordinate: ⇒ Vec2d,
                        airRefractivityIndex: Double,
                        context: Context): SurfaceInfo = {
+    // call-by-name parameters are evaluated each time their value is used,
+    // so we need to cache the result to avoid multiple calls
+    val tc = textureCoordinate
     new SurfaceInfo(
-      texture(textureCoordinate.x.toFloat, textureCoordinate.y.toFloat),
+      texture(tc.x.toFloat, tc.y.toFloat),
       Color.Black,
       DiffuseFunction.outDirection(
         incomingNormal,

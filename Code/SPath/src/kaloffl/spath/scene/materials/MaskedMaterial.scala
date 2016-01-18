@@ -31,36 +31,47 @@ class MaskedMaterial(
     incomingNormal: Vec3d,
     context: Context): Color = {
 
-    if (useA(context.passNum, mask.maskAmount(worldPos))) {
+    if (useA(context.passNum, mask.maskAmount(worldPos, Vec2d()))) {
       matA.getEmittance(worldPos, surfaceNormal, incomingNormal, context)
     } else {
       matB.getEmittance(worldPos, surfaceNormal, incomingNormal, context)
     }
   }
 
-  override def getInfo(
-    worldPos: Vec3d,
-    surfaceNormal: Vec3d,
-    incomingNormal: Vec3d,
-    textureCoordinate: Vec2d,
-    refractivityIndex: Double,
-    context: Context): SurfaceInfo = {
+  override def getInfo(incomingNormal: Vec3d,
+                       worldPos: ⇒ Vec3d,
+                       surfaceNormal: ⇒ Vec3d,
+                       textureCoordinate: ⇒ Vec2d,
+                       refractivityIndex: Double,
+                       context: Context): SurfaceInfo = {
 
-    if (useA(context.passNum, mask.maskAmount(worldPos))) {
-      matA.getInfo(worldPos, surfaceNormal, incomingNormal, textureCoordinate, refractivityIndex, context)
+    if (useA(context.passNum, mask.maskAmount(worldPos, textureCoordinate))) {
+      matA.getInfo(
+        incomingNormal,
+        worldPos,
+        surfaceNormal,
+        textureCoordinate,
+        refractivityIndex,
+        context)
     } else {
-      matB.getInfo(worldPos, surfaceNormal, incomingNormal, textureCoordinate, refractivityIndex, context)
+      matB.getInfo(
+        incomingNormal,
+        worldPos,
+        surfaceNormal,
+        textureCoordinate,
+        refractivityIndex,
+        context)
     }
   }
 
 }
 
 trait Mask {
-  def maskAmount(pos: Vec3d): Float
+  def maskAmount(pos: Vec3d, textureCoord: ⇒ Vec2d): Float
 }
 
 class CheckeredMask(val size: Double, val offset: Vec3d = Vec3d.Origin) extends Mask {
-  override def maskAmount(pos: Vec3d): Float = {
+  override def maskAmount(pos: Vec3d, textureCoord: ⇒ Vec2d): Float = {
     val mx = pos.x * size + offset.x
     val my = pos.y * size + offset.y
     val mz = pos.z * size + offset.z
@@ -73,7 +84,7 @@ class CheckeredMask(val size: Double, val offset: Vec3d = Vec3d.Origin) extends 
 }
 
 class GridMask(val size: Double, thickness: Double, val offset: Vec3d = Vec3d.Origin) extends Mask {
-  override def maskAmount(pos: Vec3d): Float = {
+  override def maskAmount(pos: Vec3d, textureCoord: ⇒ Vec2d): Float = {
     val mx = Math.abs(pos.x * size + offset.x) % 1
     val my = Math.abs(pos.y * size + offset.y) % 1
     val mz = Math.abs(pos.z * size + offset.z) % 1
@@ -82,5 +93,12 @@ class GridMask(val size: Double, thickness: Double, val offset: Vec3d = Vec3d.Or
     } else {
       0.0f
     }
+  }
+}
+
+class TextureMask(val texture: Texture) extends Mask {
+  override def maskAmount(pos: Vec3d, textureCoord: ⇒ Vec2d): Float = {
+    val tc = textureCoord
+    return texture(tc.x.toFloat, tc.y.toFloat).r
   }
 }

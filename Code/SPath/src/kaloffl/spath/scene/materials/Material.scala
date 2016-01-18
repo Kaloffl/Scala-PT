@@ -24,10 +24,10 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
                    incomingNormal: Vec3d,
                    context: Context): Color = Color.Black
 
-  def getInfo(worldPos: Vec3d,
-              surfaceNormal: Vec3d,
-              incomingNormal: Vec3d,
-              textureCoordinate: Vec2d,
+  def getInfo(incomingNormal: Vec3d,
+              worldPos: ⇒ Vec3d,
+              surfaceNormal: ⇒ Vec3d,
+              textureCoordinate: ⇒ Vec2d,
               airRefractivityIndex: Double,
               context: Context): SurfaceInfo = {
     new SurfaceInfo(

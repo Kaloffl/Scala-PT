@@ -6,5 +6,7 @@ import kaloffl.spath.math.Ray
 
 trait Tracer {
 
-  def trace(ray: Ray, maxBounces: Int, air: Material, context: Context): Color
+  def trace(ray: Ray,
+            maxBounces: Int,
+            context: Context): Color
 }
