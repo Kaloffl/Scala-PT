@@ -11,10 +11,9 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
 
   def minEmittance: Color = Color.Black
 
-  def absorbtionCoefficient: Double = 0.0
   def scatterPropability: Double = 0.0
 
-  def refractivityIndex: Double = 1.0
+  def refractiveIndex: Double = 1.0
 
   def getAbsorbtion(worldPos: Vec3d,
                     context: Context): Color = Color.Black

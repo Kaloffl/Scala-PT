@@ -1,6 +1,7 @@
 package kaloffl.spath.examples
 
 import java.io.File
+
 import javax.imageio.ImageIO
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
@@ -9,16 +10,15 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.DiffuseTexturedMaterial
 import kaloffl.spath.scene.materials.LazyTexture
 import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.materials.MaskedMaterial
+import kaloffl.spath.scene.materials.TextureMask
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.materials.ReflectiveMaterial
-import kaloffl.spath.scene.materials.MaskedMaterial
-import kaloffl.spath.scene.materials.TextureMask
-import kaloffl.spath.scene.materials.DiffuseMaterial
 
 object Textured {
 
@@ -28,51 +28,45 @@ object Textured {
 
     val matVoid = new TransparentMaterial(
       color = Color.Black,
-      absorbtionCoefficient = 0,
       scatterPropability = 0,
-      refractivityIndex = 0.99,
+      refractiveIndex = 0.99,
       roughness = 0)
     val matAir1 = new TransparentMaterial(
-      color = atmosphereColor,
-      absorbtionCoefficient = 4e-6,
+      color = atmosphereColor * 4e-6f,
       scatterPropability = 8e-8,
-      refractivityIndex = 1.0,
+      refractiveIndex = 1.0,
       roughness = 0)
     val matAir2 = new TransparentMaterial(
-      color = atmosphereColor,
-      absorbtionCoefficient = 2e-6,
+      color = atmosphereColor * 2e-6f,
       scatterPropability = 4e-8,
-      refractivityIndex = 0.998,
+      refractiveIndex = 0.998,
       roughness = 0)
     val matAir3 = new TransparentMaterial(
-      color = atmosphereColor,
-      absorbtionCoefficient = 1e-6,
+      color = atmosphereColor * 1e-6f,
       scatterPropability = 2e-8,
-      refractivityIndex = 0.996,
+      refractiveIndex = 0.996,
       roughness = 0)
     val matAir4 = new TransparentMaterial(
-      color = atmosphereColor,
-      absorbtionCoefficient = 5e-7,
+      color = atmosphereColor * 5e-7f,
       scatterPropability = 1e-8,
-      refractivityIndex = 0.994,
+      refractiveIndex = 0.994,
       roughness = 0)
     val matAir5 = new TransparentMaterial(
-      color = atmosphereColor,
-      absorbtionCoefficient = 25e-8,
+      color = atmosphereColor * 25e-8f,
       scatterPropability = 5e-9,
-      refractivityIndex = 0.992,
+      refractiveIndex = 0.992,
       roughness = 0)
     val matLight = new LightMaterial(Color.White * 40, Attenuation.none)
 
-    val matBlack = DiffuseMaterial(Color.Black)
     val matWhite = DiffuseMaterial(Color.White)
     val matGray = DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
+    
+    val matSpace = new LightMaterial(Color.White / 64, Attenuation.none)
 
     val matWater = new TransparentMaterial(
-      color = Color(4, 2, 0.5f),
-      absorbtionCoefficient = 0.34,
+      color = Color(4, 2, 0.5f) * 0.34f,
       scatterPropability = 1,
-      refractivityIndex = 1.3,
+      refractiveIndex = 1.3,
       roughness = 0.1)
     val image = ImageIO.read(new File("D:/temp/texture.jpg"))
     val mask = ImageIO.read(new File("D:/temp/mask.jpg"))
@@ -105,7 +99,7 @@ object Textured {
       scene = new Scene(
         root = world,
         airMedium = matVoid,
-        skyMaterial = matBlack,
+        skyMaterial = matSpace,
         camera = new Camera(
           position = position,
           forward = Vec3d.Front,

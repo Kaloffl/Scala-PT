@@ -22,7 +22,7 @@ object EstimatedShapes {
 
   def main(args: Array[String]): Unit = {
 
-    val matPaper = new TransparentMaterial(Color(0.01f, 0.01f, 0.01f), 10, 500, 1.557, 0.01)
+    val matPaper = new TransparentMaterial(Color(0.1f, 0.1f, 0.1f), 500, 1.557, 0.01)
 
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))

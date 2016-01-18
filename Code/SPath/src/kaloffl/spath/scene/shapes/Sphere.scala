@@ -4,6 +4,7 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
 import kaloffl.spath.math.Vec2d
+import kaloffl.spath.math.FastMath
 
 /**
  * A sphere shape consisting of a location and a radius.
@@ -21,7 +22,7 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
 
   override def getTextureCoordinate(point: Vec3d): Vec2d = {
     return Vec2d(
-      Math.asin((position.x - point.x) / radius) / Math.PI + 0.5,
+      FastMath.asin((position.x - point.x) / radius) / Math.PI + 0.5,
       (position.y - point.y) / (radius * 2) + 0.5)
   }
 

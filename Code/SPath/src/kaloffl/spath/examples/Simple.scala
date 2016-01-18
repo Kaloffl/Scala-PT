@@ -28,7 +28,7 @@ object Simple {
     val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.0, 0.0, 1.0)
 
     val matMirror = ReflectiveMaterial(Color.White, 0.0)
-    val matGlass = new TransparentMaterial(Color(0.9f, 0.9f, 0.9f), 0.1, 0.0, 2.0, 0.0)
+    val matGlass = new TransparentMaterial(Color(0.09f, 0.09f, 0.09f), 0.0, 2.0, 0.0)
     val matLight = new LightMaterial(Color.White * 8f, Attenuation.radius(1f))
 
     val coloredSpheres = SceneNode(Array(

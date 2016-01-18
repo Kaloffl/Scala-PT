@@ -28,7 +28,7 @@ object Indirect {
     val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.0, 0.0, 1.0)
 
     val matMirror = ReflectiveMaterial(Color.White, 0.0)
-    val matGlass = new TransparentMaterial(Color(0.9f, 0.9f, 0.9f), 0.1, 0.0, 2.0, 0.0)
+    val matGlass = new TransparentMaterial(Color(0.09f, 0.09f, 0.09f), 0.0, 2.0, 0.0)
     val matLight = new LightMaterial(Color.White * 3f, Attenuation.radius(0.5f))
 
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5, 0, 0))
