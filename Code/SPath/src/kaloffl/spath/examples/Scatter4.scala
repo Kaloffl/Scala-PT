@@ -17,14 +17,18 @@ import kaloffl.spath.scene.structure.SceneNode
 object Scatter4 {
   def main(args: Array[String]): Unit = {
 
-    val matPaper = new TransparentMaterial(Color(0.1f, 0.1f, 0.1f), 500, 1.557, 0.01)
+    val matPaper = new TransparentMaterial(
+      color = Color(0.1f, 0.1f, 0.1f),
+      scatterProbability = 500,
+      refractiveIndex = 1.557f,
+      roughness = 0.01)
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matWhiteLight = new LightMaterial(Color.White * 16, Attenuation.none)
     val matRedLight = new LightMaterial(Color.Red * 256, Attenuation.none)
     val matGreenLight = new LightMaterial(Color.Green * 16, Attenuation.none)
     val matMirror = ReflectiveMaterial(Color(0.5f, 0.5f, 0.5f), 0.001)
-    val matAir = new TransparentMaterial(Color.Black, 0, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.Black)
     val matSky = new LightMaterial(Color.White, Attenuation.none)
 
     val glassTest = SceneNode(Array(

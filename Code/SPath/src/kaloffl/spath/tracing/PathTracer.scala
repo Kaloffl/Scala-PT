@@ -37,7 +37,7 @@ class PathTracer(val scene: Scene) extends Tracer {
       // particle and be scattered. If the current air has a scatter probability 
       // of 0, the distance will be infinity.
       val scatterChance = context.random.getAsDouble
-      val scatterDist = -Math.log(1 - scatterChance) / media(mediaIndex).scatterPropability
+      val scatterDist = -Math.log(1 - scatterChance) / media(mediaIndex).scatterProbability
 
       // Now try to find an object in the scene that is closer than the determined 
       // scatter depth. If none is found and the scatter depth is not infinity, 
@@ -53,7 +53,12 @@ class PathTracer(val scene: Scene) extends Tracer {
           val dist = scene.skyDistance
           val point = ray.atDistance(dist)
           val emitted = scene.skyMaterial.getEmittance(point, -ray.normal, ray.normal, context)
-          val absorbed = (media(mediaIndex).getAbsorbtion(point, context) * -dist.toFloat).exp
+          val absorbed =
+            if (java.lang.Double.isInfinite(dist)) {
+              Color.White
+            } else {
+              (media(mediaIndex).getAbsorbtion(point, context) * -dist.toFloat).exp
+            }
           return color * emitted * absorbed
         }
 
@@ -70,7 +75,7 @@ class PathTracer(val scene: Scene) extends Tracer {
           worldPos = point,
           surfaceNormal = surfaceNormal,
           textureCoordinate = intersection.shape.getTextureCoordinate(point),
-          airRefractivityIndex = media(mediaIndex).refractiveIndex,
+          airRefractiveIndex = media(mediaIndex).refractiveIndex,
           context = context)
         val absorbed = (media(mediaIndex).getAbsorbtion(point, context) * -depth.toFloat).exp
 
@@ -78,7 +83,15 @@ class PathTracer(val scene: Scene) extends Tracer {
           return color * info.emittance * absorbed
         }
 
-        val newDir = info.outgoing
+        val scattering = info.scattering
+        val rnd = context.random.getAsDouble
+        var d = 0
+        var weights = scattering.getWeight(d)
+        while (weights < rnd) {
+          d += 1
+          weights += scattering.getWeight(d)
+        }
+        val newDir = scattering.getNormal(d)
 
         if (newDir.dot(surfaceNormal) < 0) {
           // if the new ray has entered a surface

@@ -19,19 +19,18 @@ object Scatter {
   def main(args: Array[String]): Unit = {
 
     val glassColor = Color(0.2f, 0.4f, 0.5f)
-    val absorbtion = 16
     val refraction = 2
     val matGlass = Array(
-      new TransparentMaterial(glassColor, 0.5, 0.0, refraction),
-      new TransparentMaterial(glassColor, 1, 0.0, refraction),
-      new TransparentMaterial(glassColor, 2, 0.0, refraction),
-      new TransparentMaterial(glassColor, 4, 0.0, refraction),
-      new TransparentMaterial(glassColor, 8, 0.0, refraction),
-      new TransparentMaterial(glassColor, 16, 0.0, refraction),
-      new TransparentMaterial(glassColor, 32, 0.0, refraction),
-      new TransparentMaterial(glassColor, 64, 0.0, refraction),
-      new TransparentMaterial(glassColor, 128, 0.0, refraction),
-      new TransparentMaterial(glassColor, 256, 0.0, refraction))
+      new TransparentMaterial(glassColor * 0.5f, 1, refraction),
+      new TransparentMaterial(glassColor * 1, 1, refraction),
+      new TransparentMaterial(glassColor * 2, 1, refraction),
+      new TransparentMaterial(glassColor * 4, 1, refraction),
+      new TransparentMaterial(glassColor * 8, 1, refraction),
+      new TransparentMaterial(glassColor * 16, 1, refraction),
+      new TransparentMaterial(glassColor * 32, 1, refraction),
+      new TransparentMaterial(glassColor * 64, 1, refraction),
+      new TransparentMaterial(glassColor * 128, 1, refraction),
+      new TransparentMaterial(glassColor * 256, 1, refraction))
 
     val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.6f, 0.6f))
     val matGreenDiffuse = DiffuseMaterial(Color(0.6f, 0.9f, 0.6f))
@@ -44,7 +43,7 @@ object Scatter {
     val mask = new GridMask(2, 0.04, Vec3d(0.5, 0.5, 0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matWhiteDiffuse, matBlueDiffuse, mask)
 
-    val matAir = new TransparentMaterial(Color.White, 0, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.Black)
 
     val environment = Array(
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),
@@ -68,15 +67,15 @@ object Scatter {
     val up = front.cross(Vec3d.Left).normalize
 
     RenderEngine.render(
-        bounces = 12,
-        target = new Display(1280, 720), 
-        scene = new Scene(
-        root = SceneNode(environment ++ objects), 
-        airMedium = matAir, 
+      bounces = 12,
+      target = new Display(1280, 720),
+      scene = new Scene(
+        root = SceneNode(environment ++ objects),
+        airMedium = matAir,
         skyMaterial = matBlackDiffuse,
         camera = new Camera(
-            position = Vec3d(0, 14, -14), 
-            forward = front.normalize, 
-            up = up)))
+          position = Vec3d(0, 14, -14),
+          forward = front.normalize,
+          up = up)))
   }
 }

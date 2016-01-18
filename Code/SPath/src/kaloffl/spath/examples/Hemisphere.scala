@@ -23,19 +23,22 @@ object Hemisphere {
       override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
     }
 
-    val matAir = new TransparentMaterial(Color.White, 0.0, 0.0, 1.0)
-    val matSky = new DirectionalLightMaterial(Color.White * 2, Vec3d(0, 1, -3).normalize, 0.5f)
+    val matAir = new TransparentMaterial(Color.Black)
+    val matSky = new DirectionalLightMaterial(
+      color = Color.White * 2,
+      direction = Vec3d(0, 1, -3).normalize,
+      limit = 0.5f)
 
     val diffuseMaterials = Array(
-        DiffuseMaterial(Color(0.9f, 0.1f, 0.1f)),
-        DiffuseMaterial(Color(0.1f, 0.9f, 0.1f)),
-        DiffuseMaterial(Color(0.1f, 0.1f, 0.9f)),
-        DiffuseMaterial(Color(0.9f, 0.9f, 0.1f)),
-        DiffuseMaterial(Color(0.1f, 0.9f, 0.9f)),
-        DiffuseMaterial(Color(0.9f, 0.1f, 0.9f)),
-        DiffuseMaterial(Color(0.1f, 0.1f, 0.1f)),
-        DiffuseMaterial(Color(0.9f, 0.9f, 0.9f)),
-        DiffuseMaterial(Color(0.5f, 0.5f, 0.5f)))
+      DiffuseMaterial(Color(0.9f, 0.1f, 0.1f)),
+      DiffuseMaterial(Color(0.1f, 0.9f, 0.1f)),
+      DiffuseMaterial(Color(0.1f, 0.1f, 0.9f)),
+      DiffuseMaterial(Color(0.9f, 0.9f, 0.1f)),
+      DiffuseMaterial(Color(0.1f, 0.9f, 0.9f)),
+      DiffuseMaterial(Color(0.9f, 0.1f, 0.9f)),
+      DiffuseMaterial(Color(0.1f, 0.1f, 0.1f)),
+      DiffuseMaterial(Color(0.9f, 0.9f, 0.9f)),
+      DiffuseMaterial(Color(0.5f, 0.5f, 0.5f)))
 
     val hemisphere = SceneNode((for (i ← 0 to 2000) yield {
       val weight = Math.cos(rng.getAsDouble * Math.PI / 2)

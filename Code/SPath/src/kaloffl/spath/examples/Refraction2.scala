@@ -19,19 +19,18 @@ import kaloffl.spath.scene.structure.SceneNode
 object Refraction2 {
   def main(args: Array[String]): Unit = {
 
-    val glassColor = Color(0.2f, 0.4f, 0.5f)
-    val absorbtion = 16
+    val glassColor = Color(0.2f, 0.4f, 0.5f) * 16
     val scatter = 0.0
-    val matGlass1 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.1)
-    val matGlass2 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.2)
-    val matGlass3 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.3)
-    val matGlass4 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.4)
-    val matGlass5 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.5)
-    val matGlass6 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.6)
-    val matGlass7 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.7)
-    val matGlass8 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.8)
-    val matGlass9 = new TransparentMaterial(glassColor, absorbtion, scatter, 1.9)
-    val matGlassA = new TransparentMaterial(glassColor, absorbtion, scatter, 2.0)
+    val matGlass1 = new TransparentMaterial(glassColor, scatter, 1.1f)
+    val matGlass2 = new TransparentMaterial(glassColor, scatter, 1.2f)
+    val matGlass3 = new TransparentMaterial(glassColor, scatter, 1.3f)
+    val matGlass4 = new TransparentMaterial(glassColor, scatter, 1.4f)
+    val matGlass5 = new TransparentMaterial(glassColor, scatter, 1.5f)
+    val matGlass6 = new TransparentMaterial(glassColor, scatter, 1.6f)
+    val matGlass7 = new TransparentMaterial(glassColor, scatter, 1.7f)
+    val matGlass8 = new TransparentMaterial(glassColor, scatter, 1.8f)
+    val matGlass9 = new TransparentMaterial(glassColor, scatter, 1.9f)
+    val matGlassA = new TransparentMaterial(glassColor, scatter, 2.0f)
 
     val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
     val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
@@ -44,7 +43,7 @@ object Refraction2 {
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matAir = new TransparentMaterial(Color.Black, 0, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.Black)
 
     val glassTest = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-8.9, 1, 0.5), 1), matGlass1),
@@ -77,8 +76,8 @@ object Refraction2 {
       SceneNode(AABB(Vec3d(0, 4, -8.5f), Vec3d(20, 8, 1)), matWhiteDiffuse),
       SceneNode(AABB(Vec3d(0, 4, 16.5), Vec3d(20, 8, 1)), matWhiteDiffuse)))
 
-    val front = Vec3d(0, -2.5, -13).normalize
-    val up = front.cross(Vec3d.Right).normalize
+    val front = Vec3d(0, -2.5, -13)
+    val up = front.normalize.cross(Vec3d.Right).normalize
 
     RenderEngine.render(
       bounces = 12,
@@ -89,7 +88,7 @@ object Refraction2 {
         skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 5, 13),
-          forward = front,
+          forward = front.normalize,
           up = up,
           aperture = 0.1,
           focalLength = front.length)))

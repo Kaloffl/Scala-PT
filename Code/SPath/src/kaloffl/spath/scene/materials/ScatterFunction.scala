@@ -5,67 +5,58 @@ import kaloffl.spath.math.Vec3d
 import java.util.function.DoubleSupplier
 
 trait ScatterFunction {
-  def outDirection(inDirection: Vec3d,
-                   normal: Vec3d,
-                   airIndex: Double,
-                   random: DoubleSupplier): Vec3d
+  def outDirections(inDirection: Vec3d,
+                    normal: Vec3d,
+                    airIndex: Float,
+                    random: DoubleSupplier): Scattering
 }
 
 object DummyFunction extends ScatterFunction {
-  override def outDirection(inDirection: Vec3d,
-                            normal: Vec3d,
-                            airIndex: Double,
-                            random: DoubleSupplier): Vec3d = ???
+  override def outDirections(inDirection: Vec3d,
+                             normal: Vec3d,
+                             airIndex: Float,
+                             random: DoubleSupplier): Scattering = ???
 }
 
 object DiffuseFunction extends ScatterFunction {
-  override def outDirection(inDirection: Vec3d,
-                            normal: Vec3d,
-                            airIndex: Double,
-                            random: DoubleSupplier): Vec3d = {
-    normal.weightedHemisphere(Vec2d.random(random))
+  override def outDirections(inDirection: Vec3d,
+                             normal: Vec3d,
+                             airIndex: Float,
+                             random: DoubleSupplier): Scattering = {
+    new SingleRayScattering(normal.weightedHemisphere(Vec2d.random(random)))
   }
 }
 
 object ReflectFunction extends ScatterFunction {
-  override def outDirection(inDirection: Vec3d,
-                            normal: Vec3d,
-                            airIndex: Double,
-                            random: DoubleSupplier): Vec3d = {
-    inDirection.reflect(normal)
+  override def outDirections(inDirection: Vec3d,
+                             normal: Vec3d,
+                             airIndex: Float,
+                             random: DoubleSupplier): Scattering = {
+    new SingleRayScattering(inDirection.reflect(normal))
   }
 }
 
 class GlossyReflectFunction(glossiness: Double) extends ScatterFunction {
-  override def outDirection(inDirection: Vec3d,
-                            normal: Vec3d,
-                            airIndex: Double,
-                            random: DoubleSupplier): Vec3d = {
-    inDirection.reflect(normal.randomConeSample(Vec2d.random(random), glossiness, 0.0))
+  override def outDirections(inDirection: Vec3d,
+                             normal: Vec3d,
+                             airIndex: Float,
+                             random: DoubleSupplier): Scattering = {
+    new SingleRayScattering(inDirection.reflect(normal.randomConeSample(Vec2d.random(random), glossiness, 0.0)))
   }
 }
 
-class RefractFunction(refractivityIndex: Double,
+class RefractFunction(refractiveIndex: Float,
                       glossiness: Double = 0.0) extends ScatterFunction {
-  override def outDirection(inDirection: Vec3d,
-                            normal: Vec3d,
-                            airIndex: Double,
-                            random: DoubleSupplier): Vec3d = {
+  override def outDirections(inDirection: Vec3d,
+                             normal: Vec3d,
+                             airIndex: Float,
+                             random: DoubleSupplier): Scattering = {
 
     val axis = normal.randomConeSample(Vec2d.random(random), glossiness, 0.0)
     if (axis.dot(inDirection) > 0) {
-      val surf = -axis
-      if (random.getAsDouble < inDirection.refractance(surf, refractivityIndex, airIndex)) {
-        inDirection.reflect(surf)
-      } else {
-        inDirection.refract(surf, refractivityIndex, airIndex)
-      }
+      new RefractiveScattering(inDirection, -axis, refractiveIndex, airIndex)
     } else {
-      if (random.getAsDouble < inDirection.refractance(axis, airIndex, refractivityIndex)) {
-        inDirection.reflect(axis)
-      } else {
-        inDirection.refract(axis, airIndex, refractivityIndex)
-      }
+      new RefractiveScattering(inDirection, axis, airIndex, refractiveIndex)
     }
   }
 }

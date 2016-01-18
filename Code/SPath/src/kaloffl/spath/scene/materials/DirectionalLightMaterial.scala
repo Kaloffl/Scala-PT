@@ -31,11 +31,11 @@ class DirectionalLightMaterial(val color: Color,
                        worldPos: ⇒ Vec3d,
                        surfaceNormal: ⇒ Vec3d,
                        textureCoordinate: ⇒ Vec2d,
-                       airRefractivityIndex: Double,
+                       airRefractiveIndex: Float,
                        context: Context): SurfaceInfo = {
     return new SurfaceInfo(
       Color.Black,
       getEmittance(worldPos, surfaceNormal, incomingNormal, context),
-      Vec3d.Origin)
+      TerminatedScattering)
   }
 }

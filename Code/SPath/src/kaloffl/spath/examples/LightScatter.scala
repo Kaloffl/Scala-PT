@@ -19,7 +19,9 @@ object LightScatter {
   def main(args: Array[String]): Unit = {
 
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
-    val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.05, 1.0)
+    val matAir = new TransparentMaterial(
+      color = Color(0.08f, 0.09f, 0.095f),
+      scatterProbability = 0.05f)
     val matLight = new LightMaterial(Color(1, 0.9f, 0.8f) * 4, Attenuation.radius(1))
 
     val hazeObjects = SceneNode(Array(

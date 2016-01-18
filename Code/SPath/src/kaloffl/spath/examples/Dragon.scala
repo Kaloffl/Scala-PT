@@ -20,9 +20,12 @@ object Dragon {
 
   def main(args: Array[String]): Unit = {
 
-    val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color(0.02f, 0.01f, 0.005f))
     val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
-    val matGlass = new TransparentMaterial(Color(0.5f, 0.8f, 0.8f), 7, 1.5, 1.9)
+    val matGlass = new TransparentMaterial(
+      color = Color(0.5f, 0.8f, 0.8f) * 7,
+      scatterProbability = 1.5,
+      refractiveIndex = 1.9f)
     val matRedMetal = ReflectiveMaterial(Color(0.9f, 0.1f, 0.1f), 0.0125)
     val matGreenMetal = ReflectiveMaterial(Color(0.1f, 0.9f, 0.1f), 0.0125)
     val matBlueMetal = ReflectiveMaterial(Color(0.1f, 0.1f, 0.9f), 0.0125)

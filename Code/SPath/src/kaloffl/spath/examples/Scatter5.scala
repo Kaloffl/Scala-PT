@@ -25,13 +25,18 @@ object Scatter5 {
     val matWhiteLight = new LightMaterial(Color.White * 16, Attenuation.none)
     val matSkyLight = new LightMaterial(Color(0.9f, 0.95f, 0.975f) * 0.5f, Attenuation.none)
 
-    val matRedGlass = new TransparentMaterial(Color(0.1f, 0.5f, 0.5f), 1, 0.1, 1.7)
-    val matClearGlass = RefractiveMaterial(Color.White, 1.7, 0.0)
-    val matWhiteGlass = new TransparentMaterial(Color.Black, 0.0, 0.1, 1.7)
+    val matRedGlass = new TransparentMaterial(
+      color = Color(0.1f, 0.5f, 0.5f),
+      scatterProbability = 0.1,
+      refractiveIndex = 1.7f)
+    val matClearGlass = RefractiveMaterial(Color.White, 1.7f, 0.0)
+    val matWhiteGlass = new TransparentMaterial(
+      color = Color.Black,
+      refractiveIndex = 1.7f)
 
     val matMirror = ReflectiveMaterial(Color.White, 0.0001)
 
-    val matAir = new TransparentMaterial(Color.Black, 0, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.Black)
 
     val glassTest = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(0, 80, 0), 20), matWhiteLight),

@@ -23,10 +23,11 @@ object Light {
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8, 0.0)
+    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f, 0.0)
 
-    val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.02, 1.0)
-    val matSky = new DirectionalLightMaterial(Color.White * 2, Vec3d(1, 3, 0).normalize, 1)
+    val matAir = new TransparentMaterial(
+      color = Color(0.02f, 0.01f, 0.005f),
+      scatterProbability = 0.02)
 
     val coloredLights = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matWhiteGlass8),
@@ -56,8 +57,8 @@ object Light {
       SceneNode(AABB(Vec3d(0, 4, -8.5f), Vec3d(16, 8, 1)), matWhiteDiffuse),
       SceneNode(AABB(Vec3d(0, 4, 16.5), Vec3d(16, 8, 1)), matWhiteDiffuse)))
 
-    val front = Vec3d(0, -2.5, -13).normalize
-    val up = front.cross(Vec3d.Right).normalize
+    val front = Vec3d(0, -2.5, -13)
+    val up = front.normalize.cross(Vec3d.Right).normalize
 
     RenderEngine.render(
       bounces = 12,
@@ -65,10 +66,10 @@ object Light {
       scene = new Scene(
         root = coloredLights,
         airMedium = matAir,
-        skyMaterial = matSky,
+        skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 5, 13),
-          forward = front,
+          forward = front.normalize,
           up = up,
           aperture = 0.1,
           focalLength = front.length)))

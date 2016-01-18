@@ -9,12 +9,11 @@ import kaloffl.spath.math.Vec2d
 
 class Material(reflectance: Color, scatterFunction: ScatterFunction) {
 
-  def scatterPropability: Double = 0.0
+  def scatterProbability: Double = 0.0
 
-  def refractiveIndex: Double = 1.0
+  def refractiveIndex: Float = 1.0f
 
-  def getAbsorbtion(worldPos: Vec3d,
-                    context: Context): Color = Color.Black
+  def getAbsorbtion(worldPos: Vec3d, context: Context): Color = Color.Black
 
   def getEmittance(worldPos: Vec3d,
                    surfaceNormal: Vec3d,
@@ -25,7 +24,7 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
               worldPos: ⇒ Vec3d,
               surfaceNormal: ⇒ Vec3d,
               textureCoordinate: ⇒ Vec2d,
-              airRefractivityIndex: Double,
+              airRefractiveIndex: Float,
               context: Context): SurfaceInfo = {
     new SurfaceInfo(
       reflectance,
@@ -34,10 +33,10 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
         surfaceNormal,
         incomingNormal,
         context),
-      scatterFunction.outDirection(
+      scatterFunction.outDirections(
         incomingNormal,
         surfaceNormal,
-        airRefractivityIndex,
+        airRefractiveIndex,
         context.random))
   }
 

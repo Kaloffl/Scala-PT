@@ -33,7 +33,7 @@ class MaskedMaterial(
                        worldPos: ⇒ Vec3d,
                        surfaceNormal: ⇒ Vec3d,
                        textureCoordinate: ⇒ Vec2d,
-                       refractivityIndex: Double,
+                       refractiveIndex: Float,
                        context: Context): SurfaceInfo = {
 
     if (useA(context.passNum, mask.maskAmount(worldPos, textureCoordinate))) {
@@ -42,7 +42,7 @@ class MaskedMaterial(
         worldPos,
         surfaceNormal,
         textureCoordinate,
-        refractivityIndex,
+        refractiveIndex,
         context)
     } else {
       matB.getInfo(
@@ -50,7 +50,7 @@ class MaskedMaterial(
         worldPos,
         surfaceNormal,
         textureCoordinate,
-        refractivityIndex,
+        refractiveIndex,
         context)
     }
   }

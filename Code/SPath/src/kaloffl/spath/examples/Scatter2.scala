@@ -30,7 +30,7 @@ object Scatter2 {
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.none)
-    val matAir = new TransparentMaterial(Color.White, 0, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.Black)
 
     val environment = Array(
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),
@@ -46,7 +46,10 @@ object Scatter2 {
       val rnd = Vec2d(rng.getAsDouble, rng.getAsDouble)
       SceneNode(
         AABB(Vec3d(x * 2 - 9.5, 0.501, y * 2 - 9.5), Vec3d(1, 0.1, 1)),
-        new TransparentMaterial(Color.randomColor(rnd, 0.5f), 10 * Math.pow(x, 2) + 10, y * x + 4, 1.1))
+        new TransparentMaterial(
+          color = Color.randomColor(rnd, 0.5f) * (10 * Math.pow(x, 2) + 10).toFloat,
+          scatterProbability = y * x + 4,
+          refractiveIndex = 1.1f))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

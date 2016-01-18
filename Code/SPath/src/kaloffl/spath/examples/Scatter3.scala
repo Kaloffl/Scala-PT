@@ -22,8 +22,10 @@ object Scatter3 {
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8, 0.0)
-    val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.005, 1.0)
+    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f, 0.0)
+    val matAir = new TransparentMaterial(
+        color = Color(0.02f, 0.01f, 0.005f), 
+        scatterProbability = 0.005)
     val matLight = new LightMaterial(Color.White * 8, Attenuation.none)
 
     val hazeObjects = Array(

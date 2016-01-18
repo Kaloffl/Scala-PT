@@ -21,8 +21,10 @@ object Mirrored {
 
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matMirror = ReflectiveMaterial(Color.White, 0)
-    val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1, 0.002, 1.0)
+    val matMirror = ReflectiveMaterial(Color.White)
+    val matAir = new TransparentMaterial(
+      color = Color(0.02f, 0.01f, 0.005f),
+      scatterProbability = 0.002f)
 
     val coloredSpheres = SceneNode(Array(
       SceneNode(

@@ -27,7 +27,7 @@ object Refraction4 {
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.none)
-    val matAir = new TransparentMaterial(Color.White, 0, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.Black)
 
     val environment = Array(
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),
@@ -42,7 +42,9 @@ object Refraction4 {
     val objects = (for (x ← 0 until 20; y ← 0 until 20) yield {
       SceneNode(
         new Sphere(Vec3d(x * 1.1 - 10.5, 0.501, y * 1.1 - 10.5), 0.5f),
-        new TransparentMaterial(Color.randomColor(Vec2d.random(rng), 0.5f), 8, 0.0, 1.8))
+        new TransparentMaterial(
+          color = Color.randomColor(Vec2d.random(rng), 0.5f) * 8,
+          refractiveIndex = 1.8f))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

@@ -21,16 +21,16 @@ object Refraction {
 
   def main(args: Array[String]): Unit = {
 
-    val matWhiteGlass0 = RefractiveMaterial(Color.White, 1.0, 0.0)
-    val matWhiteGlass1 = RefractiveMaterial(Color.White, 1.1, 0.0)
-    val matWhiteGlass2 = RefractiveMaterial(Color.White, 1.2, 0.0)
-    val matWhiteGlass3 = RefractiveMaterial(Color.White, 1.3, 0.0)
-    val matWhiteGlass4 = RefractiveMaterial(Color.White, 1.4, 0.0)
-    val matWhiteGlass5 = RefractiveMaterial(Color.White, 1.5, 0.0)
-    val matWhiteGlass6 = RefractiveMaterial(Color.White, 1.6, 0.0)
-    val matWhiteGlass7 = RefractiveMaterial(Color.White, 1.7, 0.0)
-    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8, 0.0)
-    val matWhiteGlass9 = RefractiveMaterial(Color.White, 1.9, 0.0)
+    val matWhiteGlass0 = RefractiveMaterial(Color.White, 1.0f)
+    val matWhiteGlass1 = RefractiveMaterial(Color.White, 1.1f)
+    val matWhiteGlass2 = RefractiveMaterial(Color.White, 1.2f)
+    val matWhiteGlass3 = RefractiveMaterial(Color.White, 1.3f)
+    val matWhiteGlass4 = RefractiveMaterial(Color.White, 1.4f)
+    val matWhiteGlass5 = RefractiveMaterial(Color.White, 1.5f)
+    val matWhiteGlass6 = RefractiveMaterial(Color.White, 1.6f)
+    val matWhiteGlass7 = RefractiveMaterial(Color.White, 1.7f)
+    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f)
+    val matWhiteGlass9 = RefractiveMaterial(Color.White, 1.9f)
 
     val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
     val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
@@ -43,7 +43,7 @@ object Refraction {
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matAir = new TransparentMaterial(Color.Black, 0.1, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.Black)
 
     val glassTest = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-9, 1, 0), 1), matWhiteGlass0),
@@ -76,8 +76,8 @@ object Refraction {
       SceneNode(AABB(Vec3d(0, 4, -8.5f), Vec3d(20, 8, 1)), matGreenDiffuse),
       SceneNode(AABB(Vec3d(0, 4, 16.5), Vec3d(20, 8, 1)), matWhiteDiffuse)))
 
-    val front = Vec3d(0, -2.5, -13).normalize
-    val up = front.cross(Vec3d.Right).normalize
+    val front = Vec3d(0, -2.5, -13)
+    val up = front.normalize.cross(Vec3d.Right).normalize
 
     RenderEngine.render(
       bounces = 12,
@@ -88,9 +88,9 @@ object Refraction {
         skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 5, 13),
-          forward = front,
+          forward = front.normalize,
           up = up,
           aperture = 0.1,
-          focalLength = Vec3d(0, -2.5, -13).length)))
+          focalLength = front.length)))
   }
 }

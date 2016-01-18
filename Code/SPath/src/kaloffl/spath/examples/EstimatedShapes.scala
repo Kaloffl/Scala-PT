@@ -11,7 +11,6 @@ import kaloffl.spath.scene.materials.CheckeredMask
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.MaskedMaterial
-import kaloffl.spath.scene.materials.ReflectiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Mandelbulb
@@ -21,9 +20,6 @@ import kaloffl.spath.scene.structure.SceneNode
 object EstimatedShapes {
 
   def main(args: Array[String]): Unit = {
-
-    val matPaper = new TransparentMaterial(Color(0.1f, 0.1f, 0.1f), 500, 1.557, 0.01)
-
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
@@ -31,12 +27,10 @@ object EstimatedShapes {
     val matRedLight = new LightMaterial(Color.Red * 2, Attenuation.none)
     val matGreenLight = new LightMaterial(Color.Green * 2, Attenuation.none)
 
-    val matMirror = ReflectiveMaterial(Color(0.5f, 0.5f, 0.5f), 0.001)
-
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matAir = new TransparentMaterial(Color.Black, 0, 0.0, 1.0)
+    val matAir = new TransparentMaterial(Color.Black, 0, 0, 1.0)
 
     val glassTest = SceneNode(Array(
       SceneNode(new Mandelbulb(Vec3d.Origin, 8), matWhiteDiffuse),

@@ -20,8 +20,8 @@ class LightMaterial(
                        worldPos: ⇒ Vec3d,
                        surfaceNormal: ⇒ Vec3d,
                        textureCoordinate: ⇒ Vec2d,
-                       airRefractivityIndex: Double,
+                       airRefractiveIndex: Float,
                        context: Context): SurfaceInfo = {
-    return new SurfaceInfo(Color.Black, color, Vec3d.Origin)
+    return new SurfaceInfo(Color.Black, color, TerminatedScattering)
   }
 }

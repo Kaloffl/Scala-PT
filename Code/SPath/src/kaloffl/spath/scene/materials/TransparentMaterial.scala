@@ -9,8 +9,8 @@ import kaloffl.spath.scene.SurfaceInfo
 
 class TransparentMaterial(
     color: Color,
-    override val scatterPropability: Double = 0,
-    override val refractiveIndex: Double = 1,
+    override val scatterProbability: Double = 0,
+    override val refractiveIndex: Float = 1,
     roughness: Double = 0) extends Material(Color.White, new RefractFunction(refractiveIndex, roughness)) {
 
   override def getAbsorbtion(worldPos: Vec3d, context: Context): Color = color

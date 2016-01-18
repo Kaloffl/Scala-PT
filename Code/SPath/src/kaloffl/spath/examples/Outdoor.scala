@@ -28,8 +28,13 @@ object Outdoor {
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
     val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.radius(1))
-    val matAir = new TransparentMaterial(Color(0.8f, 0.9f, 0.95f), 0.1, 0.001, 1.0)
-    val matSky = new DirectionalLightMaterial(Color.White * 0.125f, Vec3d.Down, 1)
+    val matAir = new TransparentMaterial(
+      color = Color(0.08f, 0.09f, 0.095f),
+      scatterProbability = 0.001f)
+    val matSky = new DirectionalLightMaterial(
+      color = Color.White * 0.125f,
+      direction = Vec3d.Down,
+      limit = 1)
 
     val outdoor = SceneNode(Array(
       SceneNode(

@@ -17,11 +17,17 @@ object Nested {
 
   def main(args: Array[String]): Unit = {
 
-    val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1)
+    val matAir = new TransparentMaterial(Color(0.02f, 0.01f, 0.005f))
     val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
-    val matGlassRed = new TransparentMaterial(Color(0.1f, 0.9f, 0.9f), 2, 0, 1.3)
-    val matGlassGreen = new TransparentMaterial(Color(0.9f, 0.1f, 0.9f), 2, 0, 1.4)
-    val matGlassBlue = new TransparentMaterial(Color(0.9f, 0.9f, 0.1f), 2, 0, 1.5)
+    val matGlassRed = new TransparentMaterial(
+      color = Color(0.1f, 0.9f, 0.9f) * 2,
+      refractiveIndex = 1.3f)
+    val matGlassGreen = new TransparentMaterial(
+      color = Color(0.9f, 0.1f, 0.9f) * 2,
+      refractiveIndex = 1.4f)
+    val matGlassBlue = new TransparentMaterial(
+      color = Color(0.9f, 0.9f, 0.1f) * 2,
+      refractiveIndex = 1.5f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
 
     val boxRed = SceneNode(AABB(Vec3d(0, 1.5, 0), Vec3d(3)), matGlassRed)

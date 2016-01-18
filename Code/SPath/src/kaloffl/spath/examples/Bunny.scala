@@ -18,9 +18,11 @@ object Bunny {
 
   def main(args: Array[String]): Unit = {
 
-    val matAir = new TransparentMaterial(Color(0.2f, 0.1f, 0.05f), 0.1)
+    val matAir = new TransparentMaterial(Color.Black)
     val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
-    val matGlass = new TransparentMaterial(Color(0.9f, 0.9f, 0.9f), 1, 0, 1.7)
+    val matGlass = new TransparentMaterial(
+        color = Color(0.9f, 0.9f, 0.9f), 
+        refractiveIndex = 1.7f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
 
     val bunny = SceneNode(

@@ -28,33 +28,33 @@ object Textured {
 
     val matVoid = new TransparentMaterial(
       color = Color.Black,
-      scatterPropability = 0,
-      refractiveIndex = 0.99,
+      scatterProbability = 0,
+      refractiveIndex = 0.99f,
       roughness = 0)
     val matAir1 = new TransparentMaterial(
       color = atmosphereColor * 4e-6f,
-      scatterPropability = 8e-8,
-      refractiveIndex = 1.0,
+      scatterProbability = 8e-8,
+      refractiveIndex = 1.0f,
       roughness = 0)
     val matAir2 = new TransparentMaterial(
       color = atmosphereColor * 2e-6f,
-      scatterPropability = 4e-8,
-      refractiveIndex = 0.998,
+      scatterProbability = 4e-8,
+      refractiveIndex = 0.998f,
       roughness = 0)
     val matAir3 = new TransparentMaterial(
       color = atmosphereColor * 1e-6f,
-      scatterPropability = 2e-8,
-      refractiveIndex = 0.996,
+      scatterProbability = 2e-8,
+      refractiveIndex = 0.996f,
       roughness = 0)
     val matAir4 = new TransparentMaterial(
       color = atmosphereColor * 5e-7f,
-      scatterPropability = 1e-8,
-      refractiveIndex = 0.994,
+      scatterProbability = 1e-8,
+      refractiveIndex = 0.994f,
       roughness = 0)
     val matAir5 = new TransparentMaterial(
       color = atmosphereColor * 25e-8f,
-      scatterPropability = 5e-9,
-      refractiveIndex = 0.992,
+      scatterProbability = 5e-9,
+      refractiveIndex = 0.992f,
       roughness = 0)
     val matLight = new LightMaterial(Color.White * 40, Attenuation.none)
 
@@ -65,8 +65,8 @@ object Textured {
 
     val matWater = new TransparentMaterial(
       color = Color(4, 2, 0.5f) * 0.34f,
-      scatterPropability = 1,
-      refractiveIndex = 1.3,
+      scatterProbability = 1,
+      refractiveIndex = 1.3f,
       roughness = 0.1)
     val image = ImageIO.read(new File("D:/temp/texture.jpg"))
     val mask = ImageIO.read(new File("D:/temp/mask.jpg"))
