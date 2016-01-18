@@ -10,11 +10,12 @@ import kaloffl.spath.math.Ray
 
 class PathTracer(val scene: Scene) extends Tracer {
 
-  override def trace(startRay: Ray,
+  override def trace(x: Float,
+                     y: Float,
                      maxBounces: Int,
                      context: Context): Color = {
     var color = Color.White
-    var ray = startRay
+    var ray = scene.camera.createRay(context.random, x, y)
     var i = 0
 
     // list of materials in which the rays entered

@@ -7,7 +7,7 @@ import scala.util.Sorting
 
 import kaloffl.jobs.Job
 import kaloffl.jobs.JobPool
-import kaloffl.spath.scene.Scene
+import kaloffl.spath.tracing.Tracer
 import kaloffl.spath.tracing.TracingWorker
 
 /**
@@ -44,7 +44,7 @@ object RenderEngine {
    * @param passes Number of rays that are simulated per pixel (default 3000)
    * @param bounces Maximal number of bounces that are simulated per pixel per pass (default 8)
    */
-  def render(target: RenderTarget, scene: Scene, passes: Int = 3000, bounces: Int = 8) {
+  def render(target: RenderTarget, tracer: Tracer, passes: Int = 3000, bounces: Int = 8) {
     val tracingWorkers = new Array[TracingWorker](numberOfWorkers)
     val width = target.width / cols
     val height = target.height / rows
@@ -58,7 +58,7 @@ object RenderEngine {
       val y = i / cols * height
       val w = if ((i + 1) % cols == 0) target.width - x else width
       val h = if (i >= cols * (rows - 1)) target.height - y else height
-      tracingWorkers(i) = new TracingWorker(x, y, w, h, scene, random)
+      tracingWorkers(i) = new TracingWorker(x, y, w, h, tracer, random)
     }
 
     var pass = 0

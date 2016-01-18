@@ -14,6 +14,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Mirrored {
 
@@ -45,7 +46,7 @@ object Mirrored {
     RenderEngine.render(
       bounces = 80,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = coloredSpheres,
         airMedium = matAir,
         skyMaterial = matBlackDiffuse,
@@ -54,6 +55,6 @@ object Mirrored {
           forward = Vec3d.Back,
           up = Vec3d.Up,
           aperture = 0.03f,
-          focalLength = 10)))
+          focalLength = 10))))
   }
 }

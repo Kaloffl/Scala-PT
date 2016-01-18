@@ -13,6 +13,7 @@ import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Bunny {
 
@@ -21,8 +22,9 @@ object Bunny {
     val matAir = new TransparentMaterial(Color.Black)
     val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
     val matGlass = new TransparentMaterial(
-        color = Color(0.9f, 0.9f, 0.9f), 
-        refractiveIndex = 1.7f)
+      color = Color(0.7f, 1.4f, 1.8f),
+      scatterProbability = 4,
+      refractiveIndex = 1.7f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
 
     val bunny = SceneNode(
@@ -37,7 +39,7 @@ object Bunny {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = SceneNode(Array(floor, bunny)),
         airMedium = matAir,
         skyMaterial = matSky,
@@ -46,6 +48,6 @@ object Bunny {
           forward = bunnyForward.normalize,
           up = bunnyTop,
           aperture = 0.2,
-          focalLength = bunnyForward.length)))
+          focalLength = bunnyForward.length))))
   }
 }

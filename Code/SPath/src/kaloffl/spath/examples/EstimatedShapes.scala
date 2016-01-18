@@ -16,6 +16,7 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Mandelbulb
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object EstimatedShapes {
 
@@ -51,7 +52,7 @@ object EstimatedShapes {
     RenderEngine.render(
       bounces = 4,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         airMedium = matAir,
         skyMaterial = matBlackDiffuse,
         root = glassTest,
@@ -60,6 +61,6 @@ object EstimatedShapes {
           forward = front,
           up = up,
           aperture = 0.015,
-          focalLength = 3)))
+          focalLength = 3))))
   }
 }

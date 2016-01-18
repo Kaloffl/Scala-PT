@@ -2,7 +2,6 @@ package kaloffl.spath.examples
 
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.DoubleSupplier
-
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
@@ -15,6 +14,7 @@ import kaloffl.spath.scene.materials.DirectionalLightMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Hemisphere {
 
@@ -51,13 +51,13 @@ object Hemisphere {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = hemisphere,
         airMedium = matAir,
         skyMaterial = matSky,
         camera = new Camera(
           position = Vec3d(0, 0, 2.2),
           forward = Vec3d(0, 0, -1).normalize,
-          up = Vec3d.Left)))
+          up = Vec3d.Left))))
   }
 }

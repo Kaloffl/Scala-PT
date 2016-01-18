@@ -1,16 +1,8 @@
 package kaloffl.spath.tracing
 
 import java.util.function.DoubleSupplier
+
 import kaloffl.spath.RenderTarget
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.shapes.Shape
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -29,20 +21,19 @@ class TracingWorker(
     val top: Int,
     val width: Int,
     val height: Int,
-    val scene: Scene,
+    val tracer: Tracer,
     val random: DoubleSupplier) {
 
   // The sum of determined colors is stored in this array
   // r1, g1, b1, r2, g2, b2, ...
   val samples = new Array[Float](width * height * 3)
-  val tracer = new PathTracer(scene)
 
   // the number of passes that have been rendered
   var samplesTaken: Int = 0
   var done = false
 
-  def sampleToDistribution(s: Int): Double = {
-    return random.getAsDouble - 0.5
+  def sampleToDistribution(s: Int): Float = {
+    return (random.getAsDouble - 0.5).toFloat
   }
 
   /**
@@ -58,8 +49,8 @@ class TracingWorker(
     val r = Math.sqrt(pass).toInt
     val dx = sampleToDistribution(Math.min(r, pass - r * r))
     val dy = sampleToDistribution(Math.min(r, r * r + 2 * r - pass))
-    val displayOffsetX = dWidth * 0.5 + dx - left
-    val displayOffsetY = dHeight * 0.5 + dy - top
+    val displayOffsetX = dWidth * 0.5f + dx - left
+    val displayOffsetY = dHeight * 0.5f + dy - top
     val context = new Context(random, pass, maxBounces, display)
 
     val maxIndex = width * height
@@ -67,8 +58,7 @@ class TracingWorker(
     for (index ← 0 until maxIndex) {
       val x = (index % width - displayOffsetX) / dHeight
       val y = (displayOffsetY - index / width) / dHeight
-      val ray = scene.camera.createRay(random, x, y)
-      val color = tracer.trace(ray, maxBounces, context)
+      val color = tracer.trace(x, y, maxBounces, context)
       val sampleIndex = index * 3
 
       val prevSample = samplesTaken - 1

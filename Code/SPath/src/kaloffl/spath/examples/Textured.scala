@@ -1,7 +1,6 @@
 package kaloffl.spath.examples
 
 import java.io.File
-
 import javax.imageio.ImageIO
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
@@ -19,6 +18,7 @@ import kaloffl.spath.scene.materials.TextureMask
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Textured {
 
@@ -60,7 +60,7 @@ object Textured {
 
     val matWhite = DiffuseMaterial(Color.White)
     val matGray = DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
-    
+
     val matSpace = new LightMaterial(Color.White / 64, Attenuation.none)
 
     val matWater = new TransparentMaterial(
@@ -96,13 +96,13 @@ object Textured {
     RenderEngine.render(
       bounces = 20,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = world,
         airMedium = matVoid,
         skyMaterial = matSpace,
         camera = new Camera(
           position = position,
           forward = Vec3d.Front,
-          up = Vec3d.Up)))
+          up = Vec3d.Up))))
   }
 }

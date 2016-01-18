@@ -13,6 +13,7 @@ import kaloffl.spath.scene.materials.ReflectiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Scatter4 {
   def main(args: Array[String]): Unit = {
@@ -43,7 +44,7 @@ object Scatter4 {
     RenderEngine.render(
       bounces = 128,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = glassTest,
         airMedium = matAir,
         skyMaterial = matSky,
@@ -52,6 +53,6 @@ object Scatter4 {
           forward = front,
           up = Vec3d.Up,
           aperture = 0.01,
-          focalLength = 9)))
+          focalLength = 9))))
   }
 }

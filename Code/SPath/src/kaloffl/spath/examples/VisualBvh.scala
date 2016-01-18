@@ -15,6 +15,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object VisualBvh {
 
@@ -53,7 +54,7 @@ object VisualBvh {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = SceneNode(Array(boxes, light)),
         airMedium = matAir,
         skyMaterial = matFloor,
@@ -62,6 +63,6 @@ object VisualBvh {
           forward = bunnyForward.normalize,
           up = bunnyTop,
           aperture = 0.0,
-          focalLength = bunnyForward.length)))
+          focalLength = bunnyForward.length))))
   }
 }

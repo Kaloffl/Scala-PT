@@ -14,6 +14,7 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.shapes.Triangle
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object CornellBox {
 
@@ -100,13 +101,13 @@ object CornellBox {
       passes = 60000,
       bounces = 12,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = cornellBox,
         airMedium = matAir,
         skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(278, 273, -800),
           forward = Vec3d.Front,
-          up = Vec3d.Up)))
+          up = Vec3d.Up))))
   }
 }

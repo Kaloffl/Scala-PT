@@ -14,6 +14,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Scatter3 {
 
@@ -24,8 +25,8 @@ object Scatter3 {
 
     val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f, 0.0)
     val matAir = new TransparentMaterial(
-        color = Color(0.02f, 0.01f, 0.005f), 
-        scatterProbability = 0.005)
+      color = Color(0.02f, 0.01f, 0.005f),
+      scatterProbability = 0.005)
     val matLight = new LightMaterial(Color.White * 8, Attenuation.none)
 
     val hazeObjects = Array(
@@ -58,7 +59,7 @@ object Scatter3 {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = SceneNode(hazeObjects ++ blocks),
         airMedium = matAir,
         skyMaterial = matBlackDiffuse,
@@ -67,6 +68,6 @@ object Scatter3 {
           forward = front,
           up = up,
           aperture = 0.1,
-          focalLength = Vec3d(0, 2.5, 13).length)))
+          focalLength = Vec3d(0, 2.5, 13).length))))
   }
 }

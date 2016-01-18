@@ -16,6 +16,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Indirect {
 
@@ -60,13 +61,13 @@ object Indirect {
     RenderEngine.render(
       bounces = 16,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = coloredSpheres,
         airMedium = matAir,
         skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = position,
           forward = forward,
-          up = up)))
+          up = up))))
   }
 }

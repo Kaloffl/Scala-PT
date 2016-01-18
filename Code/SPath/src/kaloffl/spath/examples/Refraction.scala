@@ -16,6 +16,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Refraction {
 
@@ -82,7 +83,7 @@ object Refraction {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = glassTest,
         airMedium = matAir,
         skyMaterial = matBlackDiffuse,
@@ -91,6 +92,6 @@ object Refraction {
           forward = front.normalize,
           up = up,
           aperture = 0.1,
-          focalLength = front.length)))
+          focalLength = front.length))))
   }
 }

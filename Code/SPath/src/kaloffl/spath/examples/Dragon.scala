@@ -15,6 +15,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Dragon {
 
@@ -62,7 +63,7 @@ object Dragon {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         airMedium = matAir,
         skyMaterial = matSky,
         root = objects,
@@ -71,6 +72,6 @@ object Dragon {
           forward = dragonForward.normalize,
           up = dragonTop,
           aperture = 0.1,
-          focalLength = dragonForward.length)))
+          focalLength = dragonForward.length))))
   }
 }

@@ -16,6 +16,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Outdoor {
 
@@ -52,13 +53,13 @@ object Outdoor {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = outdoor,
         airMedium = matAir,
         skyMaterial = matSky,
         camera = new Camera(
           position = Vec3d(0, 2.5, 13),
           forward = Vec3d.Back,
-          up = Vec3d.Up)))
+          up = Vec3d.Up))))
   }
 }

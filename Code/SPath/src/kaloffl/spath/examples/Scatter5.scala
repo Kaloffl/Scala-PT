@@ -16,6 +16,7 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Scatter5 {
   def main(args: Array[String]): Unit = {
@@ -69,13 +70,13 @@ object Scatter5 {
       passes = 6000,
       bounces = 64,
       target = new Display(700, 700),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = glassTest,
         airMedium = matAir,
         skyMaterial = matSkyLight,
         camera = new Camera(
           position = Vec3d(0, 60, 60),
           forward = front,
-          up = up)))
+          up = up))))
   }
 }

@@ -13,6 +13,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Refraction3 {
   def main(args: Array[String]): Unit = {
@@ -48,13 +49,13 @@ object Refraction3 {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      scene = new Scene(
+      tracer = new PathTracer(new Scene(
         root = SceneNode(environment ++ objects),
         airMedium = matAir,
         skyMaterial = matBlackDiffuse,
         camera = new Camera(
           position = Vec3d(0, 14, -14),
           forward = front.normalize,
-          up = up)))
+          up = up))))
   }
 }

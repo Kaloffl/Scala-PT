@@ -15,6 +15,7 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.tracing.PathTracer
 
 object Simple {
 
@@ -59,14 +60,13 @@ object Simple {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      scene =
-        new Scene(
-          root = coloredSpheres,
-          airMedium = matAir,
-          skyMaterial = matBlackDiffuse,
-          camera = new Camera(
-            position = position,
-            forward = forward,
-            up = up)))
+      tracer = new PathTracer(new Scene(
+        root = coloredSpheres,
+        airMedium = matAir,
+        skyMaterial = matBlackDiffuse,
+        camera = new Camera(
+          position = position,
+          forward = forward,
+          up = up))))
   }
 }
