@@ -1,11 +1,11 @@
 package kaloffl.spath.scene.materials
 
+import java.util.function.DoubleSupplier
+
 import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.tracing.Context
-import kaloffl.spath.math.Attenuation
-import kaloffl.spath.scene.SurfaceInfo
 import kaloffl.spath.math.Vec2d
+import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.SurfaceInfo
 
 class MaskedMaterial(
     val matA: Material,
@@ -21,16 +21,16 @@ class MaskedMaterial(
                        surfaceNormal: ⇒ Vec3d,
                        textureCoordinate: ⇒ Vec2d,
                        refractiveIndex: Float,
-                       context: Context): SurfaceInfo = {
+                       random: DoubleSupplier): SurfaceInfo = {
 
-    if (context.random.getAsDouble < mask.maskAmount(worldPos, textureCoordinate)) {
+    if (random.getAsDouble < mask.maskAmount(worldPos, textureCoordinate)) {
       matA.getInfo(
         incomingNormal,
         worldPos,
         surfaceNormal,
         textureCoordinate,
         refractiveIndex,
-        context)
+        random)
     } else {
       matB.getInfo(
         incomingNormal,
@@ -38,7 +38,7 @@ class MaskedMaterial(
         surfaceNormal,
         textureCoordinate,
         refractiveIndex,
-        context)
+        random)
     }
   }
 

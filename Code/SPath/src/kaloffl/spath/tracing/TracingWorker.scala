@@ -51,14 +51,13 @@ class TracingWorker(
     val dy = sampleToDistribution(Math.min(r, r * r + 2 * r - pass))
     val displayOffsetX = dWidth * 0.5f + dx - left
     val displayOffsetY = dHeight * 0.5f + dy - top
-    val context = new Context(random, pass, maxBounces, display)
 
     val maxIndex = width * height
     var difference = 0f
     for (index ← 0 until maxIndex) {
       val x = (index % width - displayOffsetX) / dHeight
       val y = (displayOffsetY - index / width) / dHeight
-      val color = tracer.trace(x, y, maxBounces, context)
+      val color = tracer.trace(x, y, maxBounces, random)
       val sampleIndex = index * 3
 
       val prevSample = samplesTaken - 1

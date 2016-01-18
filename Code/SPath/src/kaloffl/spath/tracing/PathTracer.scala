@@ -7,15 +7,16 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.math.Ray
+import java.util.function.DoubleSupplier
 
 class PathTracer(val scene: Scene) extends Tracer {
 
   override def trace(x: Float,
                      y: Float,
                      maxBounces: Int,
-                     context: Context): Color = {
+                     random: DoubleSupplier): Color = {
     var color = Color.White
-    var ray = scene.camera.createRay(context.random, x, y)
+    var ray = scene.camera.createRay(random, x, y)
     var i = 0
 
     // list of materials in which the rays entered
@@ -27,7 +28,7 @@ class PathTracer(val scene: Scene) extends Tracer {
       // russian roulett ray termination
       val survivability = Math.max(color.r2, Math.max(color.g2, color.b2)) * (maxBounces - i)
       if (survivability < 1) {
-        if (context.random.getAsDouble > survivability) {
+        if (random.getAsDouble > survivability) {
           return Color.Black
         } else {
           color /= survivability
@@ -37,7 +38,7 @@ class PathTracer(val scene: Scene) extends Tracer {
       // First we determine the distance it will take the ray to hit an air 
       // particle and be scattered. If the current air has a scatter probability 
       // of 0, the distance will be infinity.
-      val scatterChance = context.random.getAsDouble
+      val scatterChance = random.getAsDouble
       val scatterDist = -Math.log(1 - scatterChance) / media(mediaIndex).scatterProbability
 
       // Now try to find an object in the scene that is closer than the determined 
@@ -58,14 +59,14 @@ class PathTracer(val scene: Scene) extends Tracer {
             if (java.lang.Double.isInfinite(dist)) {
               Color.White
             } else {
-              (media(mediaIndex).getAbsorbtion(point, context) * -dist.toFloat).exp
+              (media(mediaIndex).getAbsorbtion(point, random) * -dist.toFloat).exp
             }
           return color * emitted * absorbed
         }
 
         val point = ray.atDistance(scatterDist)
-        val absorbed = (media(mediaIndex).getAbsorbtion(point, context) * -scatterDist.toFloat).exp
-        ray = new Ray(point, Vec3d.randomNormal(Vec2d.random(context.random)))
+        val absorbed = (media(mediaIndex).getAbsorbtion(point, random) * -scatterDist.toFloat).exp
+        ray = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
         color *= absorbed
       } else {
         val depth = intersection.depth
@@ -77,15 +78,15 @@ class PathTracer(val scene: Scene) extends Tracer {
           surfaceNormal = surfaceNormal,
           textureCoordinate = intersection.shape.getTextureCoordinate(point),
           airRefractiveIndex = media(mediaIndex).refractiveIndex,
-          context = context)
-        val absorbed = (media(mediaIndex).getAbsorbtion(point, context) * -depth.toFloat).exp
+          random = random)
+        val absorbed = (media(mediaIndex).getAbsorbtion(point, random) * -depth.toFloat).exp
 
         if (info.emittance != Color.Black) {
           return color * info.emittance * absorbed
         }
 
         val scattering = info.scattering
-        val rnd = context.random.getAsDouble
+        val rnd = random.getAsDouble
         var d = 0
         var weights = scattering.getWeight(d)
         while (weights < rnd) {

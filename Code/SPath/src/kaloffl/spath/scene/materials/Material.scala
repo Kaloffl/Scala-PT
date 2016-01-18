@@ -1,11 +1,11 @@
 package kaloffl.spath.scene.materials
 
+import java.util.function.DoubleSupplier
+
 import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.tracing.Context
-import kaloffl.spath.math.Attenuation
-import kaloffl.spath.scene.SurfaceInfo
 import kaloffl.spath.math.Vec2d
+import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.SurfaceInfo
 
 class Material(reflectance: Color, scatterFunction: ScatterFunction) {
 
@@ -13,14 +13,14 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
 
   def refractiveIndex: Float = 1.0f
 
-  def getAbsorbtion(worldPos: Vec3d, context: Context): Color = Color.Black
+  def getAbsorbtion(worldPos: Vec3d, random: DoubleSupplier): Color = Color.Black
 
   def getInfo(incomingNormal: Vec3d,
               worldPos: ⇒ Vec3d,
               surfaceNormal: ⇒ Vec3d,
               textureCoordinate: ⇒ Vec2d,
               airRefractiveIndex: Float,
-              context: Context): SurfaceInfo = {
+              random: DoubleSupplier): SurfaceInfo = {
     new SurfaceInfo(
       reflectance,
       Color.Black,
@@ -28,7 +28,7 @@ class Material(reflectance: Color, scatterFunction: ScatterFunction) {
         incomingNormal,
         surfaceNormal,
         airRefractiveIndex,
-        context.random))
+        random))
   }
 
 }

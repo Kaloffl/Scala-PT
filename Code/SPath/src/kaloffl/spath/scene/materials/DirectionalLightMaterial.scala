@@ -1,10 +1,11 @@
 package kaloffl.spath.scene.materials
 
+import java.util.function.DoubleSupplier
+
 import kaloffl.spath.math.Color
+import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.SurfaceInfo
-import kaloffl.spath.tracing.Context
-import kaloffl.spath.math.Vec2d
 
 class DirectionalLightMaterial(val color: Color,
                                direction: Vec3d,
@@ -28,7 +29,7 @@ class DirectionalLightMaterial(val color: Color,
                        surfaceNormal: ⇒ Vec3d,
                        textureCoordinate: ⇒ Vec2d,
                        airRefractiveIndex: Float,
-                       context: Context): SurfaceInfo = {
+                       random: DoubleSupplier): SurfaceInfo = {
     return new SurfaceInfo(
       Color.Black,
       getEmittance(incomingNormal),

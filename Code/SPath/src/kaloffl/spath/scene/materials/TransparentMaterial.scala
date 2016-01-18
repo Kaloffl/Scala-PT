@@ -1,11 +1,9 @@
 package kaloffl.spath.scene.materials
 
+import java.util.function.DoubleSupplier
+
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.tracing.Context
-import kaloffl.spath.math.Attenuation
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.scene.SurfaceInfo
 
 class TransparentMaterial(
     color: Color,
@@ -13,5 +11,5 @@ class TransparentMaterial(
     override val refractiveIndex: Float = 1,
     roughness: Double = 0) extends Material(Color.White, new RefractFunction(refractiveIndex, roughness)) {
 
-  override def getAbsorbtion(worldPos: Vec3d, context: Context): Color = color
+  override def getAbsorbtion(worldPos: Vec3d, random: DoubleSupplier): Color = color
 }

@@ -7,24 +7,25 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.math.Ray
+import java.util.function.DoubleSupplier
 
 class RecursivePathTracer(val scene: Scene) extends Tracer {
 
   override def trace(x: Float,
                      y: Float,
                      maxBounces: Int,
-                     context: Context): Color = {
-    val startRay = scene.camera.createRay(context.random, x, y)
-    return trace(startRay, scene.initialMediaStack.toSeq, maxBounces, context)
+                     random: DoubleSupplier): Color = {
+    val startRay = scene.camera.createRay(random, x, y)
+    return trace(startRay, scene.initialMediaStack.toSeq, maxBounces, random)
   }
 
-  def trace(ray: Ray, media: Seq[Material], i: Int, context: Context): Color = {
+  def trace(ray: Ray, media: Seq[Material], i: Int, random: DoubleSupplier): Color = {
     if (0 == i) return Color.Black
 
     // First we determine the distance it will take the ray to hit an air 
     // particle and be scattered. If the current air has a scatter probability 
     // of 0, the distance will be infinity.
-    val scatterChance = context.random.getAsDouble
+    val scatterChance = random.getAsDouble
     val scatterDist = -Math.log(1 - scatterChance) / media.head.scatterProbability
 
     // Now try to find an object in the scene that is closer than the determined 
@@ -45,15 +46,15 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
           if (java.lang.Double.isInfinite(dist)) {
             Color.White
           } else {
-            (media.head.getAbsorbtion(point, context) * -dist.toFloat).exp
+            (media.head.getAbsorbtion(point, random) * -dist.toFloat).exp
           }
         return emitted * absorbed
       }
 
       val point = ray.atDistance(scatterDist)
-      val absorbed = (media.head.getAbsorbtion(point, context) * -scatterDist.toFloat).exp
-      val newRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(context.random)))
-      return absorbed * trace(newRay, media, i - 1, context)
+      val absorbed = (media.head.getAbsorbtion(point, random) * -scatterDist.toFloat).exp
+      val newRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
+      return absorbed * trace(newRay, media, i - 1, random)
     } else {
       val depth = intersection.depth
       val point = ray.atDistance(depth)
@@ -64,8 +65,8 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
         surfaceNormal = surfaceNormal,
         textureCoordinate = intersection.shape.getTextureCoordinate(point),
         airRefractiveIndex = media.head.refractiveIndex,
-        context = context)
-      val absorbed = (media.head.getAbsorbtion(point, context) * -depth.toFloat).exp
+        random = random)
+      val absorbed = (media.head.getAbsorbtion(point, random) * -depth.toFloat).exp
 
       if (info.emittance != Color.Black) {
         return info.emittance * absorbed
@@ -90,7 +91,7 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
               media
             }
           val newRay = new Ray(point, newDir)
-          color += trace(newRay, newMedia, i - 1, context) * weight
+          color += trace(newRay, newMedia, i - 1, random) * weight
         }
         d += 1
       }
