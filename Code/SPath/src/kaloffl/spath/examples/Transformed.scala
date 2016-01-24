@@ -1,51 +1,40 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
-import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.materials.ReflectiveMaterial
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.shapes.Shape
-import kaloffl.spath.math.Color
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.tracing.PathTracer
 import kaloffl.spath.Display
-import kaloffl.spath.scene.Camera
-import kaloffl.spath.scene.structure.TransformationNode
-import kaloffl.spath.math.Transformation
-import kaloffl.spath.tracing.NormalTracer
-import kaloffl.spath.math.Quaternion
+import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
+import kaloffl.spath.math.Attenuation
+import kaloffl.spath.math.Color
+import kaloffl.spath.math.Quaternion
+import kaloffl.spath.math.Transformation
+import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.materials.DiffuseMaterial
+import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.structure.TransformationNode
+import kaloffl.spath.tracing.NormalTracer
+import kaloffl.spath.tracing.PathTracer
 
 object Transformed {
 
   def main(args: Array[String]): Unit = {
-    val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
-    val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
-    val matBlueDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
-    val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matAir = new TransparentMaterial(Color.Black)
-
-    val matMirror = ReflectiveMaterial(Color.White, 0.0)
-    val matGlass = new TransparentMaterial(
-      color = Color(0.09f, 0.09f, 0.09f),
-      refractiveIndex = 2.0f)
-    val matLight = new LightMaterial(Color.White * 8f, Attenuation.radius(1f))
-
-    val box = SceneNode(AABB(Vec3d.Origin, Vec3d(1)), matWhiteDiffuse)
-    val scale = Vec3d(1, 2, 1)
+    val matLight = new LightMaterial(Color(0.8f, 0.9f, 2f), Attenuation.none)
 
     val bunny = SceneNode(
       PlyImporter.load(file = "D:/temp/bunny_flipped.ply", scale = Vec3d(10)),
       matWhiteDiffuse)
 
-    val coloredSpheres = SceneNode(Array(
+    val transformed = SceneNode(Array(
+      SceneNode(
+        new Sphere(Vec3d(1, 3, 1), 1),
+        matLight),
+
       new TransformationNode(
         new Transformation(
           scale = Vec3d(4),
@@ -61,8 +50,8 @@ object Transformed {
     RenderEngine.render(
       bounces = 12,
       target = new Display(1280, 720),
-      tracer = new NormalTracer(new Scene(
-        root = coloredSpheres,
+      tracer = new PathTracer(new Scene(
+        root = transformed,
         airMedium = matAir,
         camera = new Camera(
           position = position,
