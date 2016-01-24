@@ -9,7 +9,12 @@ class SingleShape(shape: Shape, material: Material) extends SceneNode {
   def enclosingAABB = shape.enclosingAABB
   def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     val depth = shape.getIntersectionDepth(ray, maxDepth)
-    if(depth < maxDepth) new Intersection(depth, material, shape)
+    val point = ray.atDistance(depth)
+    if(depth < maxDepth) new Intersection(
+        depth, 
+        material, 
+        () => shape.getNormal(point),
+        () => shape.getTextureCoordinate(point))
     else Intersection.NullIntersection
   }
 }

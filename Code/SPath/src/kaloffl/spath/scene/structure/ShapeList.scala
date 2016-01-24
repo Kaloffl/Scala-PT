@@ -22,9 +22,11 @@ class ShapeList(val shapes: Array[_ <: Shape], val material: Material) extends S
       }
       i += 1
     }
+    val point = ray.atDistance(closestDist)
     return new Intersection(
       closestDist,
       material,
-      closestShape)
+      () => closestShape.getNormal(point),
+      () => closestShape.getTextureCoordinate(point))
   }
 }

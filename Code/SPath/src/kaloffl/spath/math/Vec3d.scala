@@ -26,6 +26,8 @@ case class Vec3d(val x: Double, val y: Double, val z: Double) {
 
   def unary_-(): Vec3d = Vec3d(-x, -y, -z)
 
+  def inverse = Vec3d(1 / x, 1 / y, 1 / z)
+
   def dot(v: Vec3d): Double = x * v.x + y * v.y + z * v.z
 
   def sum(): Double = x + y + z

@@ -12,7 +12,12 @@ class ShapeBvh(val bvh: Bvh[_ <: Shape], material: Material) extends SceneNode {
 
   override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
     val (shape, depth) = bvh.findClosestObject(ray, maxDist)
-    if(null != shape) new Intersection(depth, material, shape)
+    val point = ray.atDistance(depth)
+    if (null != shape) new Intersection(
+      depth,
+      material,
+      () ⇒ shape.getNormal(point),
+      () ⇒ shape.getTextureCoordinate(point))
     else Intersection.NullIntersection
   }
 }

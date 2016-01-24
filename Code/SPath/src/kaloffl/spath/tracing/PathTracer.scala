@@ -71,12 +71,12 @@ class PathTracer(val scene: Scene) extends Tracer {
       } else {
         val depth = intersection.depth
         val point = ray.atDistance(depth)
-        val surfaceNormal = intersection.shape.getNormal(point)
+        val surfaceNormal = intersection.normal()
         val info = intersection.material.getInfo(
           incomingNormal = ray.normal,
           worldPos = point,
           surfaceNormal = surfaceNormal,
-          textureCoordinate = intersection.shape.getTextureCoordinate(point),
+          textureCoordinate = intersection.textureCoordinate(),
           airRefractiveIndex = media(mediaIndex).refractiveIndex,
           random = random)
         val absorbed = (media(mediaIndex).getAbsorbtion(point, random) * -depth.toFloat).exp

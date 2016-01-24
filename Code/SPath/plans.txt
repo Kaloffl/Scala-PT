@@ -1,7 +1,7 @@
 pathtracer TODOs
 
 - camera
-	- controllable camera
+	- interactive camera
 	- camera shutter shape
 	- camera movement for motion blur
 	- shutter time
@@ -39,11 +39,10 @@ pathtracer TODOs
 	- live scene editing
 	- octree based voxel volume
 	- shape combinators (union, subtraction, intersection)
-	- model/shape rotation, translation & scaling
-	- texture material
 	- normalmaps for objects
 	- portals
 - spectral tracing
+- bidirectional tracing
 - Better random sampler
 - better ply importer
 - command line tool (.scene in -> .png out)
