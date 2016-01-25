@@ -21,9 +21,10 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
   }
 
   override def getTextureCoordinate(point: Vec3d): Vec2d = {
+    val normal = getNormal(point)
     return Vec2d(
-      FastMath.asin((position.x - point.x) / radius) / Math.PI + 0.5,
-      (position.y - point.y) / (radius * 2) + 0.5)
+      FastMath.atan2(normal.x, normal.z) / (2 * Math.PI) + 0.5,
+      FastMath.asin(-normal.y) / Math.PI + 0.5)
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {
