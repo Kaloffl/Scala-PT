@@ -3,20 +3,18 @@ package kaloffl.spath
 import javafx.application.Application
 import javafx.application.Platform
 import javafx.scene.Scene
-import javafx.scene.layout.BorderPane
-import javafx.scene.image.Image
 import javafx.scene.image.ImageView
-import javafx.scene.image.PixelReader
-import javafx.scene.image.PixelWriter
 import javafx.scene.image.WritableImage
+import javafx.scene.layout.BorderPane
 import javafx.stage.Stage
+import kaloffl.spath.math.Color
 
 class JfxDisplay(
     override val width: Int,
     override val height: Int) extends RenderTarget {
 
-  override def setPixel(x: Int, y: Int, color: Int) {
-    ActualDisplay.instance.backBuffer.getPixelWriter.setArgb(x, y, color)
+  override def setPixel(x: Int, y: Int, color: Color) {
+    ActualDisplay.instance.backBuffer.getPixelWriter.setArgb(x, y, color.toInt)
   }
 
   override def commit {

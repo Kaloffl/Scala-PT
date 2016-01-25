@@ -1,12 +1,14 @@
 package kaloffl.spath
 
-import javax.swing.JFrame
 import java.awt.Canvas
+import java.awt.Dimension
+import java.awt.Graphics
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
-import java.awt.Dimension
+
+import javax.swing.JFrame
 import javax.swing.WindowConstants
-import java.awt.Graphics
+import kaloffl.spath.math.Color
 
 /**
  * When instantiated, this class creates a new window with a canvas of the given
@@ -52,7 +54,7 @@ class Display(override val width: Int, override val height: Int) extends RenderT
    * Sets the pixel on the given position to the given color value. Does not
    * check bounds, so bad positions may cause ArrayIndexOutOfBoundsExceptions.
    */
-  override def setPixel(x: Int, y: Int, color: Int): Unit = {
-    raster(x + y * width) = color
+  override def setPixel(x: Int, y: Int, color: Color): Unit = {
+    raster(x + y * width) = color.toInt
   }
 }

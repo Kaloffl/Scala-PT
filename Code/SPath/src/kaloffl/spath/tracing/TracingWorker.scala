@@ -1,8 +1,8 @@
 package kaloffl.spath.tracing
 
 import java.util.function.DoubleSupplier
-
 import kaloffl.spath.RenderTarget
+import kaloffl.spath.math.Color
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -69,9 +69,9 @@ class TracingWorker(
       samples(sampleIndex + 1) += color.g2
       samples(sampleIndex + 2) += color.b2
     }
-//    if (difference / maxIndex < 1 / 255f) {
-//      done = true
-//    }
+    //    if (difference / maxIndex < 1 / 255f) {
+    //      done = true
+    //    }
   }
 
   /**
@@ -84,17 +84,12 @@ class TracingWorker(
       val y = index / width + top
       val i3 = index * 3
 
-      def toColorChannelInt(value: Double): Int = {
-        (Math.min(Math.sqrt(value / samplesTaken), 1) * 0xff).toInt
-      }
-      if (samples(i3).isNaN) {
-        System.err.println("NaN detected! ABORT SHIP!")
-      }
-
-      val red = toColorChannelInt(samples(i3))
-      val green = toColorChannelInt(samples(i3 + 1))
-      val blue = toColorChannelInt(samples(i3 + 2))
-      val color = 0xff << 24 | red << 16 | green << 8 | blue
+      // we need to use the new-constructor here because the values are already
+      // in squared space
+      val color = new Color(
+        samples(i3) / samplesTaken,
+        samples(i3 + 1) / samplesTaken,
+        samples(i3 + 2) / samplesTaken)
 
       display.setPixel(x, y, color)
     }

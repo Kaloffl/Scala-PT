@@ -77,6 +77,14 @@ class Color(val r2: Float, val g2: Float, val b2: Float) {
   override def toString(): String = {
     return s"Color(r2: $r2, g2: $g2, b2: $b2)"
   }
+
+  def toInt: Int = {
+    val ia = 0xff << 24
+    val ir = Math.min(0xff, r * 0xff).toInt << 16
+    val ig = Math.min(0xff, g * 0xff).toInt << 8
+    val ib = Math.min(0xff, b * 0xff).toInt
+    return ia | ir | ig | ib
+  }
 }
 
 object Color {
