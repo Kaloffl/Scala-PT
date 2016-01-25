@@ -23,7 +23,11 @@ object DiffuseFunction extends ScatterFunction {
                              normal: Vec3d,
                              airIndex: Float,
                              random: DoubleSupplier): Scattering = {
-    new SingleRayScattering(normal.weightedHemisphere(Vec2d.random(random)))
+    if (inDirection.dot(normal) < 0) {
+      new SingleRayScattering(normal.weightedHemisphere(Vec2d.random(random)))
+    } else {
+      new SingleRayScattering(-normal.weightedHemisphere(Vec2d.random(random)))
+    }
   }
 }
 
