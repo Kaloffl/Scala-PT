@@ -16,17 +16,19 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
                      maxBounces: Int,
                      random: DoubleSupplier): Color = {
     val startRay = scene.camera.createRay(random, x, y)
-    return trace(startRay, scene.initialMediaStack.toSeq, maxBounces, random)
+    val mediaStack = scene.initialMediaStack
+    val mediaHead = mediaStack.length - 1
+    return trace(startRay, mediaStack, mediaHead, maxBounces, random)
   }
 
-  def trace(ray: Ray, media: Seq[Material], i: Int, random: DoubleSupplier): Color = {
+  def trace(ray: Ray, media: Array[Material], mediaHead: Int, i: Int, random: DoubleSupplier): Color = {
     if (0 == i) return Color.Black
 
     // First we determine the distance it will take the ray to hit an air 
     // particle and be scattered. If the current air has a scatter probability 
     // of 0, the distance will be infinity.
     val scatterChance = random.getAsDouble
-    val scatterDist = -Math.log(1 - scatterChance) / media.head.scatterProbability
+    val scatterDist = -Math.log(1 - scatterChance) / media(mediaHead).scatterProbability
 
     // Now try to find an object in the scene that is closer than the determined 
     // scatter depth. If none is found and the scatter depth is not infinity, 
@@ -46,15 +48,15 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
           if (java.lang.Double.isInfinite(dist)) {
             Color.White
           } else {
-            (media.head.getAbsorbtion(point, random) * -dist.toFloat).exp
+            (media(mediaHead).getAbsorbtion(point, random) * -dist.toFloat).exp
           }
         return emitted * absorbed
       }
 
       val point = ray.atDistance(scatterDist)
-      val absorbed = (media.head.getAbsorbtion(point, random) * -scatterDist.toFloat).exp
+      val absorbed = (media(mediaHead).getAbsorbtion(point, random) * -scatterDist.toFloat).exp
       val newRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
-      return absorbed * trace(newRay, media, i - 1, random)
+      return absorbed * trace(newRay, media, mediaHead, i - 1, random)
     } else {
       val depth = intersection.depth
       val point = ray.atDistance(depth)
@@ -64,9 +66,9 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
         worldPos = point,
         surfaceNormal = surfaceNormal,
         textureCoordinate = intersection.textureCoordinate(),
-        airRefractiveIndex = media.head.refractiveIndex,
+        airRefractiveIndex = media(mediaHead).refractiveIndex,
         random = random)
-      val absorbed = (media.head.getAbsorbtion(point, random) * -depth.toFloat).exp
+      val absorbed = (media(mediaHead).getAbsorbtion(point, random) * -depth.toFloat).exp
 
       if (info.emittance != Color.Black) {
         return info.emittance * absorbed
@@ -80,18 +82,20 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
         val weight = scattering.getWeight(d)
         if (weight > 0.0001) {
           val newDir = scattering.getNormal(d)
-          val newMedia =
-            if (newDir.dot(surfaceNormal) < 0) {
-              // if the new ray has entered a surface
-              intersection.material +: media
-            } else if (ray.normal.dot(surfaceNormal) >= 0 && media.size > 1) {
-              // if the ray is exiting a surface
-              media.tail
-            } else {
-              media
-            }
           val newRay = new Ray(point, newDir)
-          color += trace(newRay, newMedia, i - 1, random) * weight
+          if (newDir.dot(surfaceNormal) < 0) {
+            // if the new ray has entered a surface
+            val newHead = mediaHead + 1
+            val newMedia = new Array[Material](newHead + 1)
+            System.arraycopy(media, 0, newMedia, 0, newHead)
+            newMedia(newHead) = intersection.material
+            color += trace(newRay, newMedia, mediaHead + 1, i - 1, random) * weight
+          } else if (ray.normal.dot(surfaceNormal) >= 0 && mediaHead > 0) {
+            // if the ray is exiting a surface
+            color += trace(newRay, media, mediaHead - 1, i - 1, random) * weight
+          } else {
+            color += trace(newRay, media, mediaHead, i - 1, random) * weight
+          }
         }
         d += 1
       }
