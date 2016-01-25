@@ -24,6 +24,7 @@ import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.materials.TextureMask
 import kaloffl.spath.tracing.PathTracer
 import kaloffl.spath.scene.materials.SpecularMaterial
+import kaloffl.spath.tracing.TexcoordTracer
 
 object Textured {
 
@@ -64,7 +65,7 @@ object Textured {
     val matLight = new LightMaterial(Color.White * 40, Attenuation.none)
 
     val matWhite = DiffuseMaterial(Color(0.8f, 0.8f, 0.8f))
-    val matGray = DiffuseMaterial(Color(0.5f, 0.5f, 0.5f))
+    val matBlack = DiffuseMaterial(Color.Black)
 
     val surface = ImageIO.read(new File("D:/temp/world.topo.200411.3x5400x2700.jpg"))
     val normals = ImageIO.read(new File("D:/temp/EarthNormal.png"))
@@ -79,10 +80,12 @@ object Textured {
     val matSurface = new MaskedMaterial(matWater, matTexture, new TextureMask(new LazyTexture(mask)))
 
     val matCloud = new MaskedMaterial(matWhite, matAir1, new TextureMask(new LazyTexture(clouds)))
-    val earthRadius = 6378160
-    val sunRadius = 696342000
+    val earthRadius = 12756320 / 2
+    val sunRadius = 1392684000 / 2
+    val moonRadius = 3476 / 2
     //    val earthSunDistance = 149.6e9
     val earthSunDistance = 149.6e7
+    val earthMoonDistance = 3844e5
 
     val world = SceneNode(Array(
       SceneNode(new Sphere(Vec3d.Origin, earthRadius + 2e5f), matAir4),
@@ -95,17 +98,18 @@ object Textured {
           new Sphere(Vec3d.Origin, earthRadius),
           new LazyTexture(normals)),
         matSurface),
-      SceneNode(new Sphere(Vec3d(-earthSunDistance, 0, 0), sunRadius), matLight)))
+      SceneNode(new Sphere(Vec3d(1, 0, 1).normalize * earthSunDistance, sunRadius), matLight),
+      SceneNode(new Sphere(Vec3d(1, 0, 1).normalize * earthMoonDistance, moonRadius), matWhite)))
 
-    val position = Vec3d(-0.5, 0, -1).normalize * (earthRadius * 2)
-
+    val display = new Display(1280, 720)
+    val position = Vec3d(0.5, 0, 1).normalize * (earthRadius * 2)
     RenderEngine.render(
       bounces = 20,
-      target = new Display(1280, 720),
+      target = display,
       tracer = new RecursivePathTracer(new Scene(
         root = world,
         airMedium = matVoid,
-        skyMaterial = new UniformSky(Color.White / 128),
+        skyMaterial = new UniformSky(Color.White / 256),
         camera = new Camera(
           position = position,
           forward = -position.normalize,
