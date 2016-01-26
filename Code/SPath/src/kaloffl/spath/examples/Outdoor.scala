@@ -2,14 +2,13 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.CheckeredMask
 import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.DirectionalLightMaterial
+import kaloffl.spath.scene.materials.DirectionalSky
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
@@ -17,8 +16,6 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.scene.materials.DirectionalSky
-import kaloffl.spath.scene.materials.DiffuseMaterial
 
 object Outdoor {
 
@@ -30,7 +27,7 @@ object Outdoor {
     val checkeredMask = new CheckeredMask(2)
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
 
-    val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.radius(1))
+    val matWhiteLight = new LightMaterial(Color.White * 2)
     val matAir = new TransparentMaterial(
       color = Color(0.08f, 0.09f, 0.095f),
       scatterProbability = 0.001f)

@@ -2,7 +2,6 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -36,7 +35,7 @@ object Haze {
     val matAir = new TransparentMaterial(
       color = Color(0.08f, 0.09f, 0.095f),
       scatterProbability = 0.001)
-    val matLight = new LightMaterial(Color(1, 0.9f, 0.8f) * 2, Attenuation.radius(1))
+    val matLight = new LightMaterial(Color(1, 0.9f, 0.8f) * 2)
 
     val hazeObjects = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matWhiteGlass8),

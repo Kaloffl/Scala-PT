@@ -2,9 +2,9 @@ package kaloffl.spath.examples
 
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.DoubleSupplier
+
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
@@ -25,7 +25,7 @@ object Refraction4 {
     }
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.White * 2)
     val matAir = new TransparentMaterial(Color.Black)
 
     val environment = Array(

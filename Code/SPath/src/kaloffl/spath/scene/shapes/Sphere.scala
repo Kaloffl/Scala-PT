@@ -9,7 +9,7 @@ import kaloffl.spath.math.FastMath
 /**
  * A sphere shape consisting of a location and a radius.
  */
-class Sphere(val position: Vec3d, val radius: Float) extends Shape {
+class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projectable {
 
   val radiusSq = radius * radius
 
@@ -51,5 +51,24 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape {
 
   override def enclosingAABB: AABB = {
     AABB(position, Vec3d(radius * 2))
+  }
+
+  override def getSolidAngle(point: Vec3d): Double = {
+    val dsq = (point - position).lengthSq
+    val asq = radius * radius / dsq
+    val h = 1 - Math.sqrt(1 - asq)
+    return (asq + h * h) / 2
+  }
+  
+  override def createRandomRay(start: Vec3d, random: DoubleSupplier): Ray = {
+    val direction = (position - start)
+    val maxOffset = radius * Math.sqrt(1 - radius * radius / direction.lengthSq)
+    val angle = random.getAsDouble * Math.PI * 2
+    val offset = Math.sqrt(random.getAsDouble) * maxOffset
+    val z = direction.normalize
+    val x = z.ortho.normalize * Math.cos(angle) * offset
+    val y = z.cross(x).normalize * Math.sin(angle) * offset
+    val normal = (direction + x + y).normalize
+    return new Ray(start, normal)
   }
 }

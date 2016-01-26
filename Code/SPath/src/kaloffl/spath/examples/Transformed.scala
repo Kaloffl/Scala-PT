@@ -3,7 +3,6 @@ package kaloffl.spath.examples
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Quaternion
 import kaloffl.spath.math.Transformation
@@ -16,7 +15,6 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.structure.TransformationNode
-import kaloffl.spath.tracing.NormalTracer
 import kaloffl.spath.tracing.PathTracer
 
 object Transformed {
@@ -24,7 +22,7 @@ object Transformed {
   def main(args: Array[String]): Unit = {
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matAir = new TransparentMaterial(Color.Black)
-    val matLight = new LightMaterial(Color(0.8f, 0.9f, 2f), Attenuation.none)
+    val matLight = new LightMaterial(Color(0.8f, 0.9f, 2f))
 
     val bunny = SceneNode(
       PlyImporter.load(file = "D:/temp/bunny_flipped.ply", scale = Vec3d(10)),

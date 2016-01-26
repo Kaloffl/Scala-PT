@@ -9,7 +9,7 @@ class TransparentMaterial(
     color: Color,
     override val scatterProbability: Double = 0,
     override val refractiveIndex: Float = 1,
-    roughness: Double = 0) extends Material(Color.White, new RefractFunction(refractiveIndex, roughness)) {
+    glossiness: Float = 0) extends Material(Color.White, new RefractFunction(refractiveIndex, glossiness)) {
 
   override def getAbsorbtion(worldPos: Vec3d, random: DoubleSupplier): Color = color
 }

@@ -2,7 +2,6 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -12,31 +11,30 @@ import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.ReflectiveMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.materials.UniformSky
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.scene.materials.UniformSky
-import kaloffl.spath.scene.materials.DiffuseMaterial
 
 object Scatter5 {
   def main(args: Array[String]): Unit = {
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.White * 16, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.White * 16)
 
     val matRedGlass = new TransparentMaterial(
       color = Color(0.1f, 0.5f, 0.5f),
       scatterProbability = 0.1,
       refractiveIndex = 1.7f)
-    val matClearGlass = RefractiveMaterial(Color.White, 1.7f, 0.0)
+    val matClearGlass = RefractiveMaterial(Color.White, 1.7f)
     val matWhiteGlass = new TransparentMaterial(
       color = Color.Black,
       refractiveIndex = 1.7f)
 
-    val matMirror = ReflectiveMaterial(Color.White, 0.0001)
+    val matMirror = ReflectiveMaterial(Color.White, 0.0001f)
 
     val matAir = new TransparentMaterial(Color.Black)
 

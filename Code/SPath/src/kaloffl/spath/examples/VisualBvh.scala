@@ -4,7 +4,6 @@ import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.bvh.BvhBuilder
 import kaloffl.spath.importer.PlyImporter
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -24,10 +23,10 @@ object VisualBvh {
     val matAir = new TransparentMaterial(
       color = Color.Black,
       scatterProbability = 0.0625)
-    val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2, Attenuation.none)
-    val matGlassRed = new TransparentMaterial(Color(0.7f, 4, 4), 1, 20, 1.7)
-    val matGlassGreen = new TransparentMaterial(Color(4, 0.7f, 4), 1, 20, 1.7)
-    val matGlassBlue = new TransparentMaterial(Color(4, 4, 0.7f), 1, 20, 1.7)
+    val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2)
+    val matGlassRed = new TransparentMaterial(Color(0.7f, 4, 4), 20, 1.7f)
+    val matGlassGreen = new TransparentMaterial(Color(4, 0.7f, 4), 20, 1.7f)
+    val matGlassBlue = new TransparentMaterial(Color(4, 4, 0.7f), 20, 1.7f)
     val matFloor = DiffuseMaterial(Color(0.7f, 0.75f, 0.9f))
 
     val bunny = BvhBuilder.buildTree(

@@ -2,7 +2,6 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -26,11 +25,11 @@ object Scatter4 {
       color = Color(0.1f, 0.1f, 0.1f),
       scatterProbability = 500,
       refractiveIndex = 1.557f,
-      roughness = 0.01)
+      glossiness = 0.01f)
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matRedLight = new LightMaterial(Color.Red * 256, Attenuation.none)
-    val matGreenLight = new LightMaterial(Color.Green * 16, Attenuation.none)
+    val matRedLight = new LightMaterial(Color.Red * 256)
+    val matGreenLight = new LightMaterial(Color.Green * 16)
     val matAir = new TransparentMaterial(Color.Black)
 
     val glassTest = SceneNode(Array(

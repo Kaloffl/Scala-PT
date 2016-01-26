@@ -2,13 +2,11 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.DirectionalLightMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
@@ -24,7 +22,7 @@ object Light {
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f, 0.0)
+    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f)
 
     val matAir = new TransparentMaterial(
       color = Color(0.02f, 0.01f, 0.005f),
@@ -38,11 +36,11 @@ object Light {
       SceneNode(new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f), matWhiteDiffuse),
 
       SceneNode(AABB(Vec3d(-4, 7.5, 4), Vec3d(3, 0.125, 22)),
-        new LightMaterial(Color(0.9f, 0.1f, 0.1f) * 2, Attenuation.none)),
+        new LightMaterial(Color(0.9f, 0.1f, 0.1f) * 2)),
       SceneNode(AABB(Vec3d(0, 7.5, 4), Vec3d(3, 0.125, 22)),
-        new LightMaterial(Color(0.1f, 0.9f, 0.1f) * 2, Attenuation.none)),
+        new LightMaterial(Color(0.1f, 0.9f, 0.1f) * 2)),
       SceneNode(AABB(Vec3d(4, 7.5, 4), Vec3d(3, 0.125, 22)),
-        new LightMaterial(Color(0.1f, 0.1f, 0.9f) * 2, Attenuation.none)),
+        new LightMaterial(Color(0.1f, 0.1f, 0.9f) * 2)),
 
       SceneNode(AABB(Vec3d(-7.5, 7, 4), Vec3d(1, 2, 22)), matBlackDiffuse),
       SceneNode(AABB(Vec3d(-2.5, 7, 4), Vec3d(2, 2, 22)), matBlackDiffuse),

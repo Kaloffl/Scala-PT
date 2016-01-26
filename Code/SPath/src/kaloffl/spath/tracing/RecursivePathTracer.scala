@@ -55,8 +55,19 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
 
       val point = ray.atDistance(scatterDist)
       val absorbed = (media(mediaHead).getAbsorbtion(point, random) * -scatterDist.toFloat).exp
-      val newRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
-      return absorbed * trace(newRay, media, mediaHead, i - 1, random)
+      val randomRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
+      var color = trace(randomRay, media, mediaHead, i - 1, random)
+      if (i > 1) {
+        var h = 0
+        while (h < scene.lightHints.length) {
+          val hint = scene.lightHints(h)
+          val lightRay = hint.createRandomRay(point, random)
+          val angle = hint.getSolidAngle(point).toFloat
+          color += trace(lightRay, media, mediaHead, i / 2, random) * angle
+          h += 1
+        }
+      }
+      return absorbed * color
     } else {
       val depth = intersection.depth
       val point = ray.atDistance(depth)
@@ -95,6 +106,19 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
             color += trace(newRay, media, mediaHead - 1, i - 1, random) * weight
           } else {
             color += trace(newRay, media, mediaHead, i - 1, random) * weight
+            if (i > 1) {
+              var h = 0
+              while (h < scene.lightHints.length) {
+                val hint = scene.lightHints(h)
+                val lightRay = hint.createRandomRay(point, random)
+                val contribution = scattering.getContribution(lightRay.normal)
+                if (contribution > 0) {
+                  val angle = hint.getSolidAngle(point).toFloat
+                  color += trace(lightRay, media, mediaHead, i / 2, random) * angle * contribution
+                }
+                h += 1
+              }
+            }
           }
         }
         d += 1

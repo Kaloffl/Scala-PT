@@ -4,7 +4,6 @@ import java.io.File
 import javax.imageio.ImageIO
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -25,6 +24,7 @@ import kaloffl.spath.scene.materials.TextureMask
 import kaloffl.spath.tracing.PathTracer
 import kaloffl.spath.scene.materials.SpecularMaterial
 import kaloffl.spath.tracing.TexcoordTracer
+import kaloffl.spath.scene.materials.BlackSky
 
 object Textured {
 
@@ -34,40 +34,29 @@ object Textured {
 
     val matVoid = new TransparentMaterial(
       color = Color.Black,
-      scatterProbability = 0,
-      refractiveIndex = 1,
-      roughness = 0)
+      scatterProbability = 0)
     val matAir1 = new TransparentMaterial(
       color = atmosphereColor * 4e-6f,
-      scatterProbability = 8e-8,
-      refractiveIndex = 1,
-      roughness = 0)
+      scatterProbability = 4e-8)
     val matAir2 = new TransparentMaterial(
       color = atmosphereColor * 2e-6f,
-      scatterProbability = 4e-8,
-      refractiveIndex = 1,
-      roughness = 0)
+      scatterProbability = 2e-8)
     val matAir3 = new TransparentMaterial(
       color = atmosphereColor * 1e-6f,
-      scatterProbability = 2e-8,
-      refractiveIndex = 1,
-      roughness = 0)
+      scatterProbability = 1e-8)
     val matAir4 = new TransparentMaterial(
       color = atmosphereColor * 5e-7f,
-      scatterProbability = 1e-8,
-      refractiveIndex = 1,
-      roughness = 0)
+      scatterProbability = 5e-9)
     val matAir5 = new TransparentMaterial(
       color = atmosphereColor * 25e-8f,
-      scatterProbability = 5e-9,
-      refractiveIndex = 1,
-      roughness = 0)
-    val matLight = new LightMaterial(Color.White * 40, Attenuation.none)
+      scatterProbability = 25e-10)
+    val matLight = new LightMaterial(Color.White * 640000)
 
-    val matWhite = DiffuseMaterial(Color(0.8f, 0.8f, 0.8f))
+    val matWhite = DiffuseMaterial(Color(0.93f, 0.93f, 0.93f))
+    val matGreen = DiffuseMaterial(Color(0.1f, 0.7f, 0.2f))
     val matBlack = DiffuseMaterial(Color.Black)
 
-    val surface = ImageIO.read(new File("D:/temp/world.topo.200411.3x5400x2700.jpg"))
+    val surface = ImageIO.read(new File("D:/temp/world.200409.3x5400x2700.jpg"))
     val normals = ImageIO.read(new File("D:/temp/EarthNormal.png"))
     val mask = ImageIO.read(new File("D:/temp/mask.jpg"))
     val clouds = ImageIO.read(new File("D:/temp/clouds.jpg"))
@@ -78,14 +67,16 @@ object Textured {
       refractiveIndex = 1.3f,
       roughness = 0.1)
     val matSurface = new MaskedMaterial(matWater, matTexture, new TextureMask(new LazyTexture(mask)))
-
     val matCloud = new MaskedMaterial(matWhite, matAir1, new TextureMask(new LazyTexture(clouds)))
+
     val earthRadius = 12756320 / 2
     val sunRadius = 1392684000 / 2
     val moonRadius = 3476 / 2
-    //    val earthSunDistance = 149.6e9
-    val earthSunDistance = 149.6e7
+    val earthSunDistance = 149.6e9
     val earthMoonDistance = 3844e5
+
+    val sunSphere = new Sphere(Vec3d(1, 0, 1).normalize * earthSunDistance, sunRadius)
+    val moonSphere = new Sphere(Vec3d(1, 0, -1).normalize * earthMoonDistance, moonRadius)
 
     val world = SceneNode(Array(
       SceneNode(new Sphere(Vec3d.Origin, earthRadius + 2e5f), matAir4),
@@ -98,21 +89,22 @@ object Textured {
           new Sphere(Vec3d.Origin, earthRadius),
           new LazyTexture(normals)),
         matSurface),
-      SceneNode(new Sphere(Vec3d(1, 0, 1).normalize * earthSunDistance, sunRadius), matLight),
-      SceneNode(new Sphere(Vec3d(1, 0, 1).normalize * earthMoonDistance, moonRadius), matWhite)))
+      SceneNode(sunSphere, matLight)))
 
     val display = new Display(1280, 720)
-    val position = Vec3d(0.5, 0, 1).normalize * (earthRadius * 2)
+//    val position = Vec3d(0.5, 0, 1).normalize * (earthRadius * 2)
+    val position = Vec3d(0, 1, 0).normalize * (earthRadius * 1.8) + Vec3d(1, 0, 1) * (earthRadius * 0.2)
     RenderEngine.render(
       bounces = 20,
       target = display,
       tracer = new RecursivePathTracer(new Scene(
         root = world,
-        airMedium = matVoid,
-        skyMaterial = new UniformSky(Color.White / 256),
+        initialMediaStack = Array(matVoid),
+        lightHints = Array(sunSphere),
+        skyMaterial = BlackSky,
         camera = new Camera(
           position = position,
-          forward = -position.normalize,
-          up = Vec3d.Up))))
+          forward = Vec3d.Down,
+          up = Vec3d(1, 0, 1).normalize))))
   }
 }

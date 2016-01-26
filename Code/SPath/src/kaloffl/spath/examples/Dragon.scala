@@ -27,12 +27,12 @@ object Dragon {
       color = Color(0.5f, 0.8f, 0.8f) * 7,
       scatterProbability = 1.5,
       refractiveIndex = 1.9f)
-    val matRedMetal = ReflectiveMaterial(Color(0.9f, 0.1f, 0.1f), 0.0125)
-    val matGreenMetal = ReflectiveMaterial(Color(0.1f, 0.9f, 0.1f), 0.0125)
-    val matBlueMetal = ReflectiveMaterial(Color(0.1f, 0.1f, 0.9f), 0.0125)
-    val matCyanMetal = ReflectiveMaterial(Color(0.1f, 0.8f, 0.8f), 0.0125)
-    val matMagentaMetal = ReflectiveMaterial(Color(0.8f, 0.1f, 0.8f), 0.0125)
-    val matYellowMetal = ReflectiveMaterial(Color(0.85f, 0.7f, 0.1f), 0.00001)
+    val matRedMetal = ReflectiveMaterial(Color(0.9f, 0.1f, 0.1f), 0.0125f)
+    val matGreenMetal = ReflectiveMaterial(Color(0.1f, 0.9f, 0.1f), 0.0125f)
+    val matBlueMetal = ReflectiveMaterial(Color(0.1f, 0.1f, 0.9f), 0.0125f)
+    val matCyanMetal = ReflectiveMaterial(Color(0.1f, 0.8f, 0.8f), 0.0125f)
+    val matMagentaMetal = ReflectiveMaterial(Color(0.8f, 0.1f, 0.8f), 0.0125f)
+    val matYellowMetal = ReflectiveMaterial(Color(0.85f, 0.7f, 0.1f), 0.00001f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
 
     val dragon = SceneNode(

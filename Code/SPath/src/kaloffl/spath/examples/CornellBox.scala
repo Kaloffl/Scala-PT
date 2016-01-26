@@ -2,7 +2,6 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -15,6 +14,8 @@ import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.shapes.Triangle
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.tracing.RecursivePathTracer
 
 object CornellBox {
 
@@ -24,7 +25,7 @@ object CornellBox {
     val cmatWhite = DiffuseMaterial(new Color(0.737f, 0.728f, 0.767f))
     val cmatRed = DiffuseMaterial(new Color(0.642f, 0.063f, 0.061f))
     val cmatGreen = DiffuseMaterial(new Color(0.159f, 0.373f, 0.101f))
-    val cmatLight = new LightMaterial(new Color(34.0f, 23.6f, 8.0f), Attenuation.radius(10))
+    val cmatLight = new LightMaterial(new Color(34.0f, 23.6f, 8.0f))
 
     val roomWidth = 552.5
     val roomHeight = 548.8
@@ -51,6 +52,8 @@ object CornellBox {
     val light = SceneNode(
       new AABB(Vec3d(213, roomHeight - 0.01, 227), Vec3d(343, roomHeight + 0.99, 332)),
       cmatLight)
+
+    val lightHint = new Sphere(Vec3d(278, roomHeight, 279), 65)
 
     val cornellBox = SceneNode(Array(
       light,
@@ -98,11 +101,12 @@ object CornellBox {
 
     RenderEngine.render(
       passes = 60000,
-      bounces = 12,
-      target = new Display(1280, 720),
-      tracer = new PathTracer(new Scene(
+      bounces = 8,
+      target = new Display(512, 720),
+      tracer = new RecursivePathTracer(new Scene(
         root = cornellBox,
-        airMedium = matAir,
+        initialMediaStack = Array(matAir),
+        lightHints = Array(lightHint),
         camera = new Camera(
           position = Vec3d(278, 273, -800),
           forward = Vec3d.Front,

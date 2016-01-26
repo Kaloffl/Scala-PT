@@ -2,9 +2,9 @@ package kaloffl.spath.examples
 
 import java.util.Random
 import java.util.function.DoubleSupplier
+
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
@@ -27,7 +27,7 @@ object Scatter2 {
     val glassColor = Color(0.2f, 0.4f, 0.5f)
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matWhiteLight = new LightMaterial(Color.White * 2, Attenuation.none)
+    val matWhiteLight = new LightMaterial(Color.White * 2)
     val matAir = new TransparentMaterial(Color.Black)
 
     val environment = Array(

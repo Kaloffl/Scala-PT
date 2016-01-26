@@ -2,7 +2,6 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -28,11 +27,11 @@ object Simple {
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matAir = new TransparentMaterial(Color.Black)
 
-    val matMirror = ReflectiveMaterial(Color.White, 0.0)
+    val matMirror = ReflectiveMaterial(Color.White)
     val matGlass = new TransparentMaterial(
       color = Color(0.09f, 0.09f, 0.09f),
       refractiveIndex = 2.0f)
-    val matLight = new LightMaterial(Color.White * 8f, Attenuation.radius(1f))
+    val matLight = new LightMaterial(Color.White * 8f)
 
     val coloredSpheres = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 1.5f, -1.5f), 1.5f), matMirror),

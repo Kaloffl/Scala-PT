@@ -2,7 +2,6 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -28,11 +27,11 @@ object Indirect {
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matAir = new TransparentMaterial(Color.Black)
 
-    val matMirror = ReflectiveMaterial(Color.White, 0.0)
+    val matMirror = ReflectiveMaterial(Color.White)
     val matGlass = new TransparentMaterial(
       color = Color.Black,
       refractiveIndex = 2)
-    val matLight = new LightMaterial(Color.White * 3f, Attenuation.radius(0.5f))
+    val matLight = new LightMaterial(Color.White * 3f)
 
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5, 0, 0))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)

@@ -6,6 +6,7 @@ import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.materials.SkyMaterial
 import kaloffl.spath.scene.materials.BlackSky
+import kaloffl.spath.scene.shapes.Projectable
 
 /**
  * A scene holds all the objects that might be displayed, as well as the camera
@@ -15,7 +16,8 @@ class Scene(val root: SceneNode,
             val camera: Camera,
             val initialMediaStack: Array[Material],
             val skyMaterial: SkyMaterial = BlackSky,
-            val skyDistance: Double = Double.PositiveInfinity) {
+            val skyDistance: Double = Double.PositiveInfinity,
+            val lightHints: Array[Projectable] = Array()) {
 
   def this(root: SceneNode,
            camera: Camera,
@@ -31,7 +33,7 @@ class Scene(val root: SceneNode,
            skyMaterial: SkyMaterial) {
     this(root, camera, Array(airMedium), skyMaterial)
   }
-  
+
   def this(root: SceneNode,
            camera: Camera,
            airMedium: Material) {

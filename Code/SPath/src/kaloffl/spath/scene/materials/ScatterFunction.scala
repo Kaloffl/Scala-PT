@@ -24,9 +24,9 @@ object DiffuseFunction extends ScatterFunction {
                              airIndex: Float,
                              random: DoubleSupplier): Scattering = {
     if (inDirection.dot(normal) < 0) {
-      new SingleRayScattering(normal.weightedHemisphere(Vec2d.random(random)))
+      new DiffuseScattering(normal, Vec2d.random(random))
     } else {
-      new SingleRayScattering(-normal.weightedHemisphere(Vec2d.random(random)))
+      new DiffuseScattering(-normal, Vec2d.random(random))
     }
   }
 }
@@ -40,27 +40,42 @@ object ReflectFunction extends ScatterFunction {
   }
 }
 
-class GlossyReflectFunction(glossiness: Double) extends ScatterFunction {
+class GlossyReflectFunction(glossiness: Float) extends ScatterFunction {
   override def outDirections(inDirection: Vec3d,
                              normal: Vec3d,
                              airIndex: Float,
                              random: DoubleSupplier): Scattering = {
-    new SingleRayScattering(inDirection.reflect(normal.randomConeSample(Vec2d.random(random), glossiness, 0.0)))
+    new ReflectiveScattering(
+      inDirection,
+      normal,
+      glossiness,
+      Vec2d.random(random))
   }
 }
 
 class RefractFunction(refractiveIndex: Float,
-                      glossiness: Double = 0.0) extends ScatterFunction {
+                      glossiness: Float = 0f) extends ScatterFunction {
   override def outDirections(inDirection: Vec3d,
                              normal: Vec3d,
                              airIndex: Float,
                              random: DoubleSupplier): Scattering = {
 
-    val axis = normal.randomConeSample(Vec2d.random(random), glossiness, 0.0)
-    if (axis.dot(inDirection) > 0) {
-      new RefractiveScattering(inDirection, -axis, refractiveIndex, airIndex)
+    if (normal.dot(inDirection) > 0) {
+      new RefractiveScattering(
+        inDirection,
+        -normal,
+        refractiveIndex,
+        airIndex,
+        glossiness,
+        Vec2d.random(random))
     } else {
-      new RefractiveScattering(inDirection, axis, airIndex, refractiveIndex)
+      new RefractiveScattering(
+        inDirection,
+        normal,
+        airIndex,
+        refractiveIndex,
+        glossiness,
+        Vec2d.random(random))
     }
   }
 }

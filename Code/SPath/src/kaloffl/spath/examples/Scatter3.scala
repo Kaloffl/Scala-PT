@@ -2,7 +2,6 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -22,11 +21,11 @@ object Scatter3 {
 
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
 
-    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f, 0.0)
+    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f)
     val matAir = new TransparentMaterial(
       color = Color(0.02f, 0.01f, 0.005f),
       scatterProbability = 0.005)
-    val matLight = new LightMaterial(Color.White * 8, Attenuation.none)
+    val matLight = new LightMaterial(Color.White * 8)
 
     val hazeObjects = Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matWhiteGlass8),
