@@ -3,7 +3,6 @@ package kaloffl.spath.examples
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
-import kaloffl.spath.math.Attenuation
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera

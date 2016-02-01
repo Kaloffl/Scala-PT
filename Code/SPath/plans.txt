@@ -5,8 +5,9 @@ pathtracer TODOs
 	- camera shutter shape
 	- camera movement for motion blur
 	- shutter time
+
 - UI
-	- switch to JavaFX
+	- switch to JavaFX for GUI
 	- settable sample count
 	- settable max bounce
 	- exportable image
@@ -30,35 +31,46 @@ pathtracer TODOs
 		- materials
 		- shapes & models
 		- scenes
+	- command line tool (.scene in -> .png out)
+	- progress monitor for all time consuming tasks
+		- rendering
+		- import of model files
+		- BVH construction
+
 - post processing
 	- white balance
 	- bloom
 	- color correction
+
 - scene
 	- scene file format (so trees are saved and don't need to be build every time)
 	- live scene editing
 	- octree based voxel volume
 	- shape combinators (union, subtraction, intersection)
 	- normalmaps for objects
-	- portals
-- spectral tracing
-- bidirectional tracing
-- Better random sampler
-- better ply importer
-- command line tool (.scene in -> .png out)
-- better in-scattering to allow "godrays"
-- progress monitor for all time consuming tasks
-	- rendering
-	- import of model files
-	- BVH construction
-- selective splitting (split one ray into multiple in high-variance areas to accelerate convergence)
-- single scatter optimization for air/fog scattering
-- photon mapping?
-- automatic creation of Attenuation factor for lights (needed for direct lighting solutions & bidirectional tracing)
-- Extract air scattering code
-- Extract russian roulett code
-- Allow Jobs in the jobpool to park if no executable jobs are available
-- "prominent lights": light sources chosen to be checked after every ray
-	- point lights at first because they are simpler than area lights for this
-		- point lights always have the same probability, so it can be multiplied into the intensity directly
-	- later consider area lights which need to be adjusted by their hit probability
+	- portals (non-euclidian geometry)
+	- quake-style BSP with Potentially Visible Sets to optimize indoor scenes
+
+- maybe
+	- spectral tracing
+	- bidirectional tracing
+		- or maybe the light hint system is good enough?
+	- photon mapping
+	- selective splitting (find out where more rays are the most helpful)
+	- single scatter optimization for air/fog scattering
+		- hard to get right and might never be as good as the real thing
+
+- code
+	- Extract air scattering code
+	- Extract russian roulett code
+	- Allow Jobs in the jobpool to park if no executable jobs are available
+	- figure out how to efficiently use Units of Measurement in the code
+
+- misc
+	- Better random sampler
+	- better ply importer
+	- improve lighting hint system
+		- hint-chains where the first hint in the chain will be used and then removed from the chain
+		- area-based hints where hints are only used if the point is in a specific place
+			- (maybe the chains could be implemented with this as well, though that might not be efficient)
+		- improve performance by checking hints less often
