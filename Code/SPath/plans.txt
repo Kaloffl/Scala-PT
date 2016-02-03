@@ -50,6 +50,9 @@ pathtracer TODOs
 	- normalmaps for objects
 	- portals (non-euclidian geometry)
 	- quake-style BSP with Potentially Visible Sets to optimize indoor scenes
+	- Reduce BVH overlap by referencing leafs twice in necessary
+		- https://graphics.cg.uni-saarland.de/fileadmin/cguds/papers/2009/stich_hpg2009/HPG2009_SBVH.pdf
+	- Improve the way the BVH  Builder decides to make leaves by basing it on the cost of the new layer
 
 - maybe
 	- spectral tracing
