@@ -8,14 +8,14 @@ import kaloffl.spath.math.Vec2d
 /**
  * @author Lars
  */
-class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape {
+class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape with Bounded {
 
   val edgeA = vertB - vertA
   val edgeB = vertC - vertA
 
   val normal = (edgeA).cross(edgeB).normalize
 
-  override def enclosingAABB: AABB = {
+  override def getBounds: AABB = {
     val vertB = edgeA + vertA
     val vertC = edgeB + vertA
     val minX = Math.min(vertA.x, Math.min(vertB.x, vertC.x))

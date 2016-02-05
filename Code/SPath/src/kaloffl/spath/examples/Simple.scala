@@ -38,10 +38,9 @@ object Simple {
       SceneNode(new Sphere(Vec3d(-1.0f, 1.5f, 0.0f), 1.5f), matGlass),
       SceneNode(new Sphere(Vec3d(-3.0f, 1f, 2.0f), 1f), matWhiteDiffuse),
 
-      SceneNode(
-        Array[Shape](
-          new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f),
-          new Sphere(Vec3d(-1.0f, 3.0f, -5.9f), 1f)),
+      SceneNode(Array(
+        new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f),
+        new Sphere(Vec3d(-1.0f, 3.0f, -5.9f), 1f)),
         matLight),
 
       SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(16, 1, 16)), matWhiteDiffuse),

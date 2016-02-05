@@ -8,12 +8,11 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.materials.UniformSky
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.scene.materials.UniformSky
 
 object Bunny {
 

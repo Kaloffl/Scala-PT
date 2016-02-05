@@ -13,8 +13,8 @@ import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.structure.BoundedTransformationNode
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.structure.TransformationNode
 import kaloffl.spath.tracing.PathTracer
 
 object Transformed {
@@ -33,7 +33,7 @@ object Transformed {
         new Sphere(Vec3d(1, 3, 1), 1),
         matLight),
 
-      new TransformationNode(
+      new BoundedTransformationNode(
         new Transformation(
           scale = Vec3d(4),
           translation = Vec3d(2, 4, -2),

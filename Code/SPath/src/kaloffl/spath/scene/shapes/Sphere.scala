@@ -9,7 +9,7 @@ import kaloffl.spath.math.FastMath
 /**
  * A sphere shape consisting of a location and a radius.
  */
-class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projectable {
+class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projectable with Bounded {
 
   val radiusSq = radius * radius
 
@@ -49,7 +49,7 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projecta
     return Float.PositiveInfinity
   }
 
-  override def enclosingAABB: AABB = {
+  override def getBounds: AABB = {
     AABB(position, Vec3d(radius * 2))
   }
 

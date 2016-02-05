@@ -6,7 +6,7 @@ import kaloffl.spath.math.Vec2d
 import kaloffl.spath.scene.materials.Texture
 import kaloffl.spath.math.Color
 
-class NormalMappedShape(base: Shape, normalMap: Texture) extends Shape {
+class NormalMappedShape(val base: Shape, val normalMap: Texture) extends Shape {
 
   override def getNormal(point: Vec3d): Vec3d = {
     val z = base.getNormal(point)
@@ -21,7 +21,7 @@ class NormalMappedShape(base: Shape, normalMap: Texture) extends Shape {
   override def getTextureCoordinate(point: Vec3d): Vec2d = {
     base.getTextureCoordinate(point)
   }
-  
+
   override def getIntersectionDepth(ray: Ray): Double = {
     base.getIntersectionDepth(ray)
   }
@@ -29,6 +29,9 @@ class NormalMappedShape(base: Shape, normalMap: Texture) extends Shape {
   override def getIntersectionDepth(ray: Ray, maxDepth: Double): Double = {
     base.getIntersectionDepth(ray, maxDepth)
   }
+}
 
-  override def enclosingAABB = base.enclosingAABB
+class BoundedNormalMappedShape(base: Shape with Bounded, normalMap: Texture)
+    extends NormalMappedShape(base, normalMap) with Bounded {
+  override def getBounds = base.getBounds
 }

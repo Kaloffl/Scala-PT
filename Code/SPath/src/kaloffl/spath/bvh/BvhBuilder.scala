@@ -5,7 +5,7 @@ import kaloffl.jobs.Job
 import kaloffl.jobs.JobPool
 import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Enclosable
+import kaloffl.spath.scene.shapes.Bounded
 import kaloffl.spath.scene.shapes.Intersectable
 import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.structure.SceneNode
@@ -23,7 +23,7 @@ object BvhBuilder {
    * splitting is done in places where the two smallest AABBs will be created
    * around the children.
    */
-  def buildTree[T <: Enclosable with Intersectable](objects: Array[T]): Bvh[T] = {
+  def buildTree[T <: Bounded with Intersectable](objects: Array[T]): Bvh[T] = {
     println("Building a BVH for " + objects.length + " objects.")
     val start = System.nanoTime
 
@@ -50,7 +50,7 @@ object BvhBuilder {
   }
 }
 
-class SplittingJob[T <: Enclosable with Intersectable](
+class SplittingJob[T <: Bounded with Intersectable](
     jobPool: JobPool,
     objects: SubArray[T],
     consumer: Bvh[T] ⇒ Unit,
@@ -60,7 +60,7 @@ class SplittingJob[T <: Enclosable with Intersectable](
     // If the array is small enough we create a leaf and return
     if (objects.length <= BvhBuilder.MaxLeafSize) {
       val elements = objects.toArray
-      val hull = AABB.enclosing[T](elements, _.enclosingAABB)
+      val hull = AABB.enclosing[T](elements, _.getBounds)
       consumer(new Bvh[T](null, elements, hull, level))
       return
     }
@@ -90,10 +90,10 @@ class SplittingJob[T <: Enclosable with Intersectable](
       val backToFront = new Array[AABB](objects.length);
       {
         var i = objects.length - 2
-        backToFront(i + 1) = objects(i + 1).enclosingAABB
+        backToFront(i + 1) = objects(i + 1).getBounds
         val end = 0
         while (i > end) {
-          backToFront(i) = backToFront(i + 1).enclose(objects(i).enclosingAABB)
+          backToFront(i) = backToFront(i + 1).enclose(objects(i).getBounds)
           i -= 1
         }
       }
@@ -102,9 +102,9 @@ class SplittingJob[T <: Enclosable with Intersectable](
       {
         var i = 0
         val end = objects.length - 1
-        var accumulator = objects(i).enclosingAABB
+        var accumulator = objects(i).getBounds
         while (i < end) {
-          accumulator = accumulator.enclose(objects(i).enclosingAABB)
+          accumulator = accumulator.enclose(objects(i).getBounds)
           val scoreA = accumulator.surfaceArea * i
           val scoreB = backToFront(i + 1).surfaceArea * (end - i)
           val scoreC = accumulator.overlap(backToFront(i + 1)).surfaceArea
@@ -169,82 +169,82 @@ class MergeJob[T <: Intersectable](level: Int, consumer: Bvh[T] ⇒ Unit) extend
 // Following are the implementations of the nine different ways to sort. nothing
 // too exiting.
 
-object BoxCenterXOrder extends Comparator[Enclosable] {
-  override def compare(e1: Enclosable, e2: Enclosable): Int = {
-    val x1 = e1.enclosingAABB.center.x
-    val x2 = e2.enclosingAABB.center.x
+object BoxCenterXOrder extends Comparator[Bounded] {
+  override def compare(e1: Bounded, e2: Bounded): Int = {
+    val x1 = e1.getBounds.center.x
+    val x2 = e2.getBounds.center.x
     if (x1 < x2) return -1
     if (x1 > x2) return 1
     return 0
   }
 }
-object BoxMinXOrder extends Comparator[Enclosable] {
-  override def compare(e1: Enclosable, e2: Enclosable): Int = {
-    val x1 = e1.enclosingAABB.min.x
-    val x2 = e2.enclosingAABB.min.x
+object BoxMinXOrder extends Comparator[Bounded] {
+  override def compare(e1: Bounded, e2: Bounded): Int = {
+    val x1 = e1.getBounds.min.x
+    val x2 = e2.getBounds.min.x
     if (x1 < x2) return -1
     if (x1 > x2) return 1
     return 0
   }
 }
-object BoxMaxXOrder extends Comparator[Enclosable] {
-  override def compare(e1: Enclosable, e2: Enclosable): Int = {
-    val x1 = e1.enclosingAABB.max.x
-    val x2 = e2.enclosingAABB.max.x
+object BoxMaxXOrder extends Comparator[Bounded] {
+  override def compare(e1: Bounded, e2: Bounded): Int = {
+    val x1 = e1.getBounds.max.x
+    val x2 = e2.getBounds.max.x
     if (x1 < x2) return -1
     if (x1 > x2) return 1
     return 0
   }
 }
-object BoxCenterYOrder extends Comparator[Enclosable] {
-  override def compare(e1: Enclosable, e2: Enclosable): Int = {
-    val y1 = e1.enclosingAABB.center.y
-    val y2 = e2.enclosingAABB.center.y
+object BoxCenterYOrder extends Comparator[Bounded] {
+  override def compare(e1: Bounded, e2: Bounded): Int = {
+    val y1 = e1.getBounds.center.y
+    val y2 = e2.getBounds.center.y
     if (y1 < y2) return -1
     if (y1 > y2) return 1
     return 0
   }
 }
-object BoxMinYOrder extends Comparator[Enclosable] {
-  override def compare(e1: Enclosable, e2: Enclosable): Int = {
-    val y1 = e1.enclosingAABB.min.y
-    val y2 = e2.enclosingAABB.min.y
+object BoxMinYOrder extends Comparator[Bounded] {
+  override def compare(e1: Bounded, e2: Bounded): Int = {
+    val y1 = e1.getBounds.min.y
+    val y2 = e2.getBounds.min.y
     if (y1 < y2) return -1
     if (y1 > y2) return 1
     return 0
   }
 }
-object BoxMaxYOrder extends Comparator[Enclosable] {
-  override def compare(e1: Enclosable, e2: Enclosable): Int = {
-    val y1 = e1.enclosingAABB.max.y
-    val y2 = e2.enclosingAABB.max.y
+object BoxMaxYOrder extends Comparator[Bounded] {
+  override def compare(e1: Bounded, e2: Bounded): Int = {
+    val y1 = e1.getBounds.max.y
+    val y2 = e2.getBounds.max.y
     if (y1 < y2) return -1
     if (y1 > y2) return 1
     return 0
   }
 }
-object BoxCenterZOrder extends Comparator[Enclosable] {
-  override def compare(e1: Enclosable, e2: Enclosable): Int = {
-    val z1 = e1.enclosingAABB.center.z
-    val z2 = e2.enclosingAABB.center.z
+object BoxCenterZOrder extends Comparator[Bounded] {
+  override def compare(e1: Bounded, e2: Bounded): Int = {
+    val z1 = e1.getBounds.center.z
+    val z2 = e2.getBounds.center.z
     if (z1 < z2) return -1
     if (z1 > z2) return 1
     return 0
   }
 }
-object BoxMinZOrder extends Comparator[Enclosable] {
-  override def compare(e1: Enclosable, e2: Enclosable): Int = {
-    val z1 = e1.enclosingAABB.min.z
-    val z2 = e2.enclosingAABB.min.z
+object BoxMinZOrder extends Comparator[Bounded] {
+  override def compare(e1: Bounded, e2: Bounded): Int = {
+    val z1 = e1.getBounds.min.z
+    val z2 = e2.getBounds.min.z
     if (z1 < z2) return -1
     if (z1 > z2) return 1
     return 0
   }
 }
-object BoxMaxZOrder extends Comparator[Enclosable] {
-  override def compare(e1: Enclosable, e2: Enclosable): Int = {
-    val z1 = e1.enclosingAABB.max.z
-    val z2 = e2.enclosingAABB.max.z
+object BoxMaxZOrder extends Comparator[Bounded] {
+  override def compare(e1: Bounded, e2: Bounded): Int = {
+    val z1 = e1.getBounds.max.z
+    val z2 = e2.getBounds.max.z
     if (z1 < z2) return -1
     if (z1 > z2) return 1
     return 0

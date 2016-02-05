@@ -1,12 +1,11 @@
 package kaloffl.spath.scene.structure
 
 import kaloffl.spath.math.Ray
-import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.shapes.AABB
+import kaloffl.spath.scene.shapes.Bounded
+import kaloffl.spath.tracing.Intersection
 
-class NodeList(val children: Array[_ <: SceneNode]) extends SceneNode {
-
-  val hull = AABB.enclosing[SceneNode](children, _.enclosingAABB)
+class NodeList[T <: SceneNode](val children: Array[T]) extends SceneNode {
 
   def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     var closestIntersection = Intersection.NullIntersection
@@ -22,6 +21,9 @@ class NodeList(val children: Array[_ <: SceneNode]) extends SceneNode {
     }
     return closestIntersection
   }
+}
 
-  def enclosingAABB: AABB = hull
+class BoundedNodeList[T <: SceneNode with Bounded](children: Array[T]) extends NodeList[T](children) with Bounded {
+  val hull = AABB.enclosing[Bounded](children, _.getBounds)
+  override def getBounds: AABB = hull
 }

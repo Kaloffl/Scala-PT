@@ -3,10 +3,11 @@ package kaloffl.spath.scene.structure
 import kaloffl.spath.bvh.Bvh
 import kaloffl.spath.math.Ray
 import kaloffl.spath.tracing.Intersection
+import kaloffl.spath.scene.shapes.Bounded
 
-class NodeBvh (val bvh: Bvh[_ <: SceneNode]) extends SceneNode {
+class NodeBvh (val bvh: Bvh[_ <: SceneNode]) extends SceneNode with Bounded {
 
-  override def enclosingAABB = bvh.hull
+  override def getBounds = bvh.hull
 
   override def getIntersection(ray: Ray, maxDist: Double): Intersection = {
     val (node, depth) = bvh.findClosestObject(ray, maxDist)

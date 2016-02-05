@@ -1,14 +1,13 @@
 package kaloffl.spath.scene.structure
 
-import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.math.Ray
-import kaloffl.spath.tracing.Intersection
+import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.scene.shapes.AABB
+import kaloffl.spath.scene.shapes.Bounded
+import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.tracing.Intersection
 
-class ShapeList(val shapes: Array[_ <: Shape], val material: Material) extends SceneNode {
-
-  override val enclosingAABB = AABB.enclosing[Shape](shapes, _.enclosingAABB)
+class ShapeList[T <: Shape](val shapes: Array[T], val material: Material) extends SceneNode {
 
   override def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     var closestDist = maxDepth
@@ -23,10 +22,18 @@ class ShapeList(val shapes: Array[_ <: Shape], val material: Material) extends S
       i += 1
     }
     val point = ray.atDistance(closestDist)
-    return new Intersection(
-      closestDist,
-      material,
-      () => closestShape.getNormal(point),
-      () => closestShape.getTextureCoordinate(point))
+    if(null == closestShape) {
+      Intersection.NullIntersection
+    } else {
+      new Intersection(
+          closestDist,
+          material,
+          () => closestShape.getNormal(point),
+          () => closestShape.getTextureCoordinate(point))
+    }
   }
+}
+
+class BoundedShapeList[T <: Shape with Bounded](shapes: Array[T], material: Material) extends ShapeList[T](shapes, material) with Bounded {
+    override val getBounds = AABB.enclosing[Bounded](shapes, _.getBounds)
 }

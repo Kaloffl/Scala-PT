@@ -17,7 +17,7 @@ object AABB {
   }
 
   def enclosing[T](objects: Array[_ <: T], enclose: T ⇒ AABB): AABB = {
-    if(0 == objects.length) return new AABB(Vec3d.Origin, Vec3d.Origin)
+    if (0 == objects.length) return new AABB(Vec3d.Origin, Vec3d.Origin)
     var min = enclose(objects(0)).min
     var max = enclose(objects(0)).max
     var i = 1
@@ -31,7 +31,9 @@ object AABB {
   }
 }
 
-class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
+class AABB(val min: Vec3d, val max: Vec3d) extends Shape with Bounded {
+
+  override def getBounds: AABB = this
 
   def size: Vec3d = {
     max - min
@@ -56,7 +58,7 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
     throw new RuntimeException(
       s"Could not determine AABB normal for point: $point. AABB bounds are max: $max, min: $min.")
   }
-  
+
   override def getTextureCoordinate(point: Vec3d): Vec2d = {
     val dist1 = (point - max).abs
     val dist2 = (point - min).abs
@@ -108,7 +110,7 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
 
   /**
    * Returns the overlapping space of two AABBs. If they don't overlap, an AABB
-   * with no size positioned at the origin vector is returned. If performance 
+   * with no size positioned at the origin vector is returned. If performance
    * wasn't such an issue, this method would return an Option[AABB].
    */
   def overlap(other: AABB): AABB = {
@@ -133,10 +135,8 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape {
   }
 
   def contains(v: Vec3d): Boolean = {
-    return min.x <= v.x && v.x <= max.x && 
-           min.y <= v.y && v.y <= max.y && 
-           min.z <= v.z && v.z <= max.z
+    return min.x <= v.x && v.x <= max.x &&
+      min.y <= v.y && v.y <= max.y &&
+      min.z <= v.z && v.z <= max.z
   }
-
-  override def enclosingAABB: AABB = this
 }

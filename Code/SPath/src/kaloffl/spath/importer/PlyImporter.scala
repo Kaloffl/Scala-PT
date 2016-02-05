@@ -15,7 +15,7 @@ import kaloffl.spath.scene.shapes.Triangle
  */
 object PlyImporter {
 
-  def load(file: String, scale: Vec3d = Vec3d.Unit, offset: Vec3d = Vec3d.Origin): Array[Shape] = {
+  def load(file: String, scale: Vec3d = Vec3d.Unit, offset: Vec3d = Vec3d.Origin): Array[Triangle] = {
 
     val inputStream = new BufferedInputStream(new FileInputStream(file))
     inputStream.mark(1024) // TODO rewrite importer so no buffer for resetting is needed
@@ -53,7 +53,7 @@ object PlyImporter {
     }
 
     val vertecies: Array[Vec3d] = new Array(vertCount)
-    val faces: Array[Shape] = new Array(faceCount)
+    val faces: Array[Triangle] = new Array(faceCount)
 
     println("Reading vertecies")
     if (binary) {

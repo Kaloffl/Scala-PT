@@ -5,16 +5,10 @@ import kaloffl.spath.math.Ray
 import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.shapes.Bounded
 
-class TransformationNode(transformation: Transformation,
-                         childNode: SceneNode) extends SceneNode {
-
-  override def enclosingAABB: AABB = {
-    val childAABB = childNode.enclosingAABB
-    val tMin = transformation.transformPoint(childAABB.min)
-    val tMax = transformation.transformPoint(childAABB.max)
-    return new AABB(tMin.min(tMax), tMax.max(tMin))
-  }
+class TransformationNode(val transformation: Transformation,
+                         val childNode: SceneNode) extends SceneNode {
 
   override def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     val childIntersection = childNode.getIntersection(
@@ -39,5 +33,18 @@ class TransformationNode(transformation: Transformation,
     childNode.getIntersectionDepth(
       transformation.transformRayInverse(ray),
       maxDepth)
+  }
+}
+
+class BoundedTransformationNode(transformation: Transformation,
+                                childNode: SceneNode with Bounded)
+    extends TransformationNode(transformation, childNode)
+    with Bounded {
+
+  override def getBounds: AABB = {
+    val childAABB = childNode.getBounds
+    val tMin = transformation.transformPoint(childAABB.min)
+    val tMax = transformation.transformPoint(childAABB.max)
+    return new AABB(tMin.min(tMax), tMax.max(tMin))
   }
 }

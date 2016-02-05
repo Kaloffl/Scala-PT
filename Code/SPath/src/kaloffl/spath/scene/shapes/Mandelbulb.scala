@@ -2,7 +2,7 @@ package kaloffl.spath.scene.shapes
 
 import kaloffl.spath.math.Vec3d
 
-class Mandelbulb(position: Vec3d, power: Int) extends EstimatedShape {
+class Mandelbulb(position: Vec3d, power: Int) extends EstimatedShape with Bounded {
 
   override def estimateDepth(point: Vec3d): Double = {
     var wx = point.x
@@ -28,7 +28,7 @@ class Mandelbulb(position: Vec3d, power: Int) extends EstimatedShape {
     return 0.5 * Math.log(r) * r / dr
   }
 
-  override def enclosingAABB: AABB = {
+  override def getBounds: AABB = {
     return AABB(position, Vec3d(2.5))
   }
 }

@@ -57,7 +57,7 @@ object CornellBox {
 
     val cornellBox = SceneNode(Array(
       light,
-      SceneNode(Array[Shape](
+      SceneNode(Array(
         new Triangle(s111, s110, s010),
         new Triangle(s011, s111, s010),
         new Triangle(s011, s010, s000),
@@ -70,7 +70,7 @@ object CornellBox {
         new Triangle(s101, s111, s001)),
         cmatWhite),
 
-      SceneNode(Array[Shape](
+      SceneNode(Array(
         new Triangle(t111, t110, t010),
         new Triangle(t011, t111, t010),
         new Triangle(t011, t010, t000),

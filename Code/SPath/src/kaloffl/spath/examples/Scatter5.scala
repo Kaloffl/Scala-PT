@@ -13,10 +13,12 @@ import kaloffl.spath.scene.materials.RefractiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.UniformSky
 import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.scene.shapes.Plane
 import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.structure.BoundlessNode
+import kaloffl.spath.scene.structure.ClippingNode
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.tracing.RecursivePathTracer
 
 object Scatter5 {
   def main(args: Array[String]): Unit = {
@@ -38,40 +40,43 @@ object Scatter5 {
 
     val matAir = new TransparentMaterial(Color.Black)
 
-    val glassTest = SceneNode(Array(
-      SceneNode(new Sphere(Vec3d(0, 80, 0), 20), matWhiteLight),
+    val lightShape = new Sphere(Vec3d(0, 80, 0), 20)
+
+    val glassTest = BoundlessNode(Array(
+      SceneNode(lightShape, matWhiteLight),
       SceneNode(new Sphere(Vec3d(-20, 10, -10), 10), matMirror),
       SceneNode(new Sphere(Vec3d(-10, 5, 20), 5), matWhiteGlass),
 
-      SceneNode(
-        Array[Shape](
+      new ClippingNode(
+        SceneNode(Array(
           new Sphere(Vec3d(15, 10, 0), 10),
           new Sphere(Vec3d(15, 25, 0), 5),
           new Sphere(Vec3d(15, 32.5, 0), 2.5f),
           new Sphere(Vec3d(15, 36.25, 0), 1.25f),
           new Sphere(Vec3d(15, 38.125, 0), 0.625f)),
-        matRedGlass),
+          matRedGlass),
+        new AABB(Vec3d(5, 0, -10), Vec3d(25, 38.75, 10))),
 
-      SceneNode(
-        Array[Shape](
-          new Sphere(Vec3d(1, 2.5, -6), 2.5f),
-          new Sphere(Vec3d(-10, 2.5, -4), 2.5f),
-          new Sphere(Vec3d(0, 1.25, 0), 1.25f),
-          new Sphere(Vec3d(-4, 1.25, 3), 1.25f)),
+      SceneNode(Array(
+        new Sphere(Vec3d(1, 2.5, -6), 2.5f),
+        new Sphere(Vec3d(-10, 2.5, -4), 2.5f),
+        new Sphere(Vec3d(0, 1.25, 0), 1.25f),
+        new Sphere(Vec3d(-4, 1.25, 3), 1.25f)),
         matClearGlass),
 
-      SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(10000, 1, 10000)), matWhiteDiffuse)))
+      BoundlessNode(new Plane(Vec3d.Up, 0), matWhiteDiffuse)))
 
     val front = Vec3d(0, -1, -1).normalize
     val up = Vec3d.Left.cross(front)
 
     RenderEngine.render(
       passes = 6000,
-      bounces = 64,
+      bounces = 8,
       target = new Display(700, 700),
-      tracer = new PathTracer(new Scene(
+      tracer = new RecursivePathTracer(new Scene(
         root = glassTest,
-        airMedium = matAir,
+        initialMediaStack = Array(matAir),
+        lightHints = Array(lightShape),
         skyMaterial = new UniformSky(Color(0.9f, 0.95f, 0.975f) * 0.5f),
         camera = new Camera(
           position = Vec3d(0, 60, 60),

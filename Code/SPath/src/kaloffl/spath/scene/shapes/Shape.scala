@@ -11,7 +11,7 @@ import kaloffl.spath.math.Vec2d
  * random point inside the shape and tell the length a ray must travel in order
  * to intersect the shape.
  */
-trait Shape extends Intersectable with Enclosable {
+trait Shape extends Intersectable {
 
   /**
    * Returns a normalized vector pointing straight away from the surface at

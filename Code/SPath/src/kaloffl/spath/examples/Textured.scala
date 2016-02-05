@@ -1,6 +1,7 @@
 package kaloffl.spath.examples
 
 import java.io.File
+
 import javax.imageio.ImageIO
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
@@ -8,23 +9,19 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.materials.BlackSky
 import kaloffl.spath.scene.materials.DiffuseMaterial
+import kaloffl.spath.scene.materials.DiffuseTexturedMaterial
 import kaloffl.spath.scene.materials.LazyTexture
 import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.scene.materials.MaskedMaterial
+import kaloffl.spath.scene.materials.SpecularMaterial
+import kaloffl.spath.scene.materials.TextureMask
 import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.materials.UniformSky
-import kaloffl.spath.scene.shapes.NormalMappedShape
+import kaloffl.spath.scene.shapes.BoundedNormalMappedShape
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.tracing.NormalTracer
 import kaloffl.spath.tracing.RecursivePathTracer
-import kaloffl.spath.scene.materials.DiffuseTexturedMaterial
-import kaloffl.spath.scene.materials.MaskedMaterial
-import kaloffl.spath.scene.materials.TextureMask
-import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.scene.materials.SpecularMaterial
-import kaloffl.spath.tracing.TexcoordTracer
-import kaloffl.spath.scene.materials.BlackSky
 
 object Textured {
 
@@ -85,7 +82,7 @@ object Textured {
       SceneNode(new Sphere(Vec3d.Origin, earthRadius + 5e4f), matAir1),
       SceneNode(new Sphere(Vec3d.Origin, earthRadius + 2e4f), matCloud),
       SceneNode(
-        new NormalMappedShape(
+        new BoundedNormalMappedShape(
           new Sphere(Vec3d.Origin, earthRadius),
           new LazyTexture(normals)),
         matSurface),
