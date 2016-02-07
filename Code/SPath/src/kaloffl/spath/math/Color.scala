@@ -20,6 +20,8 @@ class Color(val r2: Float, val g2: Float, val b2: Float) {
   def /(f: Float): Color = new Color(r2 / f, g2 / f, b2 / f)
   def /(c: Color): Color = new Color(r2 / c.r2, g2 / c.g2, b2 / c.b2)
 
+  def ==(c: Color): Boolean = r2 == c.r2 && g2 == c.g2 && b2 == c.b2
+  
   def unary_-(): Color = new Color(1 - r2, 1 - g2, 1 - b2)
 
   def clamp(min: Color, max: Color): Color = {

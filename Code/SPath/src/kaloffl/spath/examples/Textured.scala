@@ -1,7 +1,6 @@
 package kaloffl.spath.examples
 
 import java.io.File
-
 import javax.imageio.ImageIO
 import kaloffl.spath.Display
 import kaloffl.spath.RenderEngine
@@ -22,6 +21,7 @@ import kaloffl.spath.scene.shapes.BoundedNormalMappedShape
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.filter.BloomFilter
 
 object Textured {
 
@@ -93,7 +93,7 @@ object Textured {
     val position = Vec3d(0, 1, 0).normalize * (earthRadius * 1.8) + Vec3d(1, 0, 1) * (earthRadius * 0.2)
     RenderEngine.render(
       bounces = 20,
-      target = display,
+      target = new BloomFilter(display, 10, 0.5f),
       tracer = new RecursivePathTracer(new Scene(
         root = world,
         initialMediaStack = Array(matVoid),
