@@ -38,8 +38,6 @@ pathtracer TODOs
 		- BVH construction
 
 - post processing
-	- white balance
-	- bloom
 	- color correction
 
 - scene
@@ -47,7 +45,6 @@ pathtracer TODOs
 	- live scene editing
 	- octree based voxel volume
 	- shape combinators (union, subtraction, intersection)
-	- normalmaps for objects
 	- portals (non-euclidian geometry)
 	- quake-style BSP with Potentially Visible Sets to optimize indoor scenes
 	- Reduce BVH overlap by referencing leafs twice in necessary
@@ -77,3 +74,42 @@ pathtracer TODOs
 		- area-based hints where hints are only used if the point is in a specific place
 			- (maybe the chains could be implemented with this as well, though that might not be efficient)
 		- improve performance by checking hints less often
+	-check for areas that don't change and stop rendering them
+
+- done
+	- scene
+		- BVH acceleration structure
+			- ability to nest trees
+		- camera with aperture size and focal length
+		- sky function for rays that miss all geometry
+		- transformation (move, scale, rotate)
+		- lighting hint system for correctly weighted direct lighting
+		- basic importer for ply file format
+		- shapes
+			- Sphere
+			- Plane
+			- Triangle
+			- AABB
+			- normal map wrapper
+			- depth estimated shapes
+				- Sphere
+				- Mandelbulb
+	- materials
+		- fully diffuse material
+		- diffuse textured material
+		- light material
+		- mask based material combinator
+		- reflective material with glossiness parameter
+		- refractive material with glossiness parameter
+		- participating media (fog material)
+	- render modes
+		- non-splitting path tracer
+		- splitting path tracer
+	- post processing
+		- white balance
+		- bloom
+		- surface normal display
+		- texture coordinate display
+	- misc
+		- custom thread pool for more consistent performance
+		- mostly gamma correct color calculations
