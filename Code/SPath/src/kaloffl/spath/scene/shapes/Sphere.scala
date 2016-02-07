@@ -9,7 +9,7 @@ import kaloffl.spath.math.FastMath
 /**
  * A sphere shape consisting of a location and a radius.
  */
-class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projectable with Bounded {
+class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projectable with Bounded with Closed {
 
   val radiusSq = radius * radius
 
@@ -51,6 +51,10 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projecta
 
   override def getBounds: AABB = {
     AABB(position, Vec3d(radius * 2))
+  }
+  
+  override def contains(point: Vec3d): Boolean = {
+    (position - point).lengthSq < radiusSq
   }
 
   override def getSolidAngle(point: Vec3d): Double = {

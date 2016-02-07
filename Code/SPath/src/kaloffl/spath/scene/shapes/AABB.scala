@@ -31,7 +31,7 @@ object AABB {
   }
 }
 
-class AABB(val min: Vec3d, val max: Vec3d) extends Shape with Bounded {
+class AABB(val min: Vec3d, val max: Vec3d) extends Shape with Bounded with Closed {
 
   override def getBounds: AABB = this
 
@@ -134,7 +134,7 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape with Bounded {
     return (size.x * (size.y + size.z) + size.y * size.z) * 2
   }
 
-  def contains(v: Vec3d): Boolean = {
+  override def contains(v: Vec3d): Boolean = {
     return min.x <= v.x && v.x <= max.x &&
       min.y <= v.y && v.y <= max.y &&
       min.z <= v.z && v.z <= max.z
