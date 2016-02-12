@@ -1,12 +1,14 @@
 package kaloffl.spath.scene
 
 import kaloffl.spath.math.Ray
+import kaloffl.spath.math.Vec3d
+import kaloffl.spath.scene.hints.LightHint
+import kaloffl.spath.scene.materials.BlackSky
 import kaloffl.spath.scene.materials.Material
+import kaloffl.spath.scene.materials.SkyMaterial
+import kaloffl.spath.scene.shapes.Projectable
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.Intersection
-import kaloffl.spath.scene.materials.SkyMaterial
-import kaloffl.spath.scene.materials.BlackSky
-import kaloffl.spath.scene.shapes.Projectable
 
 /**
  * A scene holds all the objects that might be displayed, as well as the camera
@@ -17,7 +19,7 @@ class Scene(val root: SceneNode,
             val initialMediaStack: Array[Material],
             val skyMaterial: SkyMaterial = BlackSky,
             val skyDistance: Double = Double.PositiveInfinity,
-            val lightHints: Array[Projectable] = Array()) {
+            val lightHints: Array[LightHint] = Array()) {
 
   def this(root: SceneNode,
            camera: Camera,

@@ -22,6 +22,9 @@ import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.filter.BloomFilter
+import kaloffl.spath.scene.hints.LightHint
+import kaloffl.spath.scene.hints.LocalHint
+import kaloffl.spath.scene.hints.GlobalHint
 
 object Textured {
 
@@ -74,6 +77,9 @@ object Textured {
 
     val sunSphere = new Sphere(Vec3d(1, 0, 1).normalize * earthSunDistance, sunRadius)
     val moonSphere = new Sphere(Vec3d(1, 0, -1).normalize * earthMoonDistance, moonRadius)
+    
+    val earthArea = new Sphere(Vec3d.Origin, earthRadius + 2e5f)
+    val moonArea = new Sphere(moonSphere.position, moonRadius + 10)
 
     val world = SceneNode(Array(
       SceneNode(new Sphere(Vec3d.Origin, earthRadius + 2e5f), matAir4),
@@ -86,6 +92,7 @@ object Textured {
           new Sphere(Vec3d.Origin, earthRadius),
           new LazyTexture(normals)),
         matSurface),
+      SceneNode(moonSphere, matWhite),
       SceneNode(sunSphere, matLight)))
 
     val display = new Display(1280, 720)
@@ -97,7 +104,9 @@ object Textured {
       tracer = new RecursivePathTracer(new Scene(
         root = world,
         initialMediaStack = Array(matVoid),
-        lightHints = Array(sunSphere),
+        lightHints = Array(
+            GlobalHint(sunSphere),
+            LocalHint(earthArea, moonSphere)),
         skyMaterial = BlackSky,
         camera = new Camera(
           position = position,

@@ -69,11 +69,8 @@ pathtracer TODOs
 - misc
 	- Better random sampler
 	- better ply importer
-	- improve lighting hint system
-		- hint-chains where the first hint in the chain will be used and then removed from the chain
-		- area-based hints where hints are only used if the point is in a specific place
-			- (maybe the chains could be implemented with this as well, though that might not be efficient)
-		- improve performance by checking hints less often
+	- improve lighting hint performance by checking hints less often
+	- use a volume optimized BVH for local lighting hints
 
 - done
 	- scene

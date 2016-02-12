@@ -1,13 +1,13 @@
 package kaloffl.spath.tracing
 
+import java.util.function.DoubleSupplier
+
+import kaloffl.spath.math.Color
+import kaloffl.spath.math.Ray
 import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.math.Color
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.math.Ray
-import java.util.function.DoubleSupplier
 
 class RecursivePathTracer(val scene: Scene) extends Tracer {
 
@@ -59,11 +59,14 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
       var color = trace(randomRay, media, mediaHead, i - 1, random)
       if (i > 1) {
         var h = 0
-        while (h < scene.lightHints.length) {
-          val hint = scene.lightHints(h)
-          val lightRay = hint.createRandomRay(point, random)
-          val angle = hint.getSolidAngle(point).toFloat
-          color += trace(lightRay, media, mediaHead, i / 2, random) * angle
+        val hints = scene.lightHints
+        while (h < hints.length) {
+          val hint = hints(h)
+          if (hint.applicableFor(point)) {
+            val lightRay = hint.target.createRandomRay(point, random)
+            val angle = hint.target.getSolidAngle(point).toFloat
+            color += trace(lightRay, media, mediaHead, i / 2, random) * angle
+          }
           h += 1
         }
       }
@@ -108,13 +111,16 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
             color += trace(newRay, media, mediaHead, i - 1, random) * weight
             if (i > 1) {
               var h = 0
-              while (h < scene.lightHints.length) {
+              val hints = scene.lightHints
+              while (h < hints.length) {
                 val hint = scene.lightHints(h)
-                val lightRay = hint.createRandomRay(point, random)
-                val contribution = scattering.getContribution(lightRay.normal)
-                if (contribution > 0) {
-                  val angle = hint.getSolidAngle(point).toFloat
-                  color += trace(lightRay, media, mediaHead, i / 2, random) * angle * contribution
+                if (hint.applicableFor(point)) {
+                  val lightRay = hint.target.createRandomRay(point, random)
+                  val contribution = scattering.getContribution(lightRay.normal)
+                  if (contribution > 0) {
+                    val angle = hint.target.getSolidAngle(point).toFloat
+                    color += trace(lightRay, media, mediaHead, i / 2, random) * angle * contribution
+                  }
                 }
                 h += 1
               }

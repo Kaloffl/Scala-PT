@@ -16,6 +16,8 @@ import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.scene.hints.LightHint
+import kaloffl.spath.scene.hints.GlobalHint
 
 object CornellBox {
 
@@ -106,7 +108,7 @@ object CornellBox {
       tracer = new RecursivePathTracer(new Scene(
         root = cornellBox,
         initialMediaStack = Array(matAir),
-        lightHints = Array(lightHint),
+        lightHints = Array(GlobalHint(lightHint)),
         camera = new Camera(
           position = Vec3d(278, 273, -800),
           forward = Vec3d.Front,

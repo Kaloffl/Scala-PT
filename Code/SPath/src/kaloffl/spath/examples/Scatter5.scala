@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.ReflectiveMaterial
@@ -76,7 +77,7 @@ object Scatter5 {
       tracer = new RecursivePathTracer(new Scene(
         root = glassTest,
         initialMediaStack = Array(matAir),
-        lightHints = Array(lightShape),
+        lightHints = Array(GlobalHint(lightShape)),
         skyMaterial = new UniformSky(Color(0.9f, 0.95f, 0.975f) * 0.5f),
         camera = new Camera(
           position = Vec3d(0, 60, 60),
