@@ -74,7 +74,6 @@ pathtracer TODOs
 		- area-based hints where hints are only used if the point is in a specific place
 			- (maybe the chains could be implemented with this as well, though that might not be efficient)
 		- improve performance by checking hints less often
-	-check for areas that don't change and stop rendering them
 
 - done
 	- scene
@@ -113,3 +112,4 @@ pathtracer TODOs
 	- misc
 		- custom thread pool for more consistent performance
 		- mostly gamma correct color calculations
+		- check for areas that don't change and stop rendering them

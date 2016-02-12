@@ -61,17 +61,17 @@ class TracingWorker(
       val sampleIndex = index * 3
 
       val prevSample = samplesTaken - 1
-      difference += Math.abs(color.r2 - samples(sampleIndex) / prevSample)
-      difference += Math.abs(color.g2 - samples(sampleIndex + 1) / prevSample)
-      difference += Math.abs(color.b2 - samples(sampleIndex + 2) / prevSample)
+      difference += Math.abs((color.r2 * prevSample - samples(sampleIndex)) / (samplesTaken * prevSample))
+      difference += Math.abs((color.g2 * prevSample - samples(sampleIndex + 1)) / (samplesTaken * prevSample))
+      difference += Math.abs((color.b2 * prevSample - samples(sampleIndex + 2)) / (samplesTaken * prevSample))
 
       samples(sampleIndex) += color.r2
       samples(sampleIndex + 1) += color.g2
       samples(sampleIndex + 2) += color.b2
     }
-    //    if (difference / maxIndex < 1 / 255f) {
-    //      done = true
-    //    }
+    if (difference / maxIndex < 1 / (255f * 255f)) {
+      done = true
+    }
   }
 
   /**
