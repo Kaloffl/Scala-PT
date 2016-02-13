@@ -24,10 +24,11 @@ object Bunny {
       scatterProbability = 4,
       refractiveIndex = 1.7f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
+    val matBunny = DiffuseMaterial(Color(0.8f, 0.4f, 0.2f))
 
     val bunny = SceneNode(
       PlyImporter.load("D:/temp/bunny_flipped.ply", Vec3d(40), Vec3d(0, -0.659748 * 2, 0)),
-      matGlass)
+      matBunny)
 
     val floor = SceneNode(AABB(Vec3d(-1, -0.05, -1), Vec3d(8, 0.1, 8)), matFloor)
 

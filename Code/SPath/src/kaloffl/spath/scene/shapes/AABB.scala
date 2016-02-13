@@ -33,6 +33,8 @@ object AABB {
 
 class AABB(val min: Vec3d, val max: Vec3d) extends Shape with Bounded with Closed {
 
+  val bounds = Array(min, max)
+
   override def getBounds: AABB = this
 
   def size: Vec3d = {
@@ -75,30 +77,24 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape with Bounded with Close
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {
-    val tx1 = (min.x - ray.start.x) / ray.normal.x
-    val tx2 = (max.x - ray.start.x) / ray.normal.x
-
-    val ty1 = (min.y - ray.start.y) / ray.normal.y
-    val ty2 = (max.y - ray.start.y) / ray.normal.y
-
-    val tz1 = (min.z - ray.start.z) / ray.normal.z
-    val tz2 = (max.z - ray.start.z) / ray.normal.z
-
-    var tmin = Math.max(Math.max(
-      Math.min(tx1, tx2),
-      Math.min(ty1, ty2)),
-      Math.min(tz1, tz2))
-    var tmax = Math.min(Math.min(
-      Math.max(tx1, tx2),
-      Math.max(ty1, ty2)),
-      Math.max(tz1, tz2))
-
-    if (tmax < tmin) return Double.PositiveInfinity
-    if (tmin < 0.0001) {
-      if (tmax < 0.0001) return Double.PositiveInfinity
-      return tmax
+    // http://people.csail.mit.edu/amy/papers/box-jgt.pdf
+    val txmin = (bounds(ray.sx).x - ray.start.x) * ray.inverseNormal.x
+    val txmax = (bounds(1 - ray.sx).x - ray.start.x) * ray.inverseNormal.x
+    val tymin = (bounds(ray.sy).y - ray.start.y) * ray.inverseNormal.y
+    val tymax = (bounds(1 - ray.sy).y - ray.start.y) * ray.inverseNormal.y
+    if (txmin > tymax || tymin > txmax) return Double.PositiveInfinity
+    val tmin = if (txmin > tymin) txmin else tymin
+    val tmax = if (txmax < tymax) txmax else tymax
+    val tzmin = (bounds(ray.sz).z - ray.start.z) * ray.inverseNormal.z
+    val tzmax = (bounds(1 - ray.sz).z - ray.start.z) * ray.inverseNormal.z
+    if (tmin > tzmax || tzmin > tmax) return Double.PositiveInfinity
+    val tmin2 = if (tzmin > tmin) tzmin else tmin
+    val tmax2 = if (tzmax < tmax) tzmax else tmax
+    if (tmin2 < 0.0001) {
+      if (tmax2 < 0.0001) return Double.PositiveInfinity
+      return tmax2
     }
-    return tmin
+    return tmin2
   }
 
   /**
@@ -138,5 +134,14 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape with Bounded with Close
     return min.x <= v.x && v.x <= max.x &&
       min.y <= v.y && v.y <= max.y &&
       min.z <= v.z && v.z <= max.z
+  }
+
+  def overlaps(other: AABB): Boolean = {
+    return min.x < other.max.x &&
+           max.x > other.min.x &&
+           min.y < other.max.y &&
+           max.y > other.min.y &&
+           min.z < other.max.z &&
+           max.z > other.min.z
   }
 }
