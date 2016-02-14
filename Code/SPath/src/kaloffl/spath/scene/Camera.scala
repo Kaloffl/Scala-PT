@@ -20,19 +20,20 @@ class Camera(
   val right = forward.cross(up).normalize
 
   /**
-   * Creates a Ray object starting on the "lens" and pointing into a direction
-   * derived from the requested x and y position on the lens.
+   * Creates a Ray object starting on the sensor and pointing through a random 
+   * point in the aperture. The x and y values will be negated by this function
+   * to counter the flipping effect of an aperture.
    *
-   * @param random - a source of random numbers used for anti-aliasing and DOF
-   * @param x - the horizontal position on the lens for the requested Ray
-   * @param y - the vertical position on the lens for the requested Ray
+   * @param random - a source of random numbers used for DoF
+   * @param x - the horizontal position on the sensor for the requested Ray
+   * @param y - the vertical position on the sensor for the requested Ray
    */
   def createRay(random: DoubleSupplier, x: Double, y: Double): Ray = {
     // This method is called for every pixel for every sample which is a lot.
     // Because of that all the vector calculations here were inlined by hand
     // to avoid a lot of object creation.
 
-    // Calculate the point on the sensor the ray is requested for
+    // Calculate the point on the sensor the ray was requested for
     val fX = -right.x * x - up.x * y - forward.x * focalLength
     val fY = -right.y * x - up.y * y - forward.y * focalLength
     val fZ = -right.z * x - up.z * y - forward.z * focalLength
