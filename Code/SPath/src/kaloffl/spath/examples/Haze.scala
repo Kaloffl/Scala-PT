@@ -61,7 +61,7 @@ object Haze {
           position = Vec3d(0, 5, 13),
           forward = front,
           up = up,
-          aperture = 0.1,
-          focalLength = Vec3d(0, -2.5, -13).length))))
+          aperture = 0.1f,
+          focalLength = Vec3d(0, -2.5, -13).length.toFloat))))
   }
 }

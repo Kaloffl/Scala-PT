@@ -52,7 +52,7 @@ object Scatter4 {
           position = Vec3d(0, 3, 9),
           forward = front,
           up = Vec3d.Up,
-          aperture = 0.01,
+          aperture = 0.01f,
           focalLength = 9))))
   }
 }

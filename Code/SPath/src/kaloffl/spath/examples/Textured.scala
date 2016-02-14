@@ -71,7 +71,7 @@ object Textured {
 
     val earthRadius = 12756320 / 2
     val sunRadius = 1392684000 / 2
-    val moonRadius = 3476 / 2
+    val moonRadius = 3476000 / 2
     val earthSunDistance = 149.6e9
     val earthMoonDistance = 3844e5
 

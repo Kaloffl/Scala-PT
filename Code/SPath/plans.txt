@@ -4,7 +4,8 @@ pathtracer TODOs
 	- interactive camera
 	- camera shutter shape
 	- camera movement for motion blur
-	- shutter time
+	- exposure time
+	- lenses
 
 - UI
 	- switch to JavaFX for GUI
@@ -47,7 +48,7 @@ pathtracer TODOs
 	- shape combinators (union, subtraction, intersection)
 	- portals (non-euclidian geometry)
 	- quake-style BSP with Potentially Visible Sets to optimize indoor scenes
-	- Reduce BVH overlap by referencing leafs twice in necessary
+	- Reduce BVH overlap by referencing leafs twice if necessary
 		- https://graphics.cg.uni-saarland.de/fileadmin/cguds/papers/2009/stich_hpg2009/HPG2009_SBVH.pdf
 	- Improve the way the BVH  Builder decides to make leaves by basing it on the cost of the new layer
 
@@ -70,7 +71,8 @@ pathtracer TODOs
 	- Better random sampler
 	- better ply importer
 	- improve lighting hint performance by checking hints less often
-	- use a volume optimized BVH for local lighting hints
+	- use a BSP for local lighting hints
+	- use realistic values for brightness
 
 - done
 	- scene

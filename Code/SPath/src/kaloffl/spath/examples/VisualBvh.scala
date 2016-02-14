@@ -59,8 +59,6 @@ object VisualBvh {
         camera = new Camera(
           position = Vec3d(0.5, 2.5, 0.4),
           forward = bunnyForward.normalize,
-          up = bunnyTop,
-          aperture = 0.0,
-          focalLength = bunnyForward.length))))
+          up = bunnyTop))))
   }
 }

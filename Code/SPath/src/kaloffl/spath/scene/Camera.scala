@@ -8,14 +8,14 @@ import kaloffl.spath.math.Vec3d
 /**
  * A camera that has a position and orientation in space and can be used to
  * create rays for the path tracing. It can also create a depth of field effect
- * if the aperture is a value greater than 1.
+ * if the aperture is a value greater than 0.
  */
 class Camera(
     val position: Vec3d,
     val forward: Vec3d,
     val up: Vec3d,
-    val aperture: Double = 0.0,
-    val focalLength: Double = 10) {
+    val aperture: Float = 0,
+    val focalLength: Float = 1) {
 
   val right = forward.cross(up).normalize
 
@@ -32,35 +32,24 @@ class Camera(
     // Because of that all the vector calculations here were inlined by hand
     // to avoid a lot of object creation.
 
-    // Calculate the point on the "lens" the ray is requested for, relative to
-    // the camera position.
-    val fX = right.x * x + up.x * y + forward.x
-    val fY = right.y * x + up.y * y + forward.y
-    val fZ = right.z * x + up.z * y + forward.z
-    val fLength = Math.sqrt(fX * fX + fY * fY + fZ * fZ).toFloat
+    // Calculate the point on the sensor the ray is requested for
+    val fX = -right.x * x - up.x * y - forward.x * focalLength
+    val fY = -right.y * x - up.y * y - forward.y * focalLength
+    val fZ = -right.z * x - up.z * y - forward.z * focalLength
+    val rayStart = Vec3d(fX + position.x, fY + position.y, fZ + position.z)
 
-    // The random amount the actual ray will be offset by.
-    // With a bigger aperture the offset can get bigger.
+    // The random amount the ray will be offset by.
+    // With a bigger aperture the offset will get bigger.
     val angle = random.getAsDouble * 2.0 * Math.PI
-    val dist = Math.sqrt(1.0 - random.getAsDouble) * aperture
-    val poX = dist * Math.cos(angle) + x
-    val poY = dist * Math.sin(angle) + y
-
-    // Calculate the position in space where the ray will start at.
-    val pX = right.x * poX + up.x * poY + forward.x
-    val pY = right.y * poX + up.y * poY + forward.y
-    val pZ = right.z * poX + up.z * poY + forward.z
-    val rayStart = Vec3d(pX + position.x, pY + position.y, pZ + position.z)
-
-    // The position of the focus point for the requested pixel relative to the 
-    // ray starting point on the lens.
-    val len = focalLength - fLength
-    val fpX = fX * len - pX
-    val fpY = fY * len - pY
-    val fpZ = fZ * len - pZ
-    // Normalizing to make it correct for the Ray direction.
-    val fpLength = Math.sqrt(fpX * fpX + fpY * fpY + fpZ * fpZ).toFloat
-    val direction = Vec3d(fpX / fpLength, fpY / fpLength, fpZ / fpLength)
+    val dist = Math.sqrt(random.getAsDouble) * aperture
+    val poX = dist * Math.cos(angle)
+    val poY = dist * Math.sin(angle)
+    
+    val dX = right.x * poX + up.x * poY - fX
+    val dY = right.y * poX + up.y * poY - fY
+    val dZ = right.z * poX + up.z * poY - fZ
+    val dL = Math.sqrt(dX * dX + dY * dY + dZ * dZ)
+    val direction = Vec3d(dX / dL, dY / dL, dZ / dL)
 
     return new Ray(rayStart, direction)
   }

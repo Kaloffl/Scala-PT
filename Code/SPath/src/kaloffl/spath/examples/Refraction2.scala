@@ -89,7 +89,7 @@ object Refraction2 {
           position = Vec3d(0, 5, 13),
           forward = front.normalize,
           up = up,
-          aperture = 0.1,
-          focalLength = front.length))))
+          aperture = 0.1f,
+          focalLength = front.length.toFloat))))
   }
 }

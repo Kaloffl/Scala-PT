@@ -58,7 +58,7 @@ object EstimatedShapes {
           position = Vec3d(0, 1.5, 2.5),
           forward = front,
           up = up,
-          aperture = 0.015,
+          aperture = 0.015f,
           focalLength = 3))))
   }
 }

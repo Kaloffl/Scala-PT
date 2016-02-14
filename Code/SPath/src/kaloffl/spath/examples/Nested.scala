@@ -50,7 +50,7 @@ object Nested {
           position = Vec3d(0, 4.5, 9),
           forward = bunnyForward.normalize,
           up = bunnyTop,
-          aperture = 0.2,
-          focalLength = bunnyForward.length))))
+          aperture = 0.2f,
+          focalLength = bunnyForward.length.toFloat))))
   }
 }

@@ -70,7 +70,7 @@ object Dragon {
           position = camPos,
           forward = dragonForward.normalize,
           up = dragonTop,
-          aperture = 0.1,
-          focalLength = dragonForward.length))))
+          aperture = 0.1f,
+          focalLength = dragonForward.length.toFloat))))
   }
 }
