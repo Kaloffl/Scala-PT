@@ -15,6 +15,8 @@ import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.structure.BoundlessNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.filter.ScaleFilter
+import kaloffl.spath.tracing.RecursivePathTracer
 
 object Colorful {
 
@@ -48,8 +50,8 @@ object Colorful {
 
     RenderEngine.render(
       bounces = 6,
-      target = new Display(1280, 720),
-      tracer = new PathTracer(new Scene(
+      target = new ScaleFilter(new Display(1280, 720), 4, 4),
+      tracer = new RecursivePathTracer(new Scene(
         root = coloredSpheres,
         airMedium = matAir,
         camera = new Camera(
