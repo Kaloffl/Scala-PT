@@ -28,7 +28,7 @@ object Bunny {
     val matBunny = DiffuseMaterial(Color(0.8f, 0.4f, 0.2f))
 
     val bunny = SceneNode(
-      PlyImporter.load("D:/temp/bunny_flipped.ply", Vec3d(40), Vec3d(0, -0.659748 * 2, 0)),
+      PlyImporter.load("C:/dev/bunny_flipped.ply", Vec3d(40), Vec3d(0, -0.659748 * 2, 0)),
       matBunny)
 
     val floor = SceneNode(AABB(Vec3d(-1, -0.05, -1), Vec3d(8, 0.1, 8)), matFloor)
@@ -47,7 +47,7 @@ object Bunny {
           position = Vec3d(0, 4.5, 9),
           forward = bunnyForward.normalize,
           up = bunnyTop,
-          aperture = 0.2f,
-          focalLength = bunnyForward.length.toFloat))))
+          aperture = 0.002f,
+          focalLength = 1))))
   }
 }

@@ -15,6 +15,7 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.scene.shapes.Bounded
 
 object Dragon {
 
@@ -34,7 +35,7 @@ object Dragon {
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
 
     val dragon = SceneNode(
-      PlyImporter.load("D:/temp/dragon.ply", Vec3d(40), Vec3d(0.5, -2, 0)),
+      PlyImporter.load("C:/dev/dragon.ply", Vec3d(40), Vec3d(0.5, -2, 0)),
       matYellowMetal)
 
     val floor = SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(16, 1, 16)), matFloor)
@@ -69,7 +70,7 @@ object Dragon {
           position = camPos,
           forward = dragonForward.normalize,
           up = dragonTop,
-          aperture = 0.1f,
-          focalLength = dragonForward.length.toFloat))))
+          aperture = 0.001f,
+          focalLength = 1))))
   }
 }

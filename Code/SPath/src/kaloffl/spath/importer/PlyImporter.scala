@@ -15,13 +15,18 @@ import kaloffl.spath.scene.shapes.Triangle
  */
 object PlyImporter {
 
+  trait Format
+  object Ascii extends Format
+  object BinaryBigEndian extends Format
+  object BinaryLittleEndian extends Format
+
   def load(file: String, scale: Vec3d = Vec3d.Unit, offset: Vec3d = Vec3d.Origin): Array[Triangle] = {
 
     val inputStream = new BufferedInputStream(new FileInputStream(file))
     inputStream.mark(1024) // TODO rewrite importer so no buffer for resetting is needed
     val scanner = new Scanner(inputStream)
 
-    var binary: Boolean = false
+    var format: Format = null
     var vertCount = 0
     var faceCount = 0
 
@@ -36,7 +41,11 @@ object PlyImporter {
       println(line)
 
       if (segments(0) equals "format") {
-        binary = !("ascii" equals segments(1))
+        format = segments(1) match {
+          case "ascii" => Ascii
+          case "binary_big_endian" => BinaryBigEndian
+          case "binary_little_endian" => BinaryLittleEndian
+        }
       }
 
       if (segments(0) equals "element") {
@@ -56,112 +65,177 @@ object PlyImporter {
     val faces: Array[Triangle] = new Array(faceCount)
 
     println("Reading vertecies")
-    if (binary) {
-      inputStream.reset()
-      inputStream.skip(headerSize)
+    format match {
+      case BinaryLittleEndian => {
+        inputStream.reset()
+        inputStream.skip(headerSize)
 
-      val data = new Array[Byte](4)
-      def readFloat(input: InputStream): Float = {
-        if (4 != input.read(data)) {
-          throw new RuntimeException("Bytes in stream didn't line for float conversion.")
+        val data = new Array[Byte](4)
+        def readFloat(input: InputStream): Float = {
+          if (4 != input.read(data)) {
+            throw new RuntimeException("Bytes in stream didn't line for float conversion.")
+          }
+          val i = (data(0) & 0xff) | ((data(1) & 0xff) << 8) | ((data(2) & 0xff) << 16) | ((data(3) & 0xff) << 24)
+          return java.lang.Float.intBitsToFloat(i)
         }
-        val i = (data(3) & 0xff) | ((data(2) & 0xff) << 8) | ((data(1) & 0xff) << 16) | ((data(0) & 0xff) << 24)
-        return java.lang.Float.intBitsToFloat(i)
-      }
 
-      var i = 0
-      while (i < vertecies.length) {
-        val x = readFloat(inputStream) // * scale.x + offset.x
-        val y = readFloat(inputStream) // * scale.y + offset.y
-        val z = readFloat(inputStream) // * scale.z + offset.z
-        vertecies(i) = Vec3d(x, y, z)
-        if (i % (vertecies.length / 10) == 0 && i > 0) {
-          printf("%2d%%... ", i * 100 / vertecies.length)
+        var i = 0
+        while (i < vertecies.length) {
+          val x = readFloat(inputStream) * scale.x + offset.x
+          val y = readFloat(inputStream) * scale.y + offset.y
+          val z = readFloat(inputStream) * scale.z + offset.z
+          vertecies(i) = Vec3d(x, y, z)
+          if (i % (vertecies.length / 10) == 0 && i > 0) {
+            printf("%2d%%... ", i * 100 / vertecies.length)
+          }
+          i += 1
         }
-        i += 1
+        println
       }
-      println
-    } else {
-      var i = 0
-      while (i < vertecies.length) {
-        val line = scanner.nextLine
-        val segments = line.split(' ')
-        val x = java.lang.Double.parseDouble(segments(0)) * scale.x + offset.x
-        val y = java.lang.Double.parseDouble(segments(1)) * scale.y + offset.y
-        val z = java.lang.Double.parseDouble(segments(2)) * scale.z + offset.z
-        vertecies(i) = Vec3d(x, y, z)
-        if (i % (vertecies.length / 10) == 0 && i > 0) {
-          printf("%2d%%... ", i * 100 / vertecies.length)
+      case BinaryBigEndian => {
+        inputStream.reset()
+        inputStream.skip(headerSize)
+
+        val data = new Array[Byte](4)
+        def readFloat(input: InputStream): Float = {
+          if (4 != input.read(data)) {
+            throw new RuntimeException("Bytes in stream didn't line for float conversion.")
+          }
+          val i = (data(3) & 0xff) | ((data(2) & 0xff) << 8) | ((data(1) & 0xff) << 16) | ((data(0) & 0xff) << 24)
+          return java.lang.Float.intBitsToFloat(i)
         }
-        i += 1
+
+        var i = 0
+        while (i < vertecies.length) {
+          val x = readFloat(inputStream) * scale.x + offset.x
+          val y = readFloat(inputStream) * scale.y + offset.y
+          val z = readFloat(inputStream) * scale.z + offset.z
+          vertecies(i) = Vec3d(x, y, z)
+          if (i % (vertecies.length / 10) == 0 && i > 0) {
+            printf("%2d%%... ", i * 100 / vertecies.length)
+          }
+          i += 1
+        }
+        println
       }
-      println
+      case Ascii => {
+        var i = 0
+        while (i < vertecies.length) {
+          val line = scanner.nextLine
+          val segments = line.split(' ')
+          val x = java.lang.Double.parseDouble(segments(0)) * scale.x + offset.x
+          val y = java.lang.Double.parseDouble(segments(1)) * scale.y + offset.y
+          val z = java.lang.Double.parseDouble(segments(2)) * scale.z + offset.z
+          vertecies(i) = Vec3d(x, y, z)
+          if (i % (vertecies.length / 10) == 0 && i > 0) {
+            printf("%2d%%... ", i * 100 / vertecies.length)
+          }
+          i += 1
+        }
+        println
+      }
     }
 
     println("Reading face indices")
 
-    if (binary) {
-      val data = new Array[Byte](4)
-      def readInt(input: InputStream): Int = {
-        if (4 != input.read(data)) {
-          throw new RuntimeException("Bytes in stream didn't line for float conversion.")
+    format match {
+      case BinaryLittleEndian => {
+        val data = new Array[Byte](4)
+        def readInt(input: InputStream): Int = {
+          if (4 != input.read(data)) {
+            throw new RuntimeException("Bytes in stream didn't line for float conversion.")
+          }
+          val i = (data(0) & 0xff) | ((data(1) & 0xff) << 8) | ((data(2) & 0xff) << 16) | ((data(3) & 0xff) << 24)
+          if (i < 0) {
+            throw new RuntimeException(s"Negative index $i found. File must be corrupt.")
+          }
+          if (i >= vertecies.length) {
+            throw new RuntimeException(s"Index $i too large. File must be corrupt.")
+          }
+          return i
         }
-        val i = (data(3) & 0xff) | ((data(2) & 0xff) << 8) | ((data(1) & 0xff) << 16) | ((data(0) & 0xff) << 24)
-        if (i < 0) {
-          throw new RuntimeException(s"Negative index $i found. File must be corrupt.")
-        }
-        if (i >= vertecies.length) {
-          throw new RuntimeException(s"Index $i too large. File must be corrupt.")
-        }
-        return i
-      }
 
-      var i = 0
-      while (i < faces.length) {
-        val length = inputStream.read
-        if (3 != length) {
-          throw new RuntimeException("Can't handle faces with more than 3 vertecies.")
+        var i = 0
+        while (i < faces.length) {
+          val length = inputStream.read
+          if (3 != length) {
+            throw new RuntimeException("Can't handle faces with more than 3 vertecies.")
+          }
+          val vertA = vertecies(readInt(inputStream))
+          val vertB = vertecies(readInt(inputStream))
+          val vertC = vertecies(readInt(inputStream))
+          faces(i) = new Triangle(vertA, vertB, vertC)
+          if (i % (faces.length / 10) == 0 && i > 0) {
+            printf("%2d%%... ", i * 100 / faces.length)
+          }
+          i += 1
         }
-        val vertA = vertecies(readInt(inputStream))
-        val vertB = vertecies(readInt(inputStream))
-        val vertC = vertecies(readInt(inputStream))
-        faces(i) = new Triangle(vertA, vertB, vertC)
-        if (i % (faces.length / 10) == 0 && i > 0) {
-          printf("%2d%%... ", i * 100 / faces.length)
-        }
-        i += 1
+        println
       }
-      println
-    } else {
-      def readInt(s: String): Int = {
-        val index = Integer.parseInt(s)
-        if (index < 0) {
-          throw new RuntimeException(s"Negative index $index found. File must be corrupt.")
+      case BinaryBigEndian => {
+        val data = new Array[Byte](4)
+        def readInt(input: InputStream): Int = {
+          if (4 != input.read(data)) {
+            throw new RuntimeException("Bytes in stream didn't line for float conversion.")
+          }
+          val i = (data(3) & 0xff) | ((data(2) & 0xff) << 8) | ((data(1) & 0xff) << 16) | ((data(0) & 0xff) << 24)
+          if (i < 0) {
+            throw new RuntimeException(s"Negative index $i found. File must be corrupt.")
+          }
+          if (i >= vertecies.length) {
+            throw new RuntimeException(s"Index $i too large. File must be corrupt.")
+          }
+          return i
         }
-        if (index >= vertecies.length) {
-          throw new RuntimeException(s"Index $index too large. File must be corrupt.")
-        }
-        return index
-      }
 
-      var i = 0
-      while (i < faces.length) {
-        val line = scanner.nextLine
-        val segments = line.split(' ')
-        val length = Integer.parseInt(segments(0))
-        if (3 != length) {
-          throw new RuntimeException("Can't handle faces with more than 3 vertecies.")
+        var i = 0
+        while (i < faces.length) {
+          val length = inputStream.read
+          if (3 != length) {
+            throw new RuntimeException("Can't handle faces with more than 3 vertecies.")
+          }
+          val vertA = vertecies(readInt(inputStream))
+          val vertB = vertecies(readInt(inputStream))
+          val vertC = vertecies(readInt(inputStream))
+          faces(i) = new Triangle(vertA, vertB, vertC)
+          if (i % (faces.length / 10) == 0 && i > 0) {
+            printf("%2d%%... ", i * 100 / faces.length)
+          }
+          i += 1
         }
-        val vertA = vertecies(readInt(segments(1)))
-        val vertB = vertecies(readInt(segments(2)))
-        val vertC = vertecies(readInt(segments(3)))
-        faces(i) = new Triangle(vertA, vertB, vertC)
-        if (i % (faces.length / 10) == 0 && i > 0) {
-          printf("%2d%%... ", i * 100 / faces.length)
-        }
-        i += 1
+        println
       }
-      println
+      case Ascii => {
+        def readInt(s: String): Int = {
+          val index = Integer.parseInt(s)
+          if (index < 0) {
+            throw new RuntimeException(s"Negative index $index found. File must be corrupt.")
+          }
+          if (index >= vertecies.length) {
+            throw new RuntimeException(s"Index $index too large. File must be corrupt.")
+          }
+          return index
+        }
+
+        var i = 0
+        while (i < faces.length) {
+          val line = scanner.nextLine
+          val segments = line.split(' ')
+          val length = Integer.parseInt(segments(0))
+          if (3 != length) {
+            throw new RuntimeException("Can't handle faces with more than 3 vertecies.")
+          }
+          val vertA = vertecies(readInt(segments(1)))
+          val vertB = vertecies(readInt(segments(2)))
+          val vertC = vertecies(readInt(segments(3)))
+          faces(i) = new Triangle(vertA, vertB, vertC)
+          if (i % (faces.length / 10) == 0 && i > 0) {
+            printf("%2d%%... ", i * 100 / faces.length)
+          }
+          i += 1
+        }
+        println
+      }
     }
     println("import done")
 

@@ -23,7 +23,7 @@ object BvhBuilder {
    * splitting is done in places where the two smallest AABBs will be created
    * around the children.
    */
-  def buildTree[T <: Bounded with Intersectable](objects: Array[T]): Bvh[T] = {
+  def buildTree[T <: Intersectable with Bounded](objects: Array[T]): Bvh[T] = {
     println("Building a BVH for " + objects.length + " objects.")
     val start = System.nanoTime
 
@@ -50,7 +50,7 @@ object BvhBuilder {
   }
 }
 
-class SplittingJob[T <: Bounded with Intersectable](
+class SplittingJob[T <: Intersectable with Bounded](
     jobPool: JobPool,
     objects: SubArray[T],
     consumer: Bvh[T] ⇒ Unit,
