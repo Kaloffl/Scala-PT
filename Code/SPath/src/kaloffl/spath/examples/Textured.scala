@@ -1,13 +1,17 @@
 package kaloffl.spath.examples
 
 import java.io.File
+
 import javax.imageio.ImageIO
-import kaloffl.spath.Display
+import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
+import kaloffl.spath.filter.BloomFilter
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.scene.hints.LocalHint
 import kaloffl.spath.scene.materials.BlackSky
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.DiffuseTexturedMaterial
@@ -21,10 +25,6 @@ import kaloffl.spath.scene.shapes.BoundedNormalMappedShape
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.RecursivePathTracer
-import kaloffl.spath.filter.BloomFilter
-import kaloffl.spath.scene.hints.LightHint
-import kaloffl.spath.scene.hints.LocalHint
-import kaloffl.spath.scene.hints.GlobalHint
 
 object Textured {
 
@@ -95,7 +95,7 @@ object Textured {
       SceneNode(moonSphere, matWhite),
       SceneNode(sunSphere, matLight)))
 
-    val display = new Display(1280, 720)
+    val display = new JfxDisplay(1280, 720)
 //    val position = Vec3d(0.5, 0, 1).normalize * (earthRadius * 2)
     val position = Vec3d(0, 1, 0).normalize * (earthRadius * 1.8) + Vec3d(1, 0, 1) * (earthRadius * 0.2)
     RenderEngine.render(

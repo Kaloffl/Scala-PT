@@ -13,6 +13,7 @@ import kaloffl.spath.scene.materials.UniformSky
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.JfxDisplay
 
 object Bunny {
 
@@ -37,7 +38,7 @@ object Bunny {
 
     RenderEngine.render(
       bounces = 12,
-      target = new Display(1280, 720),
+      target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = SceneNode(Array(floor, bunny)),
         airMedium = matAir,

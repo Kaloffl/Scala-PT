@@ -1,6 +1,6 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.Display
+import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.filter.BloomFilter
 import kaloffl.spath.math.Color
@@ -39,7 +39,7 @@ object LightScatter {
 
     RenderEngine.render(
       bounces = 4,
-      target = new BloomFilter(new Display(1280, 720), 10, 1.5f),
+      target = new BloomFilter(new JfxDisplay(1280, 720), 10, 1.5f),
       tracer = new RecursivePathTracer(new Scene(
         root = hazeObjects,
         initialMediaStack = Array(matAir),

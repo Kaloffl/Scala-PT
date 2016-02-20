@@ -1,6 +1,6 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.Display
+import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.bvh.BvhBuilder
 import kaloffl.spath.importer.PlyImporter
@@ -52,7 +52,7 @@ object VisualBvh {
 
     RenderEngine.render(
       bounces = 12,
-      target = new Display(1280, 720),
+      target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = SceneNode(Array(boxes, light)),
         airMedium = matAir,

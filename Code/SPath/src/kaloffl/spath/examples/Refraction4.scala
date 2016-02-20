@@ -3,7 +3,7 @@ package kaloffl.spath.examples
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.Display
+import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec2d
@@ -51,7 +51,7 @@ object Refraction4 {
 
     RenderEngine.render(
       bounces = 12,
-      target = new Display(1280, 720),
+      target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = SceneNode(environment ++ objects),
         airMedium = matAir,

@@ -1,6 +1,6 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.Display
+import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
@@ -73,7 +73,7 @@ object Scatter5 {
     RenderEngine.render(
       passes = 6000,
       bounces = 8,
-      target = new Display(700, 700),
+      target = new JfxDisplay(700, 700),
       tracer = new RecursivePathTracer(new Scene(
         root = glassTest,
         initialMediaStack = Array(matAir),

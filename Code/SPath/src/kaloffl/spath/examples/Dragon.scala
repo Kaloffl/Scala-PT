@@ -1,6 +1,6 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.Display
+import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
 import kaloffl.spath.math.Color
@@ -8,14 +8,13 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.ReflectiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.materials.UniformSky
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.scene.materials.UniformSky
 
 object Dragon {
 
@@ -61,7 +60,7 @@ object Dragon {
 
     RenderEngine.render(
       bounces = 12,
-      target = new Display(1280, 720),
+      target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         airMedium = matAir,
         skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),

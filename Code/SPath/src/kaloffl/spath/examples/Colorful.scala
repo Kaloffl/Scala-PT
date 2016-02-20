@@ -1,7 +1,8 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.Display
+import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
+import kaloffl.spath.filter.ScaleFilter
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Camera
@@ -12,10 +13,8 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Plane
 import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.structure.BoundlessNode
-import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.filter.ScaleFilter
+import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.RecursivePathTracer
 
 object Colorful {
@@ -50,7 +49,7 @@ object Colorful {
 
     RenderEngine.render(
       bounces = 6,
-      target = new ScaleFilter(new Display(1280, 720), 4, 4),
+      target = new ScaleFilter(new JfxDisplay(1280, 720), 4, 4),
       tracer = new RecursivePathTracer(new Scene(
         root = coloredSpheres,
         airMedium = matAir,

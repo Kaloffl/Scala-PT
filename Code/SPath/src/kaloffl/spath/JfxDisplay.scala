@@ -2,11 +2,13 @@ package kaloffl.spath
 
 import javafx.application.Application
 import javafx.application.Platform
+import javafx.event.EventHandler
 import javafx.scene.Scene
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
 import javafx.scene.layout.BorderPane
 import javafx.stage.Stage
+import javafx.stage.WindowEvent
 import kaloffl.spath.math.Color
 
 class JfxDisplay(
@@ -18,7 +20,7 @@ class JfxDisplay(
   }
 
   override def commit {
-    Platform.runLater(new Runnable{
+    Platform.runLater(new Runnable {
       override def run {
         ActualDisplay.instance.view.setImage(ActualDisplay.instance.backBuffer)
         val temp = ActualDisplay.instance.image
@@ -30,7 +32,7 @@ class JfxDisplay(
 
   ActualDisplay.width = width
   ActualDisplay.height = height
-  
+
   new Thread(new Runnable {
     override def run {
       Application.launch(classOf[ActualDisplay])
@@ -49,17 +51,22 @@ object ActualDisplay {
 }
 
 class ActualDisplay extends Application {
-  
+
   var image = new WritableImage(ActualDisplay.width, ActualDisplay.height)
   var backBuffer = new WritableImage(ActualDisplay.width, ActualDisplay.height)
   val view = new ImageView
-  
+
   override def start(stage: Stage): Unit = {
     val content = new BorderPane
     content.setCenter(view)
     val scene = new Scene(content, ActualDisplay.width, ActualDisplay.height)
     stage.setScene(scene)
     stage.setResizable(false)
+    stage.setOnCloseRequest(new EventHandler[WindowEvent] {
+      override def handle(ve: WindowEvent): Unit = {
+        System.exit(0)
+      }
+    })
     stage.show()
     ActualDisplay.instance = this
   }

@@ -18,6 +18,7 @@ import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.scene.hints.LightHint
 import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.JfxDisplay
 
 object CornellBox {
 
@@ -104,7 +105,7 @@ object CornellBox {
     RenderEngine.render(
       passes = 60000,
       bounces = 8,
-      target = new Display(512, 720),
+      target = new JfxDisplay(512, 720),
       tracer = new RecursivePathTracer(new Scene(
         root = cornellBox,
         initialMediaStack = Array(matAir),

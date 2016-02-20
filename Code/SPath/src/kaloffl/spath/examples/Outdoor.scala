@@ -1,6 +1,6 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.Display
+import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
@@ -51,7 +51,7 @@ object Outdoor {
 
     RenderEngine.render(
       bounces = 12,
-      target = new Display(1280, 720),
+      target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = outdoor,
         airMedium = matAir,
