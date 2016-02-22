@@ -16,7 +16,7 @@ import kaloffl.spath.math.Color
  * Individual pixels on said canvas can be modified. To display the changes,
  * redraw must be called.
  */
-class Display(override val width: Int, override val height: Int) extends RenderTarget {
+class AwtDisplay(override val width: Int, override val height: Int) extends RenderTarget {
 
   private val window = new JFrame("Scala Path Tracer")
   private val canvas = new Canvas() {
