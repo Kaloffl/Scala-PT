@@ -2,13 +2,12 @@ package kaloffl.spath
 
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.DoubleSupplier
-
 import scala.util.Sorting
-
 import kaloffl.jobs.Job
 import kaloffl.jobs.JobPool
 import kaloffl.spath.tracing.Tracer
 import kaloffl.spath.tracing.TracingWorker
+import java.util.concurrent.locks.LockSupport
 
 /**
  * The Engine that can render an image of a given scene. This object handles
@@ -30,6 +29,9 @@ object RenderEngine {
   val cols = numberOfWorkers / rows
 
   println("worker threads: " + numberOfWorkers)
+
+  var pause = false
+  var stop = false
 
   /**
    * Renders the scene with the given number of passes onto the display. In each
@@ -63,9 +65,12 @@ object RenderEngine {
 
     var pass = 0
     val pool = new JobPool
-    val order = Array.tabulate(numberOfWorkers)(i ⇒ i)
+    val order = Array.tabulate(numberOfWorkers)(identity)
     val costs = new Array[Long](numberOfWorkers)
-    while (tracingWorkers.exists(!_.done)) {
+    while (!stop && tracingWorkers.exists(!_.done)) {
+      while (pause) {
+        LockSupport.park
+      }
       println("Starting pass #" + pass)
 
       val before = System.nanoTime
