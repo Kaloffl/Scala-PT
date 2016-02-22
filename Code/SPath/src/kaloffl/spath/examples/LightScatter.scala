@@ -5,8 +5,8 @@ import kaloffl.spath.RenderEngine
 import kaloffl.spath.filter.BloomFilter
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -44,7 +44,7 @@ object LightScatter {
         root = hazeObjects,
         initialMediaStack = Array(matAir),
         lightHints = Array(GlobalHint(lightSphere)),
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = Vec3d(0, 0, 13),
           forward = Vec3d.Back,
           up = Vec3d.Up))))

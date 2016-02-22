@@ -4,7 +4,7 @@ import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -14,6 +14,8 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.scene.hints.GlobalHint
 
 object Simple {
 
@@ -32,15 +34,15 @@ object Simple {
       refractiveIndex = 2.0f)
     val matLight = new LightMaterial(Color.White * 8f)
 
+    val light1 = new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f)
+    val light2 = new Sphere(Vec3d(-1.0f, 3.0f, -5.9f), 1f)
+    
     val coloredSpheres = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 1.5f, -1.5f), 1.5f), matMirror),
       SceneNode(new Sphere(Vec3d(-1.0f, 1.5f, 0.0f), 1.5f), matGlass),
       SceneNode(new Sphere(Vec3d(-3.0f, 1f, 2.0f), 1f), matWhiteDiffuse),
 
-      SceneNode(Array(
-        new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f),
-        new Sphere(Vec3d(-1.0f, 3.0f, -5.9f), 1f)),
-        matLight),
+      SceneNode(Array(light1, light2), matLight),
 
       SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(16, 1, 16)), matWhiteDiffuse),
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(16, 1, 16)), matWhiteDiffuse),
@@ -55,12 +57,13 @@ object Simple {
     val up = Vec3d(1, 0, -1).normalize.cross(forward).normalize
 
     RenderEngine.render(
-      bounces = 12,
+      bounces = 5,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = new RecursivePathTracer(new Scene(
         root = coloredSpheres,
-        airMedium = matAir,
-        camera = new Camera(
+        initialMediaStack = Array(matAir),
+        lightHints = Array(new GlobalHint(light1), new GlobalHint(light2)),
+        camera = new PinholeCamera(
           position = position,
           forward = forward,
           up = up))))

@@ -5,7 +5,7 @@ import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.ReflectiveMaterial
@@ -15,7 +15,6 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.scene.shapes.Bounded
 
 object Dragon {
 
@@ -66,11 +65,9 @@ object Dragon {
         airMedium = matAir,
         skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
         root = objects,
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = camPos,
           forward = dragonForward.normalize,
-          up = dragonTop,
-          aperture = 0.001f,
-          focalLength = 1))))
+          up = dragonTop))))
   }
 }

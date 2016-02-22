@@ -4,7 +4,7 @@ import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
@@ -45,11 +45,9 @@ object Nested {
         root = SceneNode(Array(floor, boxRed, boxGreen, boxBlue)),
         airMedium = matAir,
         skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = Vec3d(0, 4.5, 9),
           forward = bunnyForward.normalize,
-          up = bunnyTop,
-          aperture = 0.2f,
-          focalLength = bunnyForward.length.toFloat))))
+          up = bunnyTop))))
   }
 }

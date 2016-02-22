@@ -4,7 +4,7 @@ import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.LensCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -60,11 +60,11 @@ object Scatter3 {
       tracer = new PathTracer(new Scene(
         root = SceneNode(hazeObjects ++ blocks),
         airMedium = matAir,
-        camera = new Camera(
+        camera = new LensCamera(
           position = Vec3d(0, 5, 13),
           forward = front,
           up = up,
-          aperture = 0.1f,
-          focalLength = Vec3d(0, 2.5, 13).length.toFloat))))
+          lensRadius = 0.1f,
+          focussedDepth = Vec3d(0, 2.5, 13).length.toFloat))))
   }
 }

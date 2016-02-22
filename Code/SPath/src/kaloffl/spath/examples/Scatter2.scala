@@ -8,7 +8,7 @@ import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -59,7 +59,7 @@ object Scatter2 {
       tracer = new PathTracer(new Scene(
         root = SceneNode(environment ++ objects),
         airMedium = matAir,
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = Vec3d(0, 14, -14),
           forward = front.normalize,
           up = up))))

@@ -1,24 +1,20 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.Display
+import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.shapes.Triangle
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.tracing.RecursivePathTracer
-import kaloffl.spath.scene.hints.LightHint
-import kaloffl.spath.scene.hints.GlobalHint
-import kaloffl.spath.JfxDisplay
 
 object CornellBox {
 
@@ -110,7 +106,7 @@ object CornellBox {
         root = cornellBox,
         initialMediaStack = Array(matAir),
         lightHints = Array(GlobalHint(lightHint)),
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = Vec3d(278, 273, -800),
           forward = Vec3d.Front,
           up = Vec3d.Up))))

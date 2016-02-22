@@ -6,7 +6,7 @@ import kaloffl.spath.bvh.BvhBuilder
 import kaloffl.spath.importer.PlyImporter
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -31,7 +31,7 @@ object VisualBvh {
 
     val bunny = BvhBuilder.buildTree(
       PlyImporter.load(
-        file = "D:/temp/bunny_flipped.ply",
+        file = "C:/dev/bunny_flipped.ply",
         scale = Vec3d(40),
         offset = Vec3d(0, -0.659748 * 2, 0)))
 
@@ -56,7 +56,7 @@ object VisualBvh {
       tracer = new PathTracer(new Scene(
         root = SceneNode(Array(boxes, light)),
         airMedium = matAir,
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = Vec3d(0.5, 2.5, 0.4),
           forward = bunnyForward.normalize,
           up = bunnyTop))))

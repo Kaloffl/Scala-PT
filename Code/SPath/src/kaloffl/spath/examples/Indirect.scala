@@ -4,7 +4,7 @@ import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.CheckeredMask
 import kaloffl.spath.scene.materials.DiffuseMaterial
@@ -63,7 +63,7 @@ object Indirect {
       tracer = new PathTracer(new Scene(
         root = coloredSpheres,
         airMedium = matAir,
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = position,
           forward = forward,
           up = up))))

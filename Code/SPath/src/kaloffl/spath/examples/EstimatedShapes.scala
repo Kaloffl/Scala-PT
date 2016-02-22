@@ -4,7 +4,7 @@ import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.LensCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.CheckeredMask
 import kaloffl.spath.scene.materials.DiffuseMaterial
@@ -54,11 +54,11 @@ object EstimatedShapes {
       tracer = new PathTracer(new Scene(
         airMedium = matAir,
         root = glassTest,
-        camera = new Camera(
+        camera = new LensCamera(
           position = Vec3d(0, 1.5, 2.5),
           forward = front,
           up = up,
-          aperture = 0.015f,
-          focalLength = 3))))
+          lensRadius = 0.015f,
+          focussedDepth = 3))))
   }
 }

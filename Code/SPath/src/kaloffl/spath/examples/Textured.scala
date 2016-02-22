@@ -8,7 +8,7 @@ import kaloffl.spath.RenderEngine
 import kaloffl.spath.filter.BloomFilter
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.hints.LocalHint
@@ -56,10 +56,10 @@ object Textured {
     val matGreen = DiffuseMaterial(Color(0.1f, 0.7f, 0.2f))
     val matBlack = DiffuseMaterial(Color.Black)
 
-    val surface = ImageIO.read(new File("D:/temp/world.200409.3x5400x2700.jpg"))
-    val normals = ImageIO.read(new File("D:/temp/EarthNormal.png"))
-    val mask = ImageIO.read(new File("D:/temp/mask.jpg"))
-    val clouds = ImageIO.read(new File("D:/temp/clouds.jpg"))
+    val surface = ImageIO.read(new File("C:/dev/world.200409.3x5400x2700.jpg"))
+    val normals = ImageIO.read(new File("C:/dev/EarthNormal.png"))
+    val mask = ImageIO.read(new File("C:/dev/mask.jpg"))
+    val clouds = ImageIO.read(new File("C:/dev/clouds.jpg"))
 
     val matTexture = new DiffuseTexturedMaterial(new LazyTexture(surface))
     val matWater = new SpecularMaterial(
@@ -108,7 +108,7 @@ object Textured {
             GlobalHint(sunSphere),
             LocalHint(earthArea, moonSphere)),
         skyMaterial = BlackSky,
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = position,
           forward = Vec3d.Down,
           up = Vec3d(1, 0, 1).normalize))))

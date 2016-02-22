@@ -7,51 +7,68 @@ import kaloffl.spath.math.Vec3d
 
 /**
  * A camera that has a position and orientation in space and can be used to
- * create rays for the path tracing. It can also create a depth of field effect
- * if the aperture is a value greater than 0.
+ * create rays for the path tracing.
  */
-class Camera(
-    val position: Vec3d,
+trait Camera {
+  def createRay(random: DoubleSupplier, x: Float, y: Float): Ray
+}
+
+class PinholeCamera(val position: Vec3d,
     val forward: Vec3d,
     val up: Vec3d,
-    val aperture: Float = 0,
-    val focalLength: Float = 1) {
+    val sensorWidth: Float = 0.01f,
+    val sensorHeight: Float = 0.01f,
+    val sensorDistance: Float = 0.005f) extends Camera {
 
   val right = forward.cross(up).normalize
 
-  /**
-   * Creates a Ray object starting on the sensor and pointing through a random 
-   * point in the aperture. The x and y values will be negated by this function
-   * to counter the flipping effect of an aperture.
-   *
-   * @param random - a source of random numbers used for DoF
-   * @param x - the horizontal position on the sensor for the requested Ray
-   * @param y - the vertical position on the sensor for the requested Ray
-   */
-  def createRay(random: DoubleSupplier, x: Double, y: Double): Ray = {
-    // This method is called for every pixel for every sample which is a lot.
-    // Because of that all the vector calculations here were inlined by hand
-    // to avoid a lot of object creation.
-
-    // Calculate the point on the sensor the ray was requested for
-    val fX = -right.x * x - up.x * y - forward.x * focalLength
-    val fY = -right.y * x - up.y * y - forward.y * focalLength
-    val fZ = -right.z * x - up.z * y - forward.z * focalLength
-    val rayStart = Vec3d(fX + position.x, fY + position.y, fZ + position.z)
-
-    // The random amount the ray will be offset by.
-    // With a bigger aperture the offset will get bigger.
-    val angle = random.getAsDouble * 2.0 * Math.PI
-    val dist = Math.sqrt(random.getAsDouble) * aperture
-    val poX = dist * Math.cos(angle)
-    val poY = dist * Math.sin(angle)
-    
-    val dX = right.x * poX + up.x * poY - fX
-    val dY = right.y * poX + up.y * poY - fY
-    val dZ = right.z * poX + up.z * poY - fZ
+  override def createRay(random: DoubleSupplier, x: Float, y: Float): Ray = {
+    val sx = sensorWidth / 2 * x
+    val sy = sensorHeight / 2 * y
+    val dX = right.x * sx + up.x * sy + forward.x * sensorDistance
+    val dY = right.y * sx + up.y * sy + forward.y * sensorDistance
+    val dZ = right.z * sx + up.z * sy + forward.z * sensorDistance
     val dL = Math.sqrt(dX * dX + dY * dY + dZ * dZ)
     val direction = Vec3d(dX / dL, dY / dL, dZ / dL)
 
-    return new Ray(rayStart, direction)
+    return new Ray(position, direction)
+  }
+}
+
+class LensCamera(val position: Vec3d, 
+    val forward: Vec3d, 
+    val up: Vec3d, 
+    val sensorWidth: Float = 0.01f,
+    val sensorHeight: Float = 0.01f,
+    val sensorDistance: Float = 0.005f,
+    val lensRadius: Float = 0, 
+    val focussedDepth: Float = 1) extends Camera {
+  
+  val right = (forward cross up).normalize
+  
+  override def createRay(random: DoubleSupplier, x: Float, y: Float): Ray = {
+    val angle = random.getAsDouble * 2.0 * Math.PI
+    val dist = Math.sqrt(random.getAsDouble) * lensRadius
+    val poX = dist * Math.cos(angle)
+    val poY = dist * Math.sin(angle)
+    
+    val lX = right.x * poX + up.x * poY
+    val lY = right.y * poX + up.y * poY
+    val lZ = right.z * poX + up.z * poY
+    val rayStart = Vec3d(lX + position.x, lY + position.y, lZ + position.z)
+    
+    val sx = sensorWidth / 2 * x
+    val sy = sensorHeight / 2 * y
+    val dX = right.x * sx + up.x * sy + forward.x * sensorDistance
+    val dY = right.y * sx + up.y * sy + forward.y * sensorDistance
+    val dZ = right.z * sx + up.z * sy + forward.z * sensorDistance
+    val dL = focussedDepth / Math.sqrt(dX * dX + dY * dY + dZ * dZ)
+    val fX = dX * dL - lX
+    val fY = dY * dL - lY
+    val fZ = dZ * dL - lZ
+    val fL = Math.sqrt(fX * fX + fY * fY + fZ * fZ)
+    val rayDirection = Vec3d(fX / fL, fY / fL, fZ / fL)
+    
+    return new Ray(rayStart, rayDirection)
   }
 }

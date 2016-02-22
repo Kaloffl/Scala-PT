@@ -4,7 +4,7 @@ import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.CheckeredMask
 import kaloffl.spath.scene.materials.DiffuseMaterial
@@ -56,7 +56,7 @@ object Outdoor {
         root = outdoor,
         airMedium = matAir,
         skyMaterial = matSky,
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = Vec3d(0, 2.5, 13),
           forward = Vec3d.Back,
           up = Vec3d.Up))))

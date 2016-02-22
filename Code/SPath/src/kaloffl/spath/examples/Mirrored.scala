@@ -4,7 +4,7 @@ import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.LensCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -46,11 +46,11 @@ object Mirrored {
       tracer = new PathTracer(new Scene(
         root = coloredSpheres,
         airMedium = matAir,
-        camera = new Camera(
+        camera = new LensCamera(
           position = Vec3d(0, 2.5, 10),
           forward = Vec3d.Back,
           up = Vec3d.Up,
-          aperture = 0.03f,
-          focalLength = 10))))
+          lensRadius = 0.03f,
+          focussedDepth = 10))))
   }
 }

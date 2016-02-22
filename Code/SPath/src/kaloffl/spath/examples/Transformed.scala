@@ -7,7 +7,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Quaternion
 import kaloffl.spath.math.Transformation
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.Camera
+import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -25,7 +25,7 @@ object Transformed {
     val matLight = new LightMaterial(Color(0.8f, 0.9f, 2f))
 
     val bunny = SceneNode(
-      PlyImporter.load(file = "D:/temp/bunny_flipped.ply", scale = Vec3d(10)),
+      PlyImporter.load(file = "C:/dev/bunny_flipped.ply", scale = Vec3d(10)),
       matWhiteDiffuse)
 
     val transformed = SceneNode(Array(
@@ -51,7 +51,7 @@ object Transformed {
       tracer = new PathTracer(new Scene(
         root = transformed,
         airMedium = matAir,
-        camera = new Camera(
+        camera = new PinholeCamera(
           position = position,
           forward = forward,
           up = up))))
