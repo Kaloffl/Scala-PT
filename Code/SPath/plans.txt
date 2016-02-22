@@ -8,7 +8,6 @@ pathtracer TODOs
 	- lenses
 
 - UI
-	- switch to JavaFX for GUI
 	- settable sample count
 	- settable max bounce
 	- exportable image
@@ -94,6 +93,9 @@ pathtracer TODOs
 			- depth estimated shapes
 				- Sphere
 				- Mandelbulb
+	- UI
+		- live preview window of render progress
+		- copy shortcut to get the currently rendered image
 	- materials
 		- fully diffuse material
 		- diffuse textured material

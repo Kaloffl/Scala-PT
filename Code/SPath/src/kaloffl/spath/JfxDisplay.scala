@@ -6,6 +6,10 @@ import javafx.event.EventHandler
 import javafx.scene.Scene
 import javafx.scene.image.ImageView
 import javafx.scene.image.WritableImage
+import javafx.scene.input.Clipboard
+import javafx.scene.input.ClipboardContent
+import javafx.scene.input.KeyCode
+import javafx.scene.input.KeyEvent
 import javafx.scene.layout.BorderPane
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
@@ -60,10 +64,19 @@ class ActualDisplay extends Application {
     val content = new BorderPane
     content.setCenter(view)
     val scene = new Scene(content, ActualDisplay.width, ActualDisplay.height)
+    scene.setOnKeyPressed(new EventHandler[KeyEvent] {
+      override def handle(ke: KeyEvent): Unit = {
+        if (ke.isControlDown && ke.getCode == KeyCode.C) {
+          val content = new ClipboardContent
+          content.putImage(image)
+          Clipboard.getSystemClipboard.setContent(content)
+        }
+      }
+    })
     stage.setScene(scene)
     stage.setResizable(false)
     stage.setOnCloseRequest(new EventHandler[WindowEvent] {
-      override def handle(ve: WindowEvent): Unit = {
+      override def handle(we: WindowEvent): Unit = {
         System.exit(0)
       }
     })
