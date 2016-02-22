@@ -78,7 +78,9 @@ pathtracer TODOs
 	- scene
 		- BVH acceleration structure
 			- ability to nest trees
-		- camera with aperture size and focal length
+		- camera
+			- simple pinhole camera with infinitely small hole
+			- lens camera with focus depth and lens size
 		- sky function for rays that miss all geometry
 		- transformation (move, scale, rotate)
 		- lighting hint system for correctly weighted direct lighting
