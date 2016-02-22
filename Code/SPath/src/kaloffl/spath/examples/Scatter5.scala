@@ -71,7 +71,6 @@ object Scatter5 {
     val up = Vec3d.Left.cross(front)
 
     RenderEngine.render(
-      passes = 6000,
       bounces = 8,
       target = new JfxDisplay(700, 700),
       tracer = new RecursivePathTracer(new Scene(

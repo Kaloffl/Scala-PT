@@ -44,7 +44,7 @@ object RenderEngine {
    * @param passes Number of rays that are simulated per pixel (default 3000)
    * @param bounces Maximal number of bounces that are simulated per pixel per pass (default 8)
    */
-  def render(target: RenderTarget, tracer: Tracer, passes: Int = 3000, bounces: Int = 8) {
+  def render(target: RenderTarget, tracer: Tracer, bounces: Int = 8) {
     val tracingWorkers = new Array[TracingWorker](numberOfWorkers)
     val width = target.width / cols
     val height = target.height / rows
@@ -65,7 +65,7 @@ object RenderEngine {
     val pool = new JobPool
     val order = Array.tabulate(numberOfWorkers)(i ⇒ i)
     val costs = new Array[Long](numberOfWorkers)
-    while (pass < passes && tracingWorkers.exists(!_.done)) {
+    while (tracingWorkers.exists(!_.done)) {
       println("Starting pass #" + pass)
 
       val before = System.nanoTime

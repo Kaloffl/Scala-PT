@@ -99,7 +99,6 @@ object CornellBox {
         cmatRed)))
 
     RenderEngine.render(
-      passes = 60000,
       bounces = 8,
       target = new JfxDisplay(512, 720),
       tracer = new RecursivePathTracer(new Scene(
