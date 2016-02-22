@@ -14,6 +14,7 @@ import javafx.scene.layout.BorderPane
 import javafx.stage.Stage
 import javafx.stage.WindowEvent
 import kaloffl.spath.math.Color
+import java.util.concurrent.locks.LockSupport
 
 class JfxDisplay(
     override val width: Int,
@@ -65,18 +66,25 @@ class ActualDisplay extends Application {
     content.setCenter(view)
     val scene = new Scene(content, ActualDisplay.width, ActualDisplay.height)
     scene.setOnKeyPressed(new EventHandler[KeyEvent] {
-      override def handle(ke: KeyEvent): Unit = {
-        if (ke.isControlDown && ke.getCode == KeyCode.C) {
+      override def handle(ev: KeyEvent): Unit = {
+        if (ev.isControlDown && ev.getCode == KeyCode.C) {
           val content = new ClipboardContent
           content.putImage(image)
           Clipboard.getSystemClipboard.setContent(content)
+        }
+        if (ev.getCode == KeyCode.P) {
+          if (RenderEngine.isPaused) {
+        	  RenderEngine.unpause
+          } else {
+            RenderEngine.pause
+          }
         }
       }
     })
     stage.setScene(scene)
     stage.setResizable(false)
     stage.setOnCloseRequest(new EventHandler[WindowEvent] {
-      override def handle(we: WindowEvent): Unit = {
+      override def handle(ev: WindowEvent): Unit = {
         System.exit(0)
       }
     })

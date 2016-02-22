@@ -1,13 +1,15 @@
 package kaloffl.spath
 
 import java.util.concurrent.ThreadLocalRandom
+import java.util.concurrent.locks.LockSupport
 import java.util.function.DoubleSupplier
+
 import scala.util.Sorting
+
 import kaloffl.jobs.Job
 import kaloffl.jobs.JobPool
 import kaloffl.spath.tracing.Tracer
 import kaloffl.spath.tracing.TracingWorker
-import java.util.concurrent.locks.LockSupport
 
 /**
  * The Engine that can render an image of a given scene. This object handles
@@ -30,9 +32,25 @@ object RenderEngine {
 
   println("worker threads: " + numberOfWorkers)
 
-  var pause = false
-  var stop = false
+  private var thread: Thread = null
+  private var paused = false
+  private var stopped = false
 
+  def isPaused = paused
+  
+  def pause: Unit = {
+    paused = true
+  }
+  
+  def unpause: Unit = {
+    paused = false
+    LockSupport.unpark(thread)
+  }
+  
+  def stop: Unit = {
+    stopped = true
+  }
+  
   /**
    * Renders the scene with the given number of passes onto the display. In each
    * pass, Rays are shot through each pixel of the image and tested for
@@ -47,6 +65,8 @@ object RenderEngine {
    * @param bounces Maximal number of bounces that are simulated per pixel per pass (default 8)
    */
   def render(target: RenderTarget, tracer: Tracer, bounces: Int = 8) {
+    thread = Thread.currentThread
+    
     val tracingWorkers = new Array[TracingWorker](numberOfWorkers)
     val width = target.width / cols
     val height = target.height / rows
@@ -67,8 +87,8 @@ object RenderEngine {
     val pool = new JobPool
     val order = Array.tabulate(numberOfWorkers)(identity)
     val costs = new Array[Long](numberOfWorkers)
-    while (!stop && tracingWorkers.exists(!_.done)) {
-      while (pause) {
+    while (!stopped && tracingWorkers.exists(!_.done)) {
+      while (paused) {
         LockSupport.park
       }
       println("Starting pass #" + pass)
