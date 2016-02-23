@@ -12,7 +12,6 @@ import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.DirectionalSky
-import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
@@ -24,7 +23,6 @@ object Hemisphere {
       override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
     }
 
-    val matAir = new TransparentMaterial(Color.Black)
     val matSky = new DirectionalSky(
       color = Color.White * 2,
       direction = Vec3d(0, 1, -3).normalize,
@@ -54,7 +52,6 @@ object Hemisphere {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = hemisphere,
-        airMedium = matAir,
         skyMaterial = matSky,
         camera = new PinholeCamera(
           position = Vec3d(0, 0, -2.2),

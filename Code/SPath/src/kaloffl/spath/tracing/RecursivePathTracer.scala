@@ -35,7 +35,7 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
     // the ray will be scattered.
     // The added epsilon value will help prevent rays scattering close to a 
     // surface and no properly intersecting with it afterwards.
-    val intersection = scene.getIntersection(ray, scatterDist + 0.0001)
+    val intersection = scene.getIntersection(ray, scatterDist/* + 0.0001*/)
     if (!intersection.hitObject) {
       // if no object was hit, the ray will either scatter or hit the sky. At 
       // the moment the sky will only really work if the air is clear and the 

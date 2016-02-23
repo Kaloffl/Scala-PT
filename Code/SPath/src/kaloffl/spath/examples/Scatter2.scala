@@ -28,7 +28,6 @@ object Scatter2 {
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matWhiteLight = new LightMaterial(Color.White * 2)
-    val matAir = new TransparentMaterial(Color.Black)
 
     val environment = Array(
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),
@@ -45,7 +44,8 @@ object Scatter2 {
       SceneNode(
         AABB(Vec3d(x * 2 - 9.5, 0.501, y * 2 - 9.5), Vec3d(1, 0.1, 1)),
         new TransparentMaterial(
-          color = Color.randomColor(rnd, 0.5f) * (10 * Math.pow(x, 2) + 10).toFloat,
+          color = Color.randomColor(rnd, 0.5f),
+          absorbtionDepth = 0.1f / (x * x + 1),
           scatterProbability = y * x + 4,
           refractiveIndex = 1.1f))
     }).toArray
@@ -58,7 +58,6 @@ object Scatter2 {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = SceneNode(environment ++ objects),
-        airMedium = matAir,
         camera = new PinholeCamera(
           position = Vec3d(0, 14, -14),
           forward = front.normalize,

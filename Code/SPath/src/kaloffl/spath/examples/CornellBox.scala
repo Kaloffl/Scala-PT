@@ -9,7 +9,6 @@ import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.shapes.Triangle
@@ -20,7 +19,6 @@ object CornellBox {
 
   def main(args: Array[String]): Unit = {
 
-    val matAir = new TransparentMaterial(Color.Black)
     val cmatWhite = DiffuseMaterial(new Color(0.737f, 0.728f, 0.767f))
     val cmatRed = DiffuseMaterial(new Color(0.642f, 0.063f, 0.061f))
     val cmatGreen = DiffuseMaterial(new Color(0.159f, 0.373f, 0.101f))
@@ -103,7 +101,6 @@ object CornellBox {
       target = new JfxDisplay(512, 720),
       tracer = new RecursivePathTracer(new Scene(
         root = cornellBox,
-        initialMediaStack = Array(matAir),
         lightHints = Array(GlobalHint(lightHint)),
         camera = new PinholeCamera(
           position = Vec3d(278, 273, -800),

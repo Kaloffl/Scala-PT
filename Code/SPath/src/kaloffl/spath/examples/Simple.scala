@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.ReflectiveMaterial
@@ -13,9 +14,7 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.tracing.PathTracer
 import kaloffl.spath.tracing.RecursivePathTracer
-import kaloffl.spath.scene.hints.GlobalHint
 
 object Simple {
 
@@ -26,7 +25,6 @@ object Simple {
     val matBlueDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matAir = new TransparentMaterial(Color.Black)
 
     val matMirror = ReflectiveMaterial(Color.White)
     val matGlass = new TransparentMaterial(
@@ -61,7 +59,6 @@ object Simple {
       target = new JfxDisplay(1280, 720),
       tracer = new RecursivePathTracer(new Scene(
         root = coloredSpheres,
-        initialMediaStack = Array(matAir),
         lightHints = Array(new GlobalHint(light1), new GlobalHint(light2)),
         camera = new PinholeCamera(
           position = position,

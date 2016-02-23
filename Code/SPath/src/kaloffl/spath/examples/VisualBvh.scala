@@ -55,7 +55,7 @@ object VisualBvh {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = SceneNode(Array(boxes, light)),
-        airMedium = matAir,
+        initialMediaStack = Array(matAir),
         camera = new PinholeCamera(
           position = Vec3d(0.5, 2.5, 0.4),
           forward = bunnyForward.normalize,

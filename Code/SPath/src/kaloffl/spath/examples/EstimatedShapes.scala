@@ -10,7 +10,6 @@ import kaloffl.spath.scene.materials.CheckeredMask
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.MaskedMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Mandelbulb
 import kaloffl.spath.scene.shapes.Sphere
@@ -29,8 +28,6 @@ object EstimatedShapes {
 
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
-
-    val matAir = new TransparentMaterial(Color.Black, 0, 1.0f)
 
     val glassTest = SceneNode(Array(
       SceneNode(new Mandelbulb(Vec3d.Origin, 8), matWhiteDiffuse),
@@ -52,7 +49,6 @@ object EstimatedShapes {
       bounces = 4,
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
-        airMedium = matAir,
         root = glassTest,
         camera = new LensCamera(
           position = Vec3d(0, 1.5, 2.5),

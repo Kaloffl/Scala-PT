@@ -62,7 +62,7 @@ object Dragon {
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
-        airMedium = matAir,
+        initialMediaStack = Array(matAir),
         skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
         root = objects,
         camera = new PinholeCamera(

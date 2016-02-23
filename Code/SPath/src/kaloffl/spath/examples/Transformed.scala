@@ -11,7 +11,6 @@ import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.BoundedTransformationNode
 import kaloffl.spath.scene.structure.SceneNode
@@ -21,7 +20,6 @@ object Transformed {
 
   def main(args: Array[String]): Unit = {
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matAir = new TransparentMaterial(Color.Black)
     val matLight = new LightMaterial(Color(0.8f, 0.9f, 2f))
 
     val bunny = SceneNode(
@@ -50,7 +48,6 @@ object Transformed {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = transformed,
-        airMedium = matAir,
         camera = new PinholeCamera(
           position = position,
           forward = forward,

@@ -56,7 +56,7 @@ object Haze {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = hazeObjects,
-        airMedium = matAir,
+        initialMediaStack = Array(matAir),
         camera = new PinholeCamera(
           position = Vec3d(0, 5, 13),
           forward = front,

@@ -45,7 +45,7 @@ object Mirrored {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = coloredSpheres,
-        airMedium = matAir,
+        initialMediaStack = Array(matAir),
         camera = new LensCamera(
           position = Vec3d(0, 2.5, 10),
           forward = Vec3d.Back,

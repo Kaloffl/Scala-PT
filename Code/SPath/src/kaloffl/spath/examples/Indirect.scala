@@ -25,7 +25,6 @@ object Indirect {
     val matBlueDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matAir = new TransparentMaterial(Color.Black)
 
     val matMirror = ReflectiveMaterial(Color.White)
     val matGlass = new TransparentMaterial(
@@ -62,7 +61,6 @@ object Indirect {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = coloredSpheres,
-        airMedium = matAir,
         camera = new PinholeCamera(
           position = position,
           forward = forward,

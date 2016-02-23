@@ -4,6 +4,8 @@ import kaloffl.spath.JfxDisplay
 import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
 import kaloffl.spath.math.Color
+import kaloffl.spath.math.Units.cm
+import kaloffl.spath.math.Units.mm
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.LensCamera
 import kaloffl.spath.scene.Scene
@@ -12,41 +14,46 @@ import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.UniformSky
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.tracing.RecursivePathTracer
 
 object Bunny {
 
   def main(args: Array[String]): Unit = {
 
-    val matAir = new TransparentMaterial(Color.Black)
     val matGlass = new TransparentMaterial(
-      color = Color(0.7f, 1.4f, 1.8f),
+      color = Color(0.4f, 0.7f, 1.0f),
+      absorbtionDepth = mm(1),
       scatterProbability = 4,
       refractiveIndex = 1.7f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
     val matBunny = DiffuseMaterial(Color(0.8f, 0.4f, 0.2f))
 
     val bunny = SceneNode(
-      PlyImporter.load("C:/dev/bunny_flipped.ply", Vec3d(4), Vec3d(0, -0.659748 / 5, 0)),
-      matBunny)
+      PlyImporter.load(
+        file = "C:/dev/bunny_flipped.ply",
+        scale = Vec3d(2),
+        offset = Vec3d(0, -0.1319496 / 2, 0)),
+      matGlass)
 
-    val floor = SceneNode(AABB(Vec3d(-0.1, -0.005, -0.1), Vec3d(0.8, 0.01, 0.8)), matFloor)
+    val floor = SceneNode(AABB(Vec3d(0, mm(-1), 0), Vec3d(cm(5), mm(2), cm(5))), matFloor)
 
-    val bunnyForward = Vec3d(-0.2, -0.175, -1)
-    val bunnyTop = bunnyForward.cross(Vec3d.Right).normalize
+    val camPosition = Vec3d(cm(-1), cm(2), cm(5))
+    val focusPoint = Vec3d(cm(-2), cm(1.5f), cm(1))
+    val distance = focusPoint - camPosition
+    val forward = distance.normalize
+    val up = Vec3d(0, -forward.z, forward.y).normalize
 
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = new RecursivePathTracer(new Scene(
         root = SceneNode(Array(floor, bunny)),
-        airMedium = matAir,
         skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
         camera = new LensCamera(
-          position = Vec3d(0, 0.45, 0.9),
-          forward = bunnyForward.normalize,
-          up = bunnyTop,
-          lensRadius = 0.02f,
-          focussedDepth = bunnyForward.length.toFloat))))
+          position = camPosition,
+          forward = forward,
+          up = up,
+          lensRadius = mm(3),
+          focussedDepth = distance.length.toFloat))))
   }
 }

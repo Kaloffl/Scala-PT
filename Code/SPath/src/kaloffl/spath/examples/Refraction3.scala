@@ -21,7 +21,6 @@ object Refraction3 {
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
     val matWhiteLight = new LightMaterial(Color.White * 2)
-    val matAir = new TransparentMaterial(Color.Black)
 
     val environment = Array(
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),
@@ -35,9 +34,10 @@ object Refraction3 {
     val maxHeight = 4.0
     val objects = (for (x ← 0 until 10; y ← 0 until 10) yield {
       SceneNode(
-        new Sphere(Vec3d(x * 2 - 10, 0.501, y * 2 - 10), 0.5f),
+        new Sphere(Vec3d(x * -2 + 10, 0.501, y * 2 - 10), 0.5f),
         new TransparentMaterial(
-          color = glassColor * Math.pow(2, x - 1).toFloat,
+          color = glassColor,
+          absorbtionDepth =  x * x / 200f + 0.01f,
           refractiveIndex = 1 + y / 10.0f))
     }).toArray
 
@@ -49,7 +49,6 @@ object Refraction3 {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = SceneNode(environment ++ objects),
-        airMedium = matAir,
         camera = new PinholeCamera(
           position = Vec3d(0, 14, -14),
           forward = front.normalize,

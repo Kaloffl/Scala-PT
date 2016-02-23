@@ -11,7 +11,6 @@ import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
@@ -42,8 +41,6 @@ object Refraction {
 
     val checkeredMask = new CheckeredMask(2, Vec3d(0.5))
     val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
-
-    val matAir = new TransparentMaterial(Color.Black)
 
     val glassTest = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-9, 1, 0), 1), matWhiteGlass0),
@@ -84,7 +81,6 @@ object Refraction {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = glassTest,
-        airMedium = matAir,
         camera = new PinholeCamera(
           position = Vec3d(0, 5, 13),
           forward = front.normalize,

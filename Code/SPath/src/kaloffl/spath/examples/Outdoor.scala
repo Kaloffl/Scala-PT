@@ -54,7 +54,7 @@ object Outdoor {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = outdoor,
-        airMedium = matAir,
+        initialMediaStack = Array(matAir),
         skyMaterial = matSky,
         camera = new PinholeCamera(
           position = Vec3d(0, 2.5, 13),

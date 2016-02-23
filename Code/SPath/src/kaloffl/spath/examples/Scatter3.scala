@@ -59,7 +59,7 @@ object Scatter3 {
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
         root = SceneNode(hazeObjects ++ blocks),
-        airMedium = matAir,
+        initialMediaStack = Array(matAir),
         camera = new LensCamera(
           position = Vec3d(0, 5, 13),
           forward = front,

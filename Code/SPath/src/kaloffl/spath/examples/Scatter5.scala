@@ -39,8 +39,6 @@ object Scatter5 {
 
     val matMirror = ReflectiveMaterial(Color.White, 0.0001f)
 
-    val matAir = new TransparentMaterial(Color.Black)
-
     val lightShape = new Sphere(Vec3d(0, 80, 0), 20)
 
     val glassTest = BoundlessNode(Array(
@@ -75,7 +73,6 @@ object Scatter5 {
       target = new JfxDisplay(700, 700),
       tracer = new RecursivePathTracer(new Scene(
         root = glassTest,
-        initialMediaStack = Array(matAir),
         lightHints = Array(GlobalHint(lightShape)),
         skyMaterial = new UniformSky(Color(0.9f, 0.95f, 0.975f) * 0.5f),
         camera = new PinholeCamera(

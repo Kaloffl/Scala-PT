@@ -9,7 +9,6 @@ import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Plane
 import kaloffl.spath.scene.shapes.Sphere
@@ -29,7 +28,6 @@ object Colorful {
     val matPinkDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matAir = new TransparentMaterial(Color.Black)
     val matLight = new LightMaterial(Color.White * 2)
 
     val coloredSpheres = BoundlessNode(Array(
@@ -52,7 +50,6 @@ object Colorful {
       target = new ScaleFilter(new JfxDisplay(1280, 720), 4, 4),
       tracer = new RecursivePathTracer(new Scene(
         root = coloredSpheres,
-        airMedium = matAir,
         camera = new PinholeCamera(
           position = Vec3d(0, 2.5, 13),
           forward = Vec3d.Back,

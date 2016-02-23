@@ -17,37 +17,30 @@ object Nested {
 
   def main(args: Array[String]): Unit = {
 
-    val matAir = new TransparentMaterial(Color(0.02f, 0.01f, 0.005f))
     val matGlassRed = new TransparentMaterial(
-      color = Color(0.1f, 0.9f, 0.9f) * 2,
-      refractiveIndex = 1.3f)
+      color = Color(0.1f, 0.9f, 0.9f),
+      absorbtionDepth = 0.75f)
     val matGlassGreen = new TransparentMaterial(
-      color = Color(0.9f, 0.1f, 0.9f) * 2,
-      refractiveIndex = 1.4f)
+      color = Color(0.9f, 0.1f, 0.9f),
+      absorbtionDepth = 0.5f)
     val matGlassBlue = new TransparentMaterial(
-      color = Color(0.9f, 0.9f, 0.1f) * 2,
-      refractiveIndex = 1.5f)
-    val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
+      color = Color(0.9f, 0.9f, 0.1f),
+      absorbtionDepth = 0.25f)
+    val matFloor = DiffuseMaterial(Color(0.6f, 0.6f, 0.6f))
 
-    val boxRed = SceneNode(AABB(Vec3d(0, 1.5, 0), Vec3d(3)), matGlassRed)
-    val boxGreen = SceneNode(AABB(Vec3d(0, 1.5, 0), Vec3d(2)), matGlassGreen)
-    val boxBlue = SceneNode(AABB(Vec3d(0, 1.5, 0), Vec3d(1)), matGlassBlue)
-
-    val floor = SceneNode(AABB(Vec3d(0, -0.05, 0), Vec3d(8, 0.1, 8)), matFloor)
-
-    val bunnyForward = Vec3d(-2, -1.75, -10)
-    val bunnyTop = bunnyForward.cross(Vec3d.Right).normalize
+    val boxRed = SceneNode(AABB(Vec3d(0, 0, 0), Vec3d(2, 2, 3)), matGlassRed)
+    val boxGreen = SceneNode(AABB(Vec3d(0, 0, 0), Vec3d(3, 1, 2)), matGlassGreen)
+    val boxBlue = SceneNode(AABB(Vec3d(0, 0, 0), Vec3d(1, 3, 1)), matGlassBlue)
 
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = new PathTracer(new Scene(
-        root = SceneNode(Array(floor, boxRed, boxGreen, boxBlue)),
-        airMedium = matAir,
-        skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
+        root = SceneNode(Array(boxRed, boxGreen, boxBlue)),
+        skyMaterial = new UniformSky(Color.White * 2),
         camera = new PinholeCamera(
-          position = Vec3d(0, 4.5, 9),
-          forward = bunnyForward.normalize,
-          up = bunnyTop))))
+          position = Vec3d(0, 0, 9),
+          forward = Vec3d.Back,
+          up = Vec3d.Up))))
   }
 }
