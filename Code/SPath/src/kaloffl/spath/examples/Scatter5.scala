@@ -71,13 +71,14 @@ object Scatter5 {
     RenderEngine.render(
       bounces = 8,
       target = new JfxDisplay(700, 700),
-      tracer = new RecursivePathTracer(new Scene(
+      tracer = RecursivePathTracer,
+      scene = new Scene(
         root = glassTest,
         lightHints = Array(GlobalHint(lightShape)),
         skyMaterial = new UniformSky(Color(0.9f, 0.95f, 0.975f) * 0.5f),
         camera = new PinholeCamera(
           position = Vec3d(0, 60, 60),
           forward = front,
-          up = up))))
+          up = up)))
   }
 }

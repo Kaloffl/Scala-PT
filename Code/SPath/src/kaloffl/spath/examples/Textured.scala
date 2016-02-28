@@ -101,7 +101,8 @@ object Textured {
     RenderEngine.render(
       bounces = 20,
       target = new BloomFilter(display, 10, 0.5f),
-      tracer = new RecursivePathTracer(new Scene(
+      tracer = RecursivePathTracer,
+      scene = new Scene(
         root = world,
         initialMediaStack = Array(matVoid),
         lightHints = Array(
@@ -111,6 +112,6 @@ object Textured {
         camera = new PinholeCamera(
           position = position,
           forward = Vec3d.Down,
-          up = Vec3d(1, 0, 1).normalize))))
+          up = Vec3d(1, 0, 1).normalize)))
   }
 }

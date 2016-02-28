@@ -54,12 +54,13 @@ object Haze {
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = hazeObjects,
         initialMediaStack = Array(matAir),
         camera = new PinholeCamera(
           position = Vec3d(0, 5, 13),
           forward = front,
-          up = up))))
+          up = up)))
   }
 }

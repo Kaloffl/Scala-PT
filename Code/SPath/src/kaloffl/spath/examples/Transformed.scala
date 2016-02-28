@@ -46,11 +46,12 @@ object Transformed {
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = transformed,
         camera = new PinholeCamera(
           position = position,
           forward = forward,
-          up = up))))
+          up = up)))
   }
 }

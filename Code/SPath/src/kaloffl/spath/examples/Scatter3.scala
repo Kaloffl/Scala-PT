@@ -57,7 +57,8 @@ object Scatter3 {
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = SceneNode(hazeObjects ++ blocks),
         initialMediaStack = Array(matAir),
         camera = new LensCamera(
@@ -65,6 +66,6 @@ object Scatter3 {
           forward = front,
           up = up,
           lensRadius = 0.1f,
-          focussedDepth = Vec3d(0, 2.5, 13).length.toFloat))))
+          focussedDepth = Vec3d(0, 2.5, 13).length.toFloat)))
   }
 }

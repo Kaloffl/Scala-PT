@@ -52,11 +52,12 @@ object Refraction4 {
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = SceneNode(environment ++ objects),
         camera = new PinholeCamera(
           position = Vec3d(0, 14, -14),
           forward = front.normalize,
-          up = up))))
+          up = up)))
   }
 }

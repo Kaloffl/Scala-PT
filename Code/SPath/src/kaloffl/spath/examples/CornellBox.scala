@@ -99,12 +99,13 @@ object CornellBox {
     RenderEngine.render(
       bounces = 8,
       target = new JfxDisplay(512, 720),
-      tracer = new RecursivePathTracer(new Scene(
+      tracer = RecursivePathTracer,
+      scene = new Scene(
         root = cornellBox,
         lightHints = Array(GlobalHint(lightHint)),
         camera = new PinholeCamera(
           position = Vec3d(278, 273, -800),
           forward = Vec3d.Front,
-          up = Vec3d.Up))))
+          up = Vec3d.Up)))
   }
 }

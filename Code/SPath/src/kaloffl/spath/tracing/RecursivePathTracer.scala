@@ -9,19 +9,20 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.Material
 
-class RecursivePathTracer(val scene: Scene) extends Tracer {
+object RecursivePathTracer extends Tracer {
 
-  override def trace(x: Float,
+  override def trace(scene: Scene,
+                     x: Float,
                      y: Float,
                      maxBounces: Int,
                      random: DoubleSupplier): Color = {
     val startRay = scene.camera.createRay(random, x, y)
     val mediaStack = scene.initialMediaStack
     val mediaHead = mediaStack.length - 1
-    return trace(startRay, mediaStack, mediaHead, maxBounces, random)
+    return trace(startRay, scene, mediaStack, mediaHead, maxBounces, random)
   }
 
-  def trace(ray: Ray, media: Array[Material], mediaHead: Int, i: Int, random: DoubleSupplier): Color = {
+  def trace(ray: Ray, scene: Scene, media: Array[Material], mediaHead: Int, i: Int, random: DoubleSupplier): Color = {
     if (0 == i) return Color.Black
 
     // First we determine the distance it will take the ray to hit an air 
@@ -56,7 +57,7 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
       val point = ray.atDistance(scatterDist)
       val absorbed = (media(mediaHead).getAbsorbtion(point, random) * -scatterDist.toFloat).exp
       val randomRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
-      var color = trace(randomRay, media, mediaHead, i - 1, random)
+      var color = trace(randomRay, scene, media, mediaHead, i - 1, random)
       if (i > 1) {
         var h = 0
         val hints = scene.lightHints
@@ -65,7 +66,7 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
           if (hint.applicableFor(point)) {
             val lightRay = hint.target.createRandomRay(point, random)
             val angle = hint.target.getSolidAngle(point).toFloat
-            color += trace(lightRay, media, mediaHead, i / 2, random) * angle
+            color += trace(lightRay, scene, media, mediaHead, i / 2, random) * angle
           }
           h += 1
         }
@@ -103,12 +104,12 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
             val newMedia = new Array[Material](newHead + 1)
             System.arraycopy(media, 0, newMedia, 0, newHead)
             newMedia(newHead) = intersection.material
-            color += trace(newRay, newMedia, mediaHead + 1, i - 1, random) * weight
+            color += trace(newRay, scene, newMedia, mediaHead + 1, i - 1, random) * weight
           } else if (ray.normal.dot(surfaceNormal) >= 0 && mediaHead > 0) {
             // if the ray is exiting a surface
-            color += trace(newRay, media, mediaHead - 1, i - 1, random) * weight
+            color += trace(newRay, scene, media, mediaHead - 1, i - 1, random) * weight
           } else {
-            color += trace(newRay, media, mediaHead, i - 1, random) * weight
+            color += trace(newRay, scene, media, mediaHead, i - 1, random) * weight
             if (i > 1) {
               var h = 0
               val hints = scene.lightHints
@@ -119,7 +120,7 @@ class RecursivePathTracer(val scene: Scene) extends Tracer {
                   val contribution = scattering.getContribution(lightRay.normal)
                   if (contribution > 0) {
                     val angle = hint.target.getSolidAngle(point).toFloat
-                    color += trace(lightRay, media, mediaHead, i / 2, random) * angle * contribution
+                    color += trace(lightRay, scene, media, mediaHead, i / 2, random) * angle * contribution
                   }
                 }
                 h += 1

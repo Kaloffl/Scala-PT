@@ -43,7 +43,8 @@ object Mirrored {
     RenderEngine.render(
       bounces = 80,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = coloredSpheres,
         initialMediaStack = Array(matAir),
         camera = new LensCamera(
@@ -51,6 +52,6 @@ object Mirrored {
           forward = Vec3d.Back,
           up = Vec3d.Up,
           lensRadius = 0.03f,
-          focussedDepth = 10))))
+          focussedDepth = 10)))
   }
 }

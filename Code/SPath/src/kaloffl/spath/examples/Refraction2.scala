@@ -72,13 +72,14 @@ object Refraction2 {
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = glassTest,
         camera = new LensCamera(
           position = Vec3d(0, 5, 13),
           forward = front.normalize,
           up = up,
           lensRadius = 0.1f,
-          focussedDepth = front.length.toFloat))))
+          focussedDepth = front.length.toFloat)))
   }
 }

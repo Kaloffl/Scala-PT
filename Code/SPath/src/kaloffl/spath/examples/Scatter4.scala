@@ -39,12 +39,13 @@ object Scatter4 {
     RenderEngine.render(
       bounces = 128,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = glassTest,
         skyMaterial = new UniformSky(Color.White),
         camera = new PinholeCamera(
           position = Vec3d(0, 3, 9),
           forward = front,
-          up = Vec3d.Up))))
+          up = Vec3d.Up)))
   }
 }

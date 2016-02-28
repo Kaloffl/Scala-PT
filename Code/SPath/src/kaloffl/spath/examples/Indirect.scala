@@ -59,11 +59,12 @@ object Indirect {
     RenderEngine.render(
       bounces = 16,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = coloredSpheres,
         camera = new PinholeCamera(
           position = position,
           forward = forward,
-          up = up))))
+          up = up)))
   }
 }

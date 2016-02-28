@@ -40,13 +40,14 @@ object LightScatter {
     RenderEngine.render(
       bounces = 4,
       target = new BloomFilter(new JfxDisplay(1280, 720), 10, 1.5f),
-      tracer = new RecursivePathTracer(new Scene(
+      tracer = RecursivePathTracer,
+      scene = new Scene(
         root = hazeObjects,
         initialMediaStack = Array(matAir),
         lightHints = Array(GlobalHint(lightSphere)),
         camera = new PinholeCamera(
           position = Vec3d(0, 0, 13),
           forward = Vec3d.Back,
-          up = Vec3d.Up))))
+          up = Vec3d.Up)))
   }
 }

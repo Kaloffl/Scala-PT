@@ -57,12 +57,13 @@ object Simple {
     RenderEngine.render(
       bounces = 5,
       target = new JfxDisplay(1280, 720),
-      tracer = new RecursivePathTracer(new Scene(
+      tracer = RecursivePathTracer,
+      scene = new Scene(
         root = coloredSpheres,
         lightHints = Array(new GlobalHint(light1), new GlobalHint(light2)),
         camera = new PinholeCamera(
           position = position,
           forward = forward,
-          up = up))))
+          up = up)))
   }
 }

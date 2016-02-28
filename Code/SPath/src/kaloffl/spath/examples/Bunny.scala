@@ -46,7 +46,8 @@ object Bunny {
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new RecursivePathTracer(new Scene(
+      tracer = RecursivePathTracer,
+      scene = new Scene(
         root = SceneNode(Array(floor, bunny)),
         skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
         camera = new LensCamera(
@@ -54,6 +55,6 @@ object Bunny {
           forward = forward,
           up = up,
           lensRadius = mm(3),
-          focussedDepth = distance.length.toFloat))))
+          focussedDepth = distance.length.toFloat)))
   }
 }

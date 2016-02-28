@@ -35,12 +35,13 @@ object Nested {
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = SceneNode(Array(boxRed, boxGreen, boxBlue)),
         skyMaterial = new UniformSky(Color.White * 2),
         camera = new PinholeCamera(
           position = Vec3d(0, 0, 9),
           forward = Vec3d.Back,
-          up = Vec3d.Up))))
+          up = Vec3d.Up)))
   }
 }

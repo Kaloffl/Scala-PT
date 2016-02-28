@@ -48,13 +48,14 @@ object EstimatedShapes {
     RenderEngine.render(
       bounces = 4,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = glassTest,
         camera = new LensCamera(
           position = Vec3d(0, 1.5, 2.5),
           forward = front,
           up = up,
           lensRadius = 0.015f,
-          focussedDepth = 3))))
+          focussedDepth = 3)))
   }
 }

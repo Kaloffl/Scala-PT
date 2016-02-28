@@ -53,12 +53,13 @@ object VisualBvh {
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = SceneNode(Array(boxes, light)),
         initialMediaStack = Array(matAir),
         camera = new PinholeCamera(
           position = Vec3d(0.5, 2.5, 0.4),
           forward = bunnyForward.normalize,
-          up = bunnyTop))))
+          up = bunnyTop)))
   }
 }

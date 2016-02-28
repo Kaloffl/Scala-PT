@@ -48,11 +48,12 @@ object Colorful {
     RenderEngine.render(
       bounces = 6,
       target = new ScaleFilter(new JfxDisplay(1280, 720), 4, 4),
-      tracer = new RecursivePathTracer(new Scene(
+      tracer = RecursivePathTracer,
+      scene  = new Scene(
         root = coloredSpheres,
         camera = new PinholeCamera(
           position = Vec3d(0, 2.5, 13),
           forward = Vec3d.Back,
-          up = Vec3d.Up))))
+          up = Vec3d.Up)))
   }
 }

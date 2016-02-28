@@ -50,12 +50,13 @@ object Hemisphere {
     RenderEngine.render(
       bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(new Scene(
+      tracer = PathTracer,
+      scene = new Scene(
         root = hemisphere,
         skyMaterial = matSky,
         camera = new PinholeCamera(
           position = Vec3d(0, 0, -2.2),
           forward = Vec3d(0, 0, 1).normalize,
-          up = Vec3d.Left))))
+          up = Vec3d.Left)))
   }
 }

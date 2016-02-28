@@ -1,8 +1,10 @@
 package kaloffl.spath.tracing
 
 import java.util.function.DoubleSupplier
+
 import kaloffl.spath.RenderTarget
 import kaloffl.spath.math.Color
+import kaloffl.spath.scene.Scene
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -22,6 +24,8 @@ class TracingWorker(
     val width: Int,
     val height: Int,
     val tracer: Tracer,
+    val scene: Scene,
+    val target: RenderTarget,
     val random: DoubleSupplier) {
 
   // The sum of determined colors is stored in this array
@@ -39,13 +43,13 @@ class TracingWorker(
   /**
    * Renders a pass and adds the color to the samples array
    */
-  def render(maxBounces: Int, pass: Int, display: RenderTarget): Unit = {
+  def render(maxBounces: Int, pass: Int): Unit = {
     if (done) return
 
     samplesTaken += 1
 
-    val dWidth = display.width
-    val dHeight = display.height
+    val dWidth = target.width
+    val dHeight = target.height
     val r = Math.sqrt(pass).toInt
     val dx = sampleToDistribution(Math.min(r, pass - r * r))
     val dy = sampleToDistribution(Math.min(r, r * r + 2 * r - pass))
@@ -57,7 +61,7 @@ class TracingWorker(
     for (index ← 0 until maxIndex) {
       val x = (index % width - displayOffsetX) / dHeight
       val y = (displayOffsetY - index / width) / dHeight
-      val color = tracer.trace(x, y, maxBounces, random)
+      val color = tracer.trace(scene, x, y, maxBounces, random)
       val sampleIndex = index * 3
 
       val prevSample = samplesTaken - 1
@@ -77,7 +81,7 @@ class TracingWorker(
   /**
    * Draws the current samples to the display
    */
-  def draw(display: RenderTarget) {
+  def draw: Unit = {
     val maxIndex = width * height
     for (index ← 0 until maxIndex) {
       val x = index % width + left
@@ -91,7 +95,7 @@ class TracingWorker(
         samples(i3 + 1) / samplesTaken,
         samples(i3 + 2) / samplesTaken)
 
-      display.setPixel(x, y, color)
+      target.setPixel(x, y, color)
     }
   }
 }

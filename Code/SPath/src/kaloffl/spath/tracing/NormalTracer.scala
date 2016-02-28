@@ -9,9 +9,10 @@ import kaloffl.spath.scene.materials.Material
 import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
 
-class NormalTracer(val scene: Scene) extends Tracer {
+object NormalTracer extends Tracer {
 
-  override def trace(x: Float,
+  override def trace(scene: Scene,
+                     x: Float,
                      y: Float,
                      maxBounces: Int,
                      random: DoubleSupplier): Color = {
