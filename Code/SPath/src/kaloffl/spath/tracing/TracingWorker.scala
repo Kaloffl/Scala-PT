@@ -28,53 +28,30 @@ class TracingWorker(
     val target: RenderTarget,
     val random: DoubleSupplier) {
 
-  // The sum of determined colors is stored in this array
-  // r1, g1, b1, r2, g2, b2, ...
-  val samples = new Array[Float](width * height * 3)
-
-  // the number of passes that have been rendered
-  var samplesTaken: Int = 0
-  var done = false
-
-  def sampleToDistribution(s: Int): Float = {
-    return (random.getAsDouble - 0.5).toFloat
-  }
+  val sampleStorage = new DiscreteSampleStorage(width, height)
 
   /**
    * Renders a pass and adds the color to the samples array
    */
   def render(maxBounces: Int, pass: Int): Unit = {
-    if (done) return
-
-    samplesTaken += 1
 
     val dWidth = target.width
     val dHeight = target.height
-    val r = Math.sqrt(pass).toInt
-    val dx = sampleToDistribution(Math.min(r, pass - r * r))
-    val dy = sampleToDistribution(Math.min(r, r * r + 2 * r - pass))
-    val displayOffsetX = dWidth * 0.5f + dx - left
-    val displayOffsetY = dHeight * 0.5f + dy - top
+    val displayOffsetX = left + (random.getAsDouble - 0.5).toFloat
+    val displayOffsetY = top + (random.getAsDouble - 0.5).toFloat
 
     val maxIndex = width * height
-    var difference = 0f
     for (index ← 0 until maxIndex) {
-      val x = (index % width - displayOffsetX) / dHeight
-      val y = (displayOffsetY - index / width) / dHeight
-      val color = tracer.trace(scene, x, y, maxBounces, random)
-      val sampleIndex = index * 3
+      val x = index % width
+      val y = index / width
+      val color = tracer.trace(
+        scene = scene,
+        x = (2 * (x + displayOffsetX) - dWidth) / dWidth,
+        y = (dHeight - 2 * (y + displayOffsetY)) / dWidth,
+        maxBounces = maxBounces,
+        random = random)
 
-      val prevSample = samplesTaken - 1
-      difference += Math.abs((color.r2 * prevSample - samples(sampleIndex)) / (samplesTaken * prevSample))
-      difference += Math.abs((color.g2 * prevSample - samples(sampleIndex + 1)) / (samplesTaken * prevSample))
-      difference += Math.abs((color.b2 * prevSample - samples(sampleIndex + 2)) / (samplesTaken * prevSample))
-
-      samples(sampleIndex) += color.r2
-      samples(sampleIndex + 1) += color.g2
-      samples(sampleIndex + 2) += color.b2
-    }
-    if (difference / maxIndex < 1 / (255f * 255f)) {
-      done = true
+        sampleStorage.addSample(x, y, color)
     }
   }
 
@@ -84,18 +61,12 @@ class TracingWorker(
   def draw: Unit = {
     val maxIndex = width * height
     for (index ← 0 until maxIndex) {
-      val x = index % width + left
-      val y = index / width + top
-      val i3 = index * 3
+      val x = index % width
+      val y = index / width
 
-      // we need to use the new-constructor here because the values are already
-      // in squared space
-      val color = new Color(
-        samples(i3) / samplesTaken,
-        samples(i3 + 1) / samplesTaken,
-        samples(i3 + 2) / samplesTaken)
+      val color = sampleStorage.getColor(x, y)
 
-      target.setPixel(x, y, color)
+      target.setPixel(x+ left, y + top, color)
     }
   }
 }

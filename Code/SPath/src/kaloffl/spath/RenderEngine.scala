@@ -62,7 +62,6 @@ object RenderEngine {
    *
    * @param target Target to render the resulting pixels onto
    * @param scene The objects and camera for the rendering
-   * @param passes Number of rays that are simulated per pixel (default 3000)
    * @param bounces Maximal number of bounces that are simulated per pixel per pass (default 8)
    */
   def render(target: RenderTarget, tracer: Tracer, scene: Scene, bounces: Int = 8) {
@@ -88,7 +87,7 @@ object RenderEngine {
     val pool = new JobPool
     val order = Array.tabulate(numberOfWorkers)(identity)
     val costs = new Array[Long](numberOfWorkers)
-    while (!stopped && tracingWorkers.exists(!_.done)) {
+    while (!stopped) {
       while (paused) {
         LockSupport.park
       }
@@ -97,7 +96,6 @@ object RenderEngine {
       val before = System.nanoTime
       for (i ← 0 until numberOfWorkers) {
         val worker = tracingWorkers(order(i))
-        if (!worker.done) {
           pool.submit(new Job {
             override def execute = {
               val start = System.nanoTime
@@ -106,7 +104,6 @@ object RenderEngine {
               costs(order(i)) += System.nanoTime - start
             }
           })
-        }
       }
       pool.execute
 
