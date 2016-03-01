@@ -7,10 +7,9 @@ import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.SurfaceInfo
 
-class DiffuseTexturedMaterial(texture: Texture) extends Material(Color.Black, DiffuseFunction) {
+class DiffuseTexturedMaterial(texture: Texture) extends Material(Color.Black, Color.Black, DiffuseFunction) {
 
   override def getInfo(incomingNormal: Vec3d,
-                       worldPos: ⇒ Vec3d,
                        surfaceNormal: ⇒ Vec3d,
                        textureCoordinate: ⇒ Vec2d,
                        airRefractivityIndex: Float,
@@ -20,7 +19,6 @@ class DiffuseTexturedMaterial(texture: Texture) extends Material(Color.Black, Di
     val tc = textureCoordinate
     new SurfaceInfo(
       texture(tc.x.toFloat, tc.y.toFloat),
-      Color.Black,
       DiffuseFunction.outDirections(
         incomingNormal,
         surfaceNormal,

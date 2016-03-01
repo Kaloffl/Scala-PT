@@ -20,7 +20,7 @@ object Transformed {
 
   def main(args: Array[String]): Unit = {
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matLight = new LightMaterial(Color(0.8f, 0.9f, 2f))
+    val matLight = LightMaterial(Color(0.8f, 0.9f, 2f))
 
     val bunny = SceneNode(
       PlyImporter.load(file = "C:/dev/bunny_flipped.ply", scale = Vec3d(10)),

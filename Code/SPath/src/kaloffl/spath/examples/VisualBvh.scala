@@ -23,7 +23,7 @@ object VisualBvh {
     val matAir = new TransparentMaterial(
       color = Color.Black,
       scatterProbability = 0.0625)
-    val matSky = new LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2)
+    val matSky = LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2)
     val matGlassRed = new TransparentMaterial(Color(0.7f, 4, 4), 20, 1.7f)
     val matGlassGreen = new TransparentMaterial(Color(4, 0.7f, 4), 20, 1.7f)
     val matGlassBlue = new TransparentMaterial(Color(4, 4, 0.7f), 20, 1.7f)

@@ -26,18 +26,18 @@ object Scatter5 {
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.White * 16)
+    val matWhiteLight = LightMaterial(Color.White * 16)
 
     val matRedGlass = new TransparentMaterial(
       color = Color(0.1f, 0.5f, 0.5f),
       scatterProbability = 0.1,
       refractiveIndex = 1.7f)
-    val matClearGlass = RefractiveMaterial(Color.White, 1.7f)
+    val matClearGlass = RefractiveMaterial(Color.Black, 1.7f)
     val matWhiteGlass = new TransparentMaterial(
       color = Color.Black,
       refractiveIndex = 1.7f)
 
-    val matMirror = ReflectiveMaterial(Color.White, 0.0001f)
+    val matMirror = ReflectiveMaterial(Color.Black, 0.0001f)
 
     val lightShape = new Sphere(Vec3d(0, 80, 0), 20)
 

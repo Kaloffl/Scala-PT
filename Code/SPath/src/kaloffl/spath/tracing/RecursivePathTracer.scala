@@ -36,7 +36,7 @@ object RecursivePathTracer extends Tracer {
     // the ray will be scattered.
     // The added epsilon value will help prevent rays scattering close to a 
     // surface and no properly intersecting with it afterwards.
-    val intersection = scene.getIntersection(ray, scatterDist/* + 0.0001*/)
+    val intersection = scene.getIntersection(ray, scatterDist /* + 0.0001*/ )
     if (!intersection.hitObject) {
       // if no object was hit, the ray will either scatter or hit the sky. At 
       // the moment the sky will only really work if the air is clear and the 
@@ -49,13 +49,13 @@ object RecursivePathTracer extends Tracer {
           if (java.lang.Double.isInfinite(dist)) {
             Color.White
           } else {
-            (media(mediaHead).getAbsorbtion(point, random) * -dist.toFloat).exp
+            (media(mediaHead).absorbtion * -dist.toFloat).exp
           }
         return emitted * absorbed
       }
 
       val point = ray.atDistance(scatterDist)
-      val absorbed = (media(mediaHead).getAbsorbtion(point, random) * -scatterDist.toFloat).exp
+      val absorbed = (media(mediaHead).absorbtion * -scatterDist.toFloat).exp
       val randomRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
       var color = trace(randomRay, scene, media, mediaHead, i - 1, random)
       if (i > 1) {
@@ -74,20 +74,24 @@ object RecursivePathTracer extends Tracer {
       return absorbed * color
     } else {
       val depth = intersection.depth
+      val absorbed = if(media(mediaHead).absorbtion != Color.Black) {
+        (media(mediaHead).absorbtion * -depth.toFloat).exp
+      } else {
+        Color.White
+      }
+
+      if (intersection.material.emittance != Color.Black) {
+        return intersection.material.emittance * absorbed
+      }
+
       val point = ray.atDistance(depth)
       val surfaceNormal = intersection.normal()
       val info = intersection.material.getInfo(
         incomingNormal = ray.normal,
-        worldPos = point,
         surfaceNormal = surfaceNormal,
         textureCoordinate = intersection.textureCoordinate(),
         airRefractiveIndex = media(mediaHead).refractiveIndex,
         random = random)
-      val absorbed = (media(mediaHead).getAbsorbtion(point, random) * -depth.toFloat).exp
-
-      if (info.emittance != Color.Black) {
-        return info.emittance * absorbed
-      }
 
       val scattering = info.scattering
       val paths = scattering.paths

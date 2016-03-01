@@ -24,8 +24,8 @@ object Scatter4 {
       glossiness = 0.01f)
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matRedLight = new LightMaterial(Color.Red * 256)
-    val matGreenLight = new LightMaterial(Color.Green * 16)
+    val matRedLight = LightMaterial(Color.Red * 256)
+    val matGreenLight = LightMaterial(Color.Green * 16)
 
     val glassTest = SceneNode(Array(
       SceneNode(AABB(Vec3d(0, 4.5, 0), Vec3d(10, 3, 0.001)), matPaper),

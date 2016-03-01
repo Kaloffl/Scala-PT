@@ -9,10 +9,9 @@ import kaloffl.spath.scene.SurfaceInfo
 class SpecularMaterial(base: Material,
                        refractiveIndex: Float,
                        roughness: Double = 0.0)
-    extends Material(Color.Black, DummyFunction) {
+    extends Material(Color.Black, Color.Black, DummyFunction) {
 
   override def getInfo(incomingNormal: Vec3d,
-                       worldPos: ⇒ Vec3d,
                        surfaceNormal: ⇒ Vec3d,
                        textureCoordinate: ⇒ Vec2d,
                        airRefractiveIndex: Float,
@@ -23,14 +22,13 @@ class SpecularMaterial(base: Material,
     if (weight > random.getAsDouble) {
       new SurfaceInfo(
         Color.White,
-        Color.Black,
         ReflectFunction.outDirections(
           incomingNormal,
           axis,
           airRefractiveIndex,
           random))
     } else {
-      base.getInfo(incomingNormal, worldPos, surfaceNormal, textureCoordinate, airRefractiveIndex, random)
+      base.getInfo(incomingNormal, surfaceNormal, textureCoordinate, airRefractiveIndex, random)
     }
   }
 }

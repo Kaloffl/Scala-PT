@@ -28,7 +28,7 @@ object Colorful {
     val matPinkDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matLight = new LightMaterial(Color.White * 2)
+    val matLight = LightMaterial(Color.White * 2)
 
     val coloredSpheres = BoundlessNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matYellowDiffuse),

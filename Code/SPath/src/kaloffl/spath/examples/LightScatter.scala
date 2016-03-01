@@ -24,7 +24,7 @@ object LightScatter {
     val matAir = new TransparentMaterial(
       color = Color(0.08f, 0.09f, 0.095f),
       scatterProbability = 0.0125f)
-    val matLight = new LightMaterial(Color(1, 0.9f, 0.8f) * 8)
+    val matLight = LightMaterial(Color(1, 0.9f, 0.8f) * 8)
 
     val lightSphere = new Sphere(Vec3d(0, 0, 0), 1)
     

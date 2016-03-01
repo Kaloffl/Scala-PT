@@ -34,7 +34,7 @@ object Mirrored {
         ReflectiveMaterial(Color(0.2f, 0.8f, 0.2f), 0.4f)),
       SceneNode(
         AABB(Vec3d(0, 32.5, 0), Vec3d(16, 1, 24)),
-        new LightMaterial(Color.White)),
+        LightMaterial(Color.White)),
       SceneNode(AABB(Vec3d(8.5f, 16, 0), Vec3d(1, 32, 24)), matMirror),
       SceneNode(AABB(Vec3d(-8.5f, 16, 0), Vec3d(1, 32, 24)), matMirror),
       SceneNode(AABB(Vec3d(0, 16, -12.5f), Vec3d(16, 32, 1)), matMirror),

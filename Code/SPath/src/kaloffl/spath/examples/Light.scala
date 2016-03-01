@@ -31,12 +31,15 @@ object Light {
       SceneNode(new Sphere(Vec3d(2.5f, 1.0f, 6.0f), 1.0f), matWhiteDiffuse),
       SceneNode(new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f), matWhiteDiffuse),
 
-      SceneNode(AABB(Vec3d(-4, 7.5, 4), Vec3d(3, 0.125, 22)),
-        new LightMaterial(Color(0.9f, 0.1f, 0.1f) * 2)),
-      SceneNode(AABB(Vec3d(0, 7.5, 4), Vec3d(3, 0.125, 22)),
-        new LightMaterial(Color(0.1f, 0.9f, 0.1f) * 2)),
-      SceneNode(AABB(Vec3d(4, 7.5, 4), Vec3d(3, 0.125, 22)),
-        new LightMaterial(Color(0.1f, 0.1f, 0.9f) * 2)),
+      SceneNode(
+        AABB(Vec3d(-4, 7.5, 4), Vec3d(3, 0.125, 22)),
+        LightMaterial(Color(0.9f, 0.1f, 0.1f) * 2)),
+      SceneNode(
+        AABB(Vec3d(0, 7.5, 4), Vec3d(3, 0.125, 22)),
+        LightMaterial(Color(0.1f, 0.9f, 0.1f) * 2)),
+      SceneNode(
+        AABB(Vec3d(4, 7.5, 4), Vec3d(3, 0.125, 22)),
+        LightMaterial(Color(0.1f, 0.1f, 0.9f) * 2)),
 
       BoundlessNode(new Plane(Vec3d.Left, 8), matWhiteDiffuse),
       BoundlessNode(new Plane(Vec3d.Right, 8), matWhiteDiffuse),

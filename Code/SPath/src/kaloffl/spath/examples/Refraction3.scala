@@ -20,7 +20,7 @@ object Refraction3 {
     val glassColor = Color(0.2f, 0.4f, 0.5f)
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matWhiteLight = new LightMaterial(Color.White * 2)
+    val matWhiteLight = LightMaterial(Color.White * 2)
 
     val environment = Array(
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),

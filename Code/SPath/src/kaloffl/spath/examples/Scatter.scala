@@ -7,9 +7,7 @@ import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.GridMask
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
@@ -34,15 +32,12 @@ object Scatter {
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = new LightMaterial(Color.White * 2)
-
-    val mask = new GridMask(2, 0.04, Vec3d(0.5, 0.5, 0.5))
-    val matBlackWhiteCheckered = new MaskedMaterial(matWhiteDiffuse, matBlueDiffuse, mask)
+    val matWhiteLight = LightMaterial(Color.White * 2)
 
     val environment = Array(
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),
 
-      SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(32, 1, 32)), matBlackWhiteCheckered),
+      SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(32, 1, 32)), matWhiteDiffuse),
       SceneNode(AABB(Vec3d(16.5f, 8, 0), Vec3d(1, 16, 32)), matRedDiffuse),
       SceneNode(AABB(Vec3d(-16.5f, 8, 0), Vec3d(1, 16, 32)), matGreenDiffuse),
       SceneNode(AABB(Vec3d(0, 8, -16.5f), Vec3d(32, 16, 1)), matWhiteDiffuse),

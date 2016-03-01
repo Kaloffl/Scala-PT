@@ -6,5 +6,4 @@ import kaloffl.spath.scene.materials.Scattering
 
 class SurfaceInfo(
   val reflectance: Color,
-  val emittance: Color,
   val scattering: Scattering)

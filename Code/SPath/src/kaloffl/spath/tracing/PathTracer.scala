@@ -60,31 +60,36 @@ object PathTracer extends Tracer {
             if (java.lang.Double.isInfinite(dist)) {
               Color.White
             } else {
-              (media(mediaIndex).getAbsorbtion(point, random) * -dist.toFloat).exp
+              (media(mediaIndex).absorbtion * -dist.toFloat).exp
             }
           return color * emitted * absorbed
         }
 
         val point = ray.atDistance(scatterDist)
-        val absorbed = (media(mediaIndex).getAbsorbtion(point, random) * -scatterDist.toFloat).exp
+        val absorbed = (media(mediaIndex).absorbtion * -scatterDist.toFloat).exp
         ray = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
         color *= absorbed
       } else {
         val depth = intersection.depth
-        val point = ray.atDistance(depth)
-        val surfaceNormal = intersection.normal()
-        val info = intersection.material.getInfo(
-          incomingNormal = ray.normal,
-          worldPos = point,
-          surfaceNormal = surfaceNormal,
-          textureCoordinate = intersection.textureCoordinate(),
-          airRefractiveIndex = media(mediaIndex).refractiveIndex,
-          random = random)
-        val absorbed = (media(mediaIndex).getAbsorbtion(point, random) * -depth.toFloat).exp
 
-        if (info.emittance != Color.Black) {
-          return color * info.emittance * absorbed
+        val absorbed = if(media(mediaIndex).absorbtion != Color.Black) {
+        	  (media(mediaIndex).absorbtion * -depth.toFloat).exp
+        } else {
+          Color.White
         }
+
+        if (intersection.material.emittance != Color.Black) {
+          return color * intersection.material.emittance * absorbed
+        }
+
+        val point = ray.atDistance(depth)
+    		val surfaceNormal = intersection.normal()
+    		val info = intersection.material.getInfo(
+    				incomingNormal = ray.normal,
+    				surfaceNormal = surfaceNormal,
+    				textureCoordinate = intersection.textureCoordinate(),
+    				airRefractiveIndex = media(mediaIndex).refractiveIndex,
+    				random = random)
 
         val scattering = info.scattering
         val rnd = random.getAsDouble

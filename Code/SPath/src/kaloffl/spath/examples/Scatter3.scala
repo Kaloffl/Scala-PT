@@ -25,7 +25,7 @@ object Scatter3 {
     val matAir = new TransparentMaterial(
       color = Color(0.02f, 0.01f, 0.005f),
       scatterProbability = 0.005)
-    val matLight = new LightMaterial(Color.White * 8)
+    val matLight = LightMaterial(Color.White * 8)
 
     val hazeObjects = Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matWhiteGlass8),

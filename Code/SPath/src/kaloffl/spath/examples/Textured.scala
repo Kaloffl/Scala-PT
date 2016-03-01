@@ -50,7 +50,7 @@ object Textured {
     val matAir5 = new TransparentMaterial(
       color = atmosphereColor * 25e-8f,
       scatterProbability = 25e-10)
-    val matLight = new LightMaterial(Color.White * 640000)
+    val matLight = LightMaterial(Color.White * 640000)
 
     val matWhite = DiffuseMaterial(Color(0.93f, 0.93f, 0.93f))
     val matGreen = DiffuseMaterial(Color(0.1f, 0.7f, 0.2f))

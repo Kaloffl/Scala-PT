@@ -30,7 +30,7 @@ object Simple {
     val matGlass = new TransparentMaterial(
       color = Color(0.09f, 0.09f, 0.09f),
       refractiveIndex = 2.0f)
-    val matLight = new LightMaterial(Color.White * 8f)
+    val matLight = LightMaterial(Color.White * 8f)
 
     val light1 = new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f)
     val light2 = new Sphere(Vec3d(-1.0f, 3.0f, -5.9f), 1f)

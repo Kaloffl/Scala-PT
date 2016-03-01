@@ -6,10 +6,8 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.materials.CheckeredMask
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.MaskedMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.shapes.AABB
@@ -26,16 +24,13 @@ object Haze {
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val checkeredMask = new CheckeredMask(2)
-    val matBlackWhiteCheckered = new MaskedMaterial(matBlackDiffuse, matWhiteDiffuse, checkeredMask)
-
     val matWhiteGlass8 = RefractiveMaterial(
       color = Color.White,
       refractiveIndex = 1.8f)
     val matAir = new TransparentMaterial(
       color = Color(0.08f, 0.09f, 0.095f),
       scatterProbability = 0.001)
-    val matLight = new LightMaterial(Color(1, 0.9f, 0.8f) * 2)
+    val matLight = LightMaterial(Color(1, 0.9f, 0.8f) * 2)
 
     val hazeObjects = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matWhiteGlass8),
@@ -46,7 +41,7 @@ object Haze {
 
       SceneNode(new Sphere(Vec3d(0, 4, 0), 1), matLight),
 
-      SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(24, 1, 24)), matBlackWhiteCheckered)))
+      SceneNode(AABB(Vec3d(0, -0.5, 0), Vec3d(24, 1, 24)), matWhiteDiffuse)))
 
     val front = Vec3d(0, -2.5, -13).normalize
     val up = front.cross(Vec3d.Right).normalize

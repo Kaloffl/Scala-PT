@@ -22,7 +22,7 @@ object CornellBox {
     val cmatWhite = DiffuseMaterial(new Color(0.737f, 0.728f, 0.767f))
     val cmatRed = DiffuseMaterial(new Color(0.642f, 0.063f, 0.061f))
     val cmatGreen = DiffuseMaterial(new Color(0.159f, 0.373f, 0.101f))
-    val cmatLight = new LightMaterial(new Color(34.0f, 23.6f, 8.0f))
+    val cmatLight = LightMaterial(new Color(34.0f, 23.6f, 8.0f))
 
     val roomWidth = 552.5
     val roomHeight = 548.8
@@ -98,7 +98,7 @@ object CornellBox {
 
     RenderEngine.render(
       bounces = 8,
-      target = new JfxDisplay(512, 720),
+      target = new JfxDisplay(512, 512),
       tracer = RecursivePathTracer,
       scene = new Scene(
         root = cornellBox,
@@ -106,6 +106,7 @@ object CornellBox {
         camera = new PinholeCamera(
           position = Vec3d(278, 273, -800),
           forward = Vec3d.Front,
-          up = Vec3d.Up)))
+          up = Vec3d.Up,
+          sensorDistance = 0.014f)))
   }
 }
