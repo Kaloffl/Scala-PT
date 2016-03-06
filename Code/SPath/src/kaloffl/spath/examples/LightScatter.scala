@@ -15,6 +15,8 @@ import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.scene.Viewpoint
+import kaloffl.spath.scene.Viewpoint
 
 object LightScatter {
 
@@ -27,7 +29,7 @@ object LightScatter {
     val matLight = LightMaterial(Color(1, 0.9f, 0.8f) * 8)
 
     val lightSphere = new Sphere(Vec3d(0, 0, 0), 1)
-    
+
     val hazeObjects = SceneNode(Array(
       SceneNode(lightSphere, matLight),
       SceneNode(AABB(Vec3d(1.05, 0, 0), Vec3d(0.1, 1.5, 1.5)), matBlackDiffuse),
@@ -41,13 +43,14 @@ object LightScatter {
       bounces = 4,
       target = new BloomFilter(new JfxDisplay(1280, 720), 10, 1.5f),
       tracer = RecursivePathTracer,
+      view = new Viewpoint(
+        position = Vec3d(0, 0, 13),
+        forward = Vec3d.Back,
+        up = Vec3d.Up),
       scene = new Scene(
         root = hazeObjects,
         initialMediaStack = Array(matAir),
         lightHints = Array(GlobalHint(lightSphere)),
-        camera = new PinholeCamera(
-          position = Vec3d(0, 0, 13),
-          forward = Vec3d.Back,
-          up = Vec3d.Up)))
+        camera = new PinholeCamera))
   }
 }

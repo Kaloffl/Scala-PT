@@ -11,15 +11,13 @@ import kaloffl.spath.scene.materials.Material
 
 object RecursivePathTracer extends Tracer {
 
-  override def trace(scene: Scene,
-                     x: Float,
-                     y: Float,
+  override def trace(ray: Ray,
+                     scene: Scene,
                      maxBounces: Int,
                      random: DoubleSupplier): Color = {
-    val startRay = scene.camera.createRay(random, x, y)
     val mediaStack = scene.initialMediaStack
     val mediaHead = mediaStack.length - 1
-    return trace(startRay, scene, mediaStack, mediaHead, maxBounces, random)
+    return trace(ray, scene, mediaStack, mediaHead, maxBounces, random)
   }
 
   def trace(ray: Ray, scene: Scene, media: Array[Material], mediaHead: Int, i: Int, random: DoubleSupplier): Color = {

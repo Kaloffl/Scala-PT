@@ -7,6 +7,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.ReflectiveMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
@@ -62,13 +63,14 @@ object Dragon {
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = camPos,
+        forward = dragonForward.normalize,
+        up = dragonTop),
       scene = new Scene(
         initialMediaStack = Array(matAir),
         skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
         root = objects,
-        camera = new PinholeCamera(
-          position = camPos,
-          forward = dragonForward.normalize,
-          up = dragonTop)))
+        camera = new PinholeCamera))
   }
 }

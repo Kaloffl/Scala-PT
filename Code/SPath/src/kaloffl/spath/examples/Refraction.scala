@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.RefractiveMaterial
@@ -74,11 +75,12 @@ object Refraction {
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = Vec3d(0, 5, 13),
+        forward = front.normalize,
+        up = up),
       scene = new Scene(
         root = glassTest,
-        camera = new PinholeCamera(
-          position = Vec3d(0, 5, 13),
-          forward = front.normalize,
-          up = up)))
+        camera = new PinholeCamera))
   }
 }

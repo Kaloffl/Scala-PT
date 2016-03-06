@@ -3,8 +3,8 @@ package kaloffl.spath.tracing
 import java.util.function.DoubleSupplier
 
 import kaloffl.spath.RenderTarget
-import kaloffl.spath.math.Color
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -33,7 +33,7 @@ class TracingWorker(
   /**
    * Renders a pass and adds the color to the samples array
    */
-  def render(maxBounces: Int, pass: Int): Unit = {
+  def render(view: Viewpoint, maxBounces: Int, pass: Int): Unit = {
 
     val dWidth = target.width
     val dHeight = target.height
@@ -44,10 +44,14 @@ class TracingWorker(
     for (index ← 0 until maxIndex) {
       val x = index % width
       val y = index / width
+      val ray = scene.camera.createRay(
+          view, 
+          random, 
+          (2 * (x + displayOffsetX) - dWidth) / dWidth, 
+          (dHeight - 2 * (y + displayOffsetY)) / dWidth)
       val color = tracer.trace(
+        ray = ray,
         scene = scene,
-        x = (2 * (x + displayOffsetX) - dWidth) / dWidth,
-        y = (dHeight - 2 * (y + displayOffsetY)) / dWidth,
         maxBounces = maxBounces,
         random = random)
 

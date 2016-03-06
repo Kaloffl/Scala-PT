@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
@@ -20,10 +21,10 @@ object Scatter {
     val refraction = 2
     val matGlass = Array.tabulate(10) { i =>
       new TransparentMaterial(
-          color = glassColor,
-          absorbtionDepth = 2f / (1 << i), 
-          scatterProbability = 1, 
-          refractiveIndex = refraction)
+        color = glassColor,
+        absorbtionDepth = 2f / (1 << i),
+        scatterProbability = 1,
+        refractiveIndex = refraction)
     }
 
     val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.6f, 0.6f))
@@ -59,11 +60,12 @@ object Scatter {
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = Vec3d(0, 14, -14),
+        forward = front.normalize,
+        up = up),
       scene = new Scene(
         root = SceneNode(environment ++ objects),
-        camera = new PinholeCamera(
-          position = Vec3d(0, 14, -14),
-          forward = front.normalize,
-          up = up)))
+        camera = new PinholeCamera))
   }
 }

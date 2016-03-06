@@ -8,6 +8,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
@@ -54,12 +55,13 @@ object VisualBvh {
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = Vec3d(0.5, 2.5, 0.4),
+        forward = bunnyForward.normalize,
+        up = bunnyTop),
       scene = new Scene(
         root = SceneNode(Array(boxes, light)),
         initialMediaStack = Array(matAir),
-        camera = new PinholeCamera(
-          position = Vec3d(0.5, 2.5, 0.4),
-          forward = bunnyForward.normalize,
-          up = bunnyTop)))
+        camera = new PinholeCamera))
   }
 }

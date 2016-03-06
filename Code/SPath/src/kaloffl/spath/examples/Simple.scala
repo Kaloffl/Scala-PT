@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -34,7 +35,7 @@ object Simple {
 
     val light1 = new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f)
     val light2 = new Sphere(Vec3d(-1.0f, 3.0f, -5.9f), 1f)
-    
+
     val coloredSpheres = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 1.5f, -1.5f), 1.5f), matMirror),
       SceneNode(new Sphere(Vec3d(-1.0f, 1.5f, 0.0f), 1.5f), matGlass),
@@ -58,12 +59,13 @@ object Simple {
       bounces = 5,
       target = new JfxDisplay(1280, 720),
       tracer = RecursivePathTracer,
+      view = new Viewpoint(
+        position = position,
+        forward = forward,
+        up = up),
       scene = new Scene(
         root = coloredSpheres,
         lightHints = Array(new GlobalHint(light1), new GlobalHint(light2)),
-        camera = new PinholeCamera(
-          position = position,
-          forward = forward,
-          up = up)))
+        camera = new PinholeCamera))
   }
 }

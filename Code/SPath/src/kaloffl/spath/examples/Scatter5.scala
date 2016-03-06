@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -72,13 +73,14 @@ object Scatter5 {
       bounces = 8,
       target = new JfxDisplay(700, 700),
       tracer = RecursivePathTracer,
+      view = new Viewpoint(
+        position = Vec3d(0, 60, 60),
+        forward = front,
+        up = up),
       scene = new Scene(
         root = glassTest,
         lightHints = Array(GlobalHint(lightShape)),
         skyMaterial = new UniformSky(Color(0.9f, 0.95f, 0.975f) * 0.5f),
-        camera = new PinholeCamera(
-          position = Vec3d(0, 60, 60),
-          forward = front,
-          up = up)))
+        camera = new PinholeCamera))
   }
 }

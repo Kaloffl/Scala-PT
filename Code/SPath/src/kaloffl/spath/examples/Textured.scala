@@ -10,6 +10,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.hints.LocalHint
 import kaloffl.spath.scene.materials.BlackSky
@@ -77,7 +78,7 @@ object Textured {
 
     val sunSphere = new Sphere(Vec3d(1, 0, 1).normalize * earthSunDistance, sunRadius)
     val moonSphere = new Sphere(Vec3d(1, 0, -1).normalize * earthMoonDistance, moonRadius)
-    
+
     val earthArea = new Sphere(Vec3d.Origin, earthRadius + 2e5f)
     val moonArea = new Sphere(moonSphere.position, moonRadius + 10)
 
@@ -96,22 +97,23 @@ object Textured {
       SceneNode(sunSphere, matLight)))
 
     val display = new JfxDisplay(1280, 720)
-//    val position = Vec3d(0.5, 0, 1).normalize * (earthRadius * 2)
+    //    val position = Vec3d(0.5, 0, 1).normalize * (earthRadius * 2)
     val position = Vec3d(0, 1, 0).normalize * (earthRadius * 1.8) + Vec3d(1, 0, 1) * (earthRadius * 0.2)
     RenderEngine.render(
       bounces = 20,
       target = new BloomFilter(display, 10, 0.5f),
       tracer = RecursivePathTracer,
+      view = new Viewpoint(
+        position = position,
+        forward = Vec3d.Down,
+        up = Vec3d(1, 0, 1).normalize),
       scene = new Scene(
         root = world,
         initialMediaStack = Array(matVoid),
         lightHints = Array(
-            GlobalHint(sunSphere),
-            LocalHint(earthArea, moonSphere)),
+          GlobalHint(sunSphere),
+          LocalHint(earthArea, moonSphere)),
         skyMaterial = BlackSky,
-        camera = new PinholeCamera(
-          position = position,
-          forward = Vec3d.Down,
-          up = Vec3d(1, 0, 1).normalize)))
+        camera = new PinholeCamera))
   }
 }

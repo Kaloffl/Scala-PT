@@ -11,13 +11,12 @@ import java.util.function.DoubleSupplier
 
 object PathTracer extends Tracer {
 
-  override def trace(scene: Scene,
-                     x: Float,
-                     y: Float,
+  override def trace(initialRay: Ray,
+                     scene: Scene,
                      maxBounces: Int,
                      random: DoubleSupplier): Color = {
+    var ray = initialRay
     var color = Color.White
-    var ray = scene.camera.createRay(random, x, y)
     var i = 0
 
     // list of materials in which the rays entered

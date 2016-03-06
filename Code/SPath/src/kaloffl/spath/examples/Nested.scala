@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
 import kaloffl.spath.scene.materials.UniformSky
@@ -36,12 +37,13 @@ object Nested {
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = Vec3d(0, 0, 9),
+        forward = Vec3d.Back,
+        up = Vec3d.Up),
       scene = new Scene(
         root = SceneNode(Array(boxRed, boxGreen, boxBlue)),
         skyMaterial = new UniformSky(Color.White * 2),
-        camera = new PinholeCamera(
-          position = Vec3d(0, 0, 9),
-          forward = Vec3d.Back,
-          up = Vec3d.Up)))
+        camera = new PinholeCamera))
   }
 }

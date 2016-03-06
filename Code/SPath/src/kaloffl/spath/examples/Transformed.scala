@@ -9,6 +9,7 @@ import kaloffl.spath.math.Transformation
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.shapes.Sphere
@@ -47,11 +48,12 @@ object Transformed {
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = position,
+        forward = forward,
+        up = up),
       scene = new Scene(
         root = transformed,
-        camera = new PinholeCamera(
-          position = position,
-          forward = forward,
-          up = up)))
+        camera = new PinholeCamera))
   }
 }

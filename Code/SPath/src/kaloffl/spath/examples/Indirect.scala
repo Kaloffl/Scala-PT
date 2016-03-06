@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.ReflectiveMaterial
@@ -55,11 +56,12 @@ object Indirect {
       bounces = 16,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = position,
+        forward = forward,
+        up = up),
       scene = new Scene(
         root = coloredSpheres,
-        camera = new PinholeCamera(
-          position = position,
-          forward = forward,
-          up = up)))
+        camera = new PinholeCamera))
   }
 }

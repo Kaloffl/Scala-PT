@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.LensCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
@@ -67,12 +68,13 @@ object Refraction2 {
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = Vec3d(0, 5, 13),
+        forward = front.normalize,
+        up = up),
       scene = new Scene(
         root = glassTest,
         camera = new LensCamera(
-          position = Vec3d(0, 5, 13),
-          forward = front.normalize,
-          up = up,
           lensRadius = 0.1f,
           focussedDepth = front.length.toFloat)))
   }

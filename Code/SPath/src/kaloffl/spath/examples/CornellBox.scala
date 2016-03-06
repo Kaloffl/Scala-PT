@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
@@ -100,13 +101,13 @@ object CornellBox {
       bounces = 8,
       target = new JfxDisplay(512, 512),
       tracer = RecursivePathTracer,
+      view = new Viewpoint(
+        position = Vec3d(278, 273, -800),
+        forward = Vec3d.Front,
+        up = Vec3d.Up),
       scene = new Scene(
         root = cornellBox,
         lightHints = Array(GlobalHint(lightHint)),
-        camera = new PinholeCamera(
-          position = Vec3d(278, 273, -800),
-          forward = Vec3d.Front,
-          up = Vec3d.Up,
-          sensorDistance = 0.014f)))
+        camera = new PinholeCamera(sensorDistance = 0.014f)))
   }
 }

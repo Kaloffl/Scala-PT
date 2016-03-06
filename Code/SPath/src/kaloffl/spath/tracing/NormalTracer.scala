@@ -11,12 +11,10 @@ import java.util.function.DoubleSupplier
 
 object NormalTracer extends Tracer {
 
-  override def trace(scene: Scene,
-                     x: Float,
-                     y: Float,
+  override def trace(ray: Ray,
+                     scene: Scene,
                      maxBounces: Int,
                      random: DoubleSupplier): Color = {
-    var ray = scene.camera.createRay(random, x, y)
 
     val intersection = scene.getIntersection(ray, Double.PositiveInfinity)
     if (!intersection.hitObject) {

@@ -6,6 +6,7 @@ import kaloffl.spath.math.Color
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.LightMaterial
 import kaloffl.spath.scene.materials.TransparentMaterial
@@ -40,12 +41,13 @@ object Scatter4 {
       bounces = 128,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = Vec3d(0, 3, 9),
+        forward = front,
+        up = Vec3d.Up),
       scene = new Scene(
         root = glassTest,
         skyMaterial = new UniformSky(Color.White),
-        camera = new PinholeCamera(
-          position = Vec3d(0, 3, 9),
-          forward = front,
-          up = Vec3d.Up)))
+        camera = new PinholeCamera))
   }
 }

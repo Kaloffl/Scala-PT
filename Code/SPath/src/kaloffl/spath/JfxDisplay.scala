@@ -15,6 +15,9 @@ import javafx.stage.Stage
 import javafx.stage.WindowEvent
 import kaloffl.spath.math.Color
 import java.util.concurrent.locks.LockSupport
+import java.util.LinkedList
+import kaloffl.spath.InputEvent.Key
+import java.util.HashMap
 
 class JfxDisplay(
     override val width: Int,
@@ -33,6 +36,45 @@ class JfxDisplay(
         ActualDisplay.instance.backBuffer = temp
       }
     })
+  }
+  
+  val jfxKeyMap = {
+    val map = new HashMap[KeyCode, Key]
+    map.put(KeyCode.A, InputEvent.Key_A)
+    map.put(KeyCode.B, InputEvent.Key_B)
+    map.put(KeyCode.C, InputEvent.Key_C)
+    map.put(KeyCode.D, InputEvent.Key_D)
+    map.put(KeyCode.E, InputEvent.Key_E)
+    map.put(KeyCode.F, InputEvent.Key_F)
+    map.put(KeyCode.G, InputEvent.Key_G)
+    map.put(KeyCode.H, InputEvent.Key_H)
+    map.put(KeyCode.I, InputEvent.Key_I)
+    map.put(KeyCode.J, InputEvent.Key_J)
+    map.put(KeyCode.K, InputEvent.Key_K)
+    map.put(KeyCode.L, InputEvent.Key_L)
+    map.put(KeyCode.M, InputEvent.Key_M)
+    map.put(KeyCode.N, InputEvent.Key_N)
+    map.put(KeyCode.O, InputEvent.Key_O)
+    map.put(KeyCode.P, InputEvent.Key_P)
+    map.put(KeyCode.Q, InputEvent.Key_Q)
+    map.put(KeyCode.R, InputEvent.Key_R)
+    map.put(KeyCode.S, InputEvent.Key_S)
+    map.put(KeyCode.T, InputEvent.Key_T)
+    map.put(KeyCode.U, InputEvent.Key_U)
+    map.put(KeyCode.V, InputEvent.Key_V)
+    map.put(KeyCode.W, InputEvent.Key_W)
+    map.put(KeyCode.X, InputEvent.Key_X)
+    map.put(KeyCode.Y, InputEvent.Key_Y)
+    map.put(KeyCode.Z, InputEvent.Key_Z)
+    // TODO map more keys
+    map
+  }
+  val events = new Iterator[InputEvent] {
+    override def hasNext: Boolean = !ActualDisplay.instance.events.isEmpty
+    override def next: InputEvent = {
+      val jfxEvent = ActualDisplay.instance.events.poll.asInstanceOf[KeyEvent]
+      return new InputEvent(jfxKeyMap.get(jfxEvent.getCode), jfxEvent.getEventType == KeyEvent.KEY_PRESSED)
+    }
   }
 
   ActualDisplay.width = width
@@ -60,26 +102,14 @@ class ActualDisplay extends Application {
   var image = new WritableImage(ActualDisplay.width, ActualDisplay.height)
   var backBuffer = new WritableImage(ActualDisplay.width, ActualDisplay.height)
   val view = new ImageView
+  val events = new LinkedList[javafx.scene.input.InputEvent]
 
   override def start(stage: Stage): Unit = {
     val content = new BorderPane
     content.setCenter(view)
     val scene = new Scene(content, ActualDisplay.width, ActualDisplay.height)
     scene.setOnKeyPressed(new EventHandler[KeyEvent] {
-      override def handle(ev: KeyEvent): Unit = {
-        if (ev.isControlDown && ev.getCode == KeyCode.C) {
-          val content = new ClipboardContent
-          content.putImage(image)
-          Clipboard.getSystemClipboard.setContent(content)
-        }
-        if (ev.getCode == KeyCode.P) {
-          if (RenderEngine.isPaused) {
-        	  RenderEngine.unpause
-          } else {
-            RenderEngine.pause
-          }
-        }
-      }
+      override def handle(ev: KeyEvent): Unit = events.add(ev)
     })
     stage.setScene(scene)
     stage.setResizable(false)

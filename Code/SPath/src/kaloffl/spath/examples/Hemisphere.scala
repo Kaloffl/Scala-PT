@@ -10,6 +10,7 @@ import kaloffl.spath.math.Vec2d
 import kaloffl.spath.math.Vec3d
 import kaloffl.spath.scene.PinholeCamera
 import kaloffl.spath.scene.Scene
+import kaloffl.spath.scene.Viewpoint
 import kaloffl.spath.scene.materials.DiffuseMaterial
 import kaloffl.spath.scene.materials.DirectionalSky
 import kaloffl.spath.scene.shapes.Sphere
@@ -51,12 +52,13 @@ object Hemisphere {
       bounces = 12,
       target = new JfxDisplay(1280, 720),
       tracer = PathTracer,
+      view = new Viewpoint(
+        position = Vec3d(0, 0, -2.2),
+        forward = Vec3d(0, 0, 1).normalize,
+        up = Vec3d.Left),
       scene = new Scene(
         root = hemisphere,
         skyMaterial = matSky,
-        camera = new PinholeCamera(
-          position = Vec3d(0, 0, -2.2),
-          forward = Vec3d(0, 0, 1).normalize,
-          up = Vec3d.Left)))
+        camera = new PinholeCamera))
   }
 }

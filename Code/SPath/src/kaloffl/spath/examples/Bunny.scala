@@ -15,6 +15,10 @@ import kaloffl.spath.scene.materials.UniformSky
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.scene.Viewpoint
+import kaloffl.spath.RtApplication
+import kaloffl.spath.scene.PinholeCamera
+import kaloffl.spath.tracing.PathTracer
 
 object Bunny {
 
@@ -31,9 +35,9 @@ object Bunny {
     val bunny = SceneNode(
       PlyImporter.load(
         file = "C:/dev/bunny_flipped.ply",
-        scale = Vec3d(2),
+        scale = Vec3d(3),
         offset = Vec3d(0, -0.1319496 / 2, 0)),
-      matGlass)
+      matBunny)
 
     val floor = SceneNode(AABB(Vec3d(0, mm(-1), 0), Vec3d(cm(5), mm(2), cm(5))), matFloor)
 
@@ -43,18 +47,23 @@ object Bunny {
     val forward = distance.normalize
     val up = Vec3d(0, -forward.z, forward.y).normalize
 
-    RenderEngine.render(
+    val window = new JfxDisplay(1280, 720)
+    
+    RtApplication.run(
       bounces = 12,
-      target = new JfxDisplay(1280, 720),
-      tracer = RecursivePathTracer,
+      target = window,
+      events = window.events,
+      tracer = PathTracer,
+      initialView = new Viewpoint(
+        position = camPosition,
+        forward = forward,
+        up = up),
       scene = new Scene(
         root = SceneNode(Array(floor, bunny)),
         skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
-        camera = new LensCamera(
-          position = camPosition,
-          forward = forward,
-          up = up,
-          lensRadius = mm(3),
-          focussedDepth = distance.length.toFloat)))
+        camera = new PinholeCamera))
+//        camera = new LensCamera(
+//          lensRadius = mm(3),
+//          focussedDepth = distance.length.toFloat)))
   }
 }
