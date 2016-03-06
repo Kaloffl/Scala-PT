@@ -1,7 +1,6 @@
 pathtracer TODOs
 
 - camera
-	- interactive camera
 	- camera shutter shape
 	- camera movement for motion blur
 	- exposure time
@@ -95,6 +94,7 @@ pathtracer TODOs
 				- Mandelbulb
 	- UI
 		- live preview window of render progress
+		- movable and turnable camera
 		- copy shortcut to get the currently rendered image
 	- materials
 		- fully diffuse material

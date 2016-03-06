@@ -18,6 +18,7 @@ import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.RtApplication
 import kaloffl.spath.scene.materials.RefractiveMaterial
+import kaloffl.spath.tracing.PathTracer
 
 object Colorful {
 
@@ -50,12 +51,12 @@ object Colorful {
       BoundlessNode(new Plane(Vec3d.Back, 16), matWhiteDiffuse)))
 
     val window = new JfxDisplay(1280, 720)
-      
+
     RtApplication.run(
       bounces = 4,
       events = window.events,
       target = window,
-      tracer = RecursivePathTracer,
+      tracer = PathTracer,
       initialView = new Viewpoint(
         position = Vec3d(0, 2.5, 13),
         forward = Vec3d.Back,

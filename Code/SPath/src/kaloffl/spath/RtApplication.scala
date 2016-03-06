@@ -44,20 +44,35 @@ object RtApplication {
         val event = events.next
         if (event.pressed) {
           view = event.key match {
-            case InputEvent.Key_W => new Viewpoint(view.position + view.forward * 0.1, view.forward, view.up)
-            case InputEvent.Key_A => new Viewpoint(view.position + view.right * -0.1, view.forward, view.up)
-            case InputEvent.Key_S => new Viewpoint(view.position + view.forward * -0.1, view.forward, view.up)
-            case InputEvent.Key_D => new Viewpoint(view.position + view.right * 0.1, view.forward, view.up)
+            case InputEvent.Key_W => {
+              reset = true
+              new Viewpoint(view.position + view.forward * 0.1, view.forward, view.up)
+            }
+            case InputEvent.Key_A => {
+              reset = true
+              new Viewpoint(view.position + view.right * -0.1, view.forward, view.up)
+            }
+            case InputEvent.Key_S => {
+              reset = true
+              new Viewpoint(view.position + view.forward * -0.1, view.forward, view.up)
+            }
+            case InputEvent.Key_D => {
+              reset = true
+              new Viewpoint(view.position + view.right * 0.1, view.forward, view.up)
+            }
 
             case InputEvent.Key_Q => {
+              reset = true
               val quat = Quaternion(view.up, Math.PI / 8)
               new Viewpoint(view.position, (quat * view.forward * ~quat).toVec3, view.up)
             }
             case InputEvent.Key_E => {
+              reset = true
               val quat = Quaternion(view.up, 15 * Math.PI / 8)
               new Viewpoint(view.position, (quat * view.forward * ~quat).toVec3, view.up)
             }
             case InputEvent.Key_R => {
+              reset = true
               val quat = Quaternion(view.right, Math.PI / 8)
               val iquat = ~quat
               val forward = (quat * view.forward * iquat).toVec3
@@ -65,6 +80,7 @@ object RtApplication {
               new Viewpoint(view.position, forward, up)
             }
             case InputEvent.Key_F => {
+              reset = true
               val quat = Quaternion(view.right, 15 * Math.PI / 8)
               val iquat = ~quat
               val forward = (quat * view.forward * iquat).toVec3
@@ -74,7 +90,6 @@ object RtApplication {
 
             case _ => view
           }
-          reset = true
         }
       }
       if (reset || target != actualTarget) {

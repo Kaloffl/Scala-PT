@@ -3,7 +3,7 @@ package kaloffl.spath
 case class InputEvent(key: InputEvent.Key, pressed: Boolean)
 
 object InputEvent {
-  case class Key(val id: Int) extends AnyVal
+  case class Key(val id: Int)
 
   val Key_A = Key(0)
   val Key_B = Key(1)

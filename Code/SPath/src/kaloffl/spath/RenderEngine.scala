@@ -33,24 +33,7 @@ object RenderEngine {
   println("worker threads: " + numberOfWorkers)
 
   private var thread: Thread = null
-  private var paused = false
-  private var stopped = false
 
-  def isPaused = paused
-  
-  def pause: Unit = {
-    paused = true
-  }
-  
-  def unpause: Unit = {
-    paused = false
-    LockSupport.unpark(thread)
-  }
-  
-  def stop: Unit = {
-    stopped = true
-  }
-  
   /**
    * Renders the scene with the given number of passes onto the display. In each
    * pass, Rays are shot through each pixel of the image and tested for
@@ -65,7 +48,7 @@ object RenderEngine {
    */
   def render(target: RenderTarget, tracer: Tracer, scene: Scene, view: Viewpoint, bounces: Int = 8) {
     thread = Thread.currentThread
-    
+
     val tracingWorkers = new Array[TracingWorker](numberOfWorkers)
     val width = target.width / cols
     val height = target.height / rows
@@ -86,23 +69,20 @@ object RenderEngine {
     val pool = new JobPool
     val order = Array.tabulate(numberOfWorkers)(identity)
     val costs = new Array[Long](numberOfWorkers)
-    while (!stopped) {
-      while (paused) {
-        LockSupport.park
-      }
+    while (true) {
       println("Starting pass #" + pass)
 
       val before = System.nanoTime
       for (i ← 0 until numberOfWorkers) {
         val worker = tracingWorkers(order(i))
-          pool.submit(new Job {
-            override def execute = {
-              val start = System.nanoTime
-              worker.render(view, bounces, pass)
-              worker.draw
-              costs(order(i)) += System.nanoTime - start
-            }
-          })
+        pool.submit(new Job {
+          override def execute = {
+            val start = System.nanoTime
+            worker.render(view, bounces, pass)
+            worker.draw
+            costs(order(i)) += System.nanoTime - start
+          }
+        })
       }
       pool.execute
 
