@@ -49,15 +49,15 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape with Bounded with Close
   }
 
   override def getNormal(point: Vec3d): Vec3d = {
-    if(point.x < min.x) {
+    if(point.x <= min.x + 0.0001) {
       Vec3d.Right
-    } else if(point.x <= max.x) {
-      if(point.y < min.y) {
+    } else if(point.x <= max.x - 0.0001) {
+      if(point.y < min.y + 0.0001) {
         Vec3d.Down
-      } else if(point.y <= max.y) {
-        if(point.z < min.z) {
+      } else if(point.y <= max.y - 0.0001) {
+        if(point.z < min.z + 0.0001) {
           Vec3d.Back
-        } else if(point.z <= max.z) {
+        } else if(point.z <= max.z - 0.0001) {
           // this case should not happen but unfortunately it does sometimes 
           // due to imprecise calculations. Just returning something and 
           // acting like everything is fine should be ok, because it happens 
