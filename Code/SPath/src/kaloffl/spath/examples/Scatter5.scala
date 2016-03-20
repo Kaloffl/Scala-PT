@@ -33,19 +33,16 @@ object Scatter5 {
       color = Color(0.1f, 0.5f, 0.5f),
       scatterProbability = 0.1,
       refractiveIndex = 1.7f)
-    val matClearGlass = RefractiveMaterial(Color.Black, 1.7f)
-    val matWhiteGlass = new TransparentMaterial(
-      color = Color.Black,
-      refractiveIndex = 1.7f)
+    val matClearGlass = RefractiveMaterial(Color.White, 1.7f)
 
-    val matMirror = ReflectiveMaterial(Color.Black, 0.0001f)
+    val matMirror = ReflectiveMaterial(Color.White, 0.0001f)
 
     val lightShape = new Sphere(Vec3d(0, 80, 0), 20)
 
     val glassTest = BoundlessNode(Array(
       SceneNode(lightShape, matWhiteLight),
       SceneNode(new Sphere(Vec3d(-20, 10, -10), 10), matMirror),
-      SceneNode(new Sphere(Vec3d(-10, 5, 20), 5), matWhiteGlass),
+      SceneNode(new Sphere(Vec3d(-10, 5, 20), 5), matClearGlass),
 
       new ClippingNode(
         SceneNode(Array(
