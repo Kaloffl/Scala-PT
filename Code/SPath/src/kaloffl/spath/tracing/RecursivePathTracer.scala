@@ -112,21 +112,22 @@ object RecursivePathTracer extends Tracer {
             color += trace(newRay, scene, media, mediaHead - 1, i - 1, random) * weight
           } else {
             color += trace(newRay, scene, media, mediaHead, i - 1, random) * weight
-            if (i > 1) {
-              var h = 0
-              val hints = scene.lightHints
-              while (h < hints.length) {
-                val hint = scene.lightHints(h)
+            if (i > 1 && scene.lightHints.length > 0) {
+            	val hints = scene.lightHints
+//              var h = 0
+//              while (h < hints.length) {
+//                val hint = hints(h)
+                val hint = hints((hints.length * random.getAsDouble).toInt)
                 if (hint.applicableFor(point)) {
                   val lightRay = hint.target.createRandomRay(point, random)
                   val contribution = scattering.getContribution(lightRay.normal)
                   if (contribution > 0) {
                     val angle = hint.target.getSolidAngle(point).toFloat
-                    color += trace(lightRay, scene, media, mediaHead, i / 2, random) * angle * contribution
+                    color += trace(lightRay, scene, media, mediaHead, 1, random) * angle * contribution
                   }
                 }
-                h += 1
-              }
+//                h += 1
+//              }
             }
           }
         }

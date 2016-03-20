@@ -1,9 +1,10 @@
 package kaloffl.spath.scene.shapes
 
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
+
+import kaloffl.spath.math.Ray
 import kaloffl.spath.math.Vec2d
+import kaloffl.spath.math.Vec3d
 
 /**
  * AABB stands for Axis Aligned Bounding Box and is a very simple and
@@ -48,17 +49,29 @@ class AABB(val min: Vec3d, val max: Vec3d) extends Shape with Bounded with Close
   }
 
   override def getNormal(point: Vec3d): Vec3d = {
-    val dist1 = (point - max).abs
-    val dist2 = (point - min).abs
-    val minDst = Math.min(dist1.min, dist2.min)
-    if (minDst == dist1.x) return Vec3d.Left
-    if (minDst == dist2.x) return Vec3d.Right
-    if (minDst == dist1.y) return Vec3d.Up
-    if (minDst == dist2.y) return Vec3d.Down
-    if (minDst == dist1.z) return Vec3d.Front
-    if (minDst == dist2.z) return Vec3d.Back
-    throw new RuntimeException(
-      s"Could not determine AABB normal for point: $point. AABB bounds are max: $max, min: $min.")
+    if(point.x < min.x) {
+      Vec3d.Right
+    } else if(point.x <= max.x) {
+      if(point.y < min.y) {
+        Vec3d.Down
+      } else if(point.y <= max.y) {
+        if(point.z < min.z) {
+          Vec3d.Back
+        } else if(point.z <= max.z) {
+          // this case should not happen but unfortunately it does sometimes 
+          // due to imprecise calculations. Just returning something and 
+          // acting like everything is fine should be ok, because it happens 
+          // so rarely
+          Vec3d.Up
+        } else {
+          Vec3d.Front
+        }
+      } else {
+        Vec3d.Up
+      }
+    } else {
+      Vec3d.Left
+    }
   }
 
   override def getTextureCoordinate(point: Vec3d): Vec2d = {

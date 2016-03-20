@@ -12,6 +12,7 @@ pathtracer TODOs
 	- exportable image
 	- pause/unpause of rendering
 	- saving rendering status to continue later
+		- automatic snapshots every X minutes on long render jobs
 	- statistics
 		- rendertime
 		- time per sample
@@ -49,6 +50,7 @@ pathtracer TODOs
 	- Reduce BVH overlap by referencing leafs twice if necessary
 		- https://graphics.cg.uni-saarland.de/fileadmin/cguds/papers/2009/stich_hpg2009/HPG2009_SBVH.pdf
 	- Improve the way the BVH  Builder decides to make leaves by basing it on the cost of the new layer
+	- Interpolate triangle normals for smoother model surfaces
 
 - maybe
 	- spectral tracing
@@ -71,6 +73,12 @@ pathtracer TODOs
 	- improve lighting hint performance by checking hints less often
 	- use a BSP for local lighting hints
 	- use realistic values for brightness
+	- some way to remove the absolute paths to models and textures from the scenes
+	- find all shapes visible to each image chunk and only trace them for primary rays
+	- Do only a direct illumination pass for the first RT sample
+	- AABB Projectable implementation
+	- Triable Projectable implementation
+	
 
 - done
 	- scene
