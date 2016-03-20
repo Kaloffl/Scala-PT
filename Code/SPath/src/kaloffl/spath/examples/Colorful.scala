@@ -19,6 +19,10 @@ import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.RtApplication
 import kaloffl.spath.scene.materials.RefractiveMaterial
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.filter.BloomFilter
+import kaloffl.spath.scene.shapes.Triangle
+import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.tracing.RayTracer
 
 object Colorful {
 
@@ -32,8 +36,15 @@ object Colorful {
     val matPinkDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.9f))
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matLight = LightMaterial(Color.White * 2)
     val matGlass = RefractiveMaterial(Color.White, 2)
+
+//    val matLight = LightMaterial(Color.White * 2)
+//    val light1 = new Triangle(Vec3d(-6, 7.8, -6), Vec3d(-6, 7.8, 14), Vec3d(6, 7.8, 14))
+//    val light2 = new Triangle(Vec3d(-6, 7.8, -6), Vec3d(6, 7.8, -6), Vec3d(6, 7.8, 14))
+
+    val matLight = LightMaterial(Color.White * 10)
+    val light1 = new Sphere(Vec3d(-4, 7.5, 4), 0.5f)
+    val light2 = new Sphere(Vec3d(4, 7.5, -4), 0.5f)
 
     val coloredSpheres = BoundlessNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matYellowDiffuse),
@@ -42,7 +53,9 @@ object Colorful {
       SceneNode(new Sphere(Vec3d(2.5f, 1.0f, 6.0f), 1.0f), matWhiteDiffuse),
       SceneNode(new Sphere(Vec3d(5.0f, 1.0f, 5.0f), 1.0f), matGlass),
 
-      SceneNode(AABB(Vec3d(0, 7.8, 4), Vec3d(12, 0.1, 20)), matLight),
+//      SceneNode(AABB(Vec3d(0, 7.8, 4), Vec3d(12, 0.1, 20)), matLight),
+      SceneNode(light1, matLight),
+      SceneNode(light2, matLight),
       BoundlessNode(new Plane(Vec3d.Up, 0), matWhiteDiffuse),
       BoundlessNode(new Plane(Vec3d.Down, 8), matWhiteDiffuse),
       BoundlessNode(new Plane(Vec3d.Right, 8), matBlueDiffuse),
@@ -56,13 +69,14 @@ object Colorful {
       bounces = 4,
       events = window.events,
       target = window,
-      tracer = PathTracer,
+      tracer = RayTracer,
       initialView = new Viewpoint(
         position = Vec3d(0, 2.5, 13),
         forward = Vec3d.Back,
         up = Vec3d.Up),
       scene = new Scene(
         root = coloredSpheres,
+        lightHints = Array(new GlobalHint(light1), new GlobalHint(light2)),
         camera = new PinholeCamera))
   }
 }
