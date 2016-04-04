@@ -11,6 +11,8 @@ pathtracer TODOs
 	- settable max bounce
 	- exportable image
 	- pause/unpause of rendering
+	- change cpu usage on the fly
+	- add timestamps to console output
 	- saving rendering status to continue later
 		- automatic snapshots every X minutes on long render jobs
 	- statistics
@@ -78,6 +80,7 @@ pathtracer TODOs
 	- Do only a direct illumination pass for the first RT sample
 	- AABB Projectable implementation
 	- Triable Projectable implementation
+	- Fix corners of transparent AABBs
 	
 
 - done

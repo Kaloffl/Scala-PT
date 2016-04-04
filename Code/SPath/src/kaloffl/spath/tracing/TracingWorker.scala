@@ -33,7 +33,7 @@ class TracingWorker(
   /**
    * Renders a pass and adds the color to the samples array
    */
-  def render(view: Viewpoint, maxBounces: Int, pass: Int): Unit = {
+  def render(view: Viewpoint, maxBounces: Int, passes: Int = 1, cpuSaturation: Float = 1): Unit = {
 
     val dWidth = target.width
     val dHeight = target.height
@@ -41,21 +41,35 @@ class TracingWorker(
     val displayOffsetY = top + (random.getAsDouble - 0.5).toFloat
 
     val maxIndex = width * height
+    var wait = 0L
     for (index ← 0 until maxIndex) {
       val x = index % width
       val y = index / width
-      val ray = scene.camera.createRay(
-          view, 
-          random, 
-          (2 * (x + displayOffsetX) - dWidth) / dWidth, 
-          (dHeight - 2 * (y + displayOffsetY)) / dWidth)
-      val color = tracer.trace(
-        ray = ray,
-        scene = scene,
-        maxBounces = maxBounces,
-        random = random)
+      val rx = (2 * (x + displayOffsetX) - dWidth) / dWidth
+      val ry = (dHeight - 2 * (y + displayOffsetY)) / dWidth
+      val ray = scene.camera.createRay(view, random, rx, ry)
+      for (_ <- 0 until passes) {
+        val start = System.nanoTime
+
+        val color = tracer.trace(
+          ray = ray,
+          scene = scene,
+          maxBounces = maxBounces,
+          random = random)
 
         sampleStorage.addSample(x, y, color)
+        
+        if(cpuSaturation < 1) {
+          val stop = System.nanoTime
+          wait += ((stop - start) * (1 / cpuSaturation - 1)).toLong
+          if (wait >= 3000000) {
+            val ms = (wait / 1000000) 
+            wait -= ms * 1000000
+            // to prevent too long sleeps, they are limited to 2s
+            Thread.sleep(ms % 2000)
+          }
+        }
+      }
     }
   }
 
@@ -70,7 +84,7 @@ class TracingWorker(
 
       val color = sampleStorage.getColor(x, y)
 
-      target.setPixel(x+ left, y + top, color)
+      target.setPixel(x + left, y + top, color)
     }
   }
 }

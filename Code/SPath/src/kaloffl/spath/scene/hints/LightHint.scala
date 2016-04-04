@@ -12,6 +12,9 @@ trait LightHint {
 case class GlobalHint(override val target: Projectable) extends LightHint {
   override def applicableFor(point: Vec3d) = true
 }
-case class LocalHint(source: Closed, override val target: Projectable) extends LightHint{
-    override def applicableFor(point: Vec3d) = source.contains(point)
+case class LocalHint(source: Closed, override val target: Projectable) extends LightHint {
+  override def applicableFor(point: Vec3d) = source.contains(point)
+}
+case class ExclusionHint(excluded: Closed, override val target: Projectable) extends LightHint {
+  override def applicableFor(point: Vec3d) = !excluded.contains(point)
 }
