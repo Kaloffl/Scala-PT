@@ -3,8 +3,7 @@ package kaloffl.spath.tracing
 import java.util.function.DoubleSupplier
 
 import kaloffl.spath.RenderTarget
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
+import kaloffl.spath.scene.{Scene, Viewpoint}
 
 /**
  * A worker that renders a chunk of the final image by shooting rays through
@@ -34,7 +33,6 @@ class TracingWorker(
    * Renders a pass and adds the color to the samples array
    */
   def render(view: Viewpoint, maxBounces: Int, passes: Int = 1, cpuSaturation: Float = 1): Unit = {
-
     val dWidth = target.width
     val dHeight = target.height
     val displayOffsetX = left + (random.getAsDouble - 0.5).toFloat
@@ -51,19 +49,19 @@ class TracingWorker(
       for (_ <- 0 until passes) {
         val start = System.nanoTime
 
-        val color = tracer.trace(
+        val (color, paths) = tracer.trace(
           ray = ray,
           scene = scene,
           maxBounces = maxBounces,
           random = random)
 
-        sampleStorage.addSample(x, y, color)
+        sampleStorage.addSample(x, y, color, paths)
         
         if(cpuSaturation < 1) {
           val stop = System.nanoTime
           wait += ((stop - start) * (1 / cpuSaturation - 1)).toLong
           if (wait >= 3000000) {
-            val ms = (wait / 1000000) 
+            val ms = wait / 1000000
             wait -= ms * 1000000
             // to prevent too long sleeps, they are limited to 2s
             Thread.sleep(ms % 2000)
@@ -76,7 +74,7 @@ class TracingWorker(
   /**
    * Draws the current samples to the display
    */
-  def draw: Unit = {
+  def draw(): Unit = {
     val maxIndex = width * height
     for (index ← 0 until maxIndex) {
       val x = index % width

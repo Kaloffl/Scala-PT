@@ -2,43 +2,38 @@ package kaloffl.spath.tracing
 
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Ray
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.{Color, Ray}
 import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.materials.Material
 
 object RayTracer extends Tracer {
 
   override def trace(ray: Ray,
                      scene: Scene,
                      maxBounces: Int,
-                     random: DoubleSupplier): Color = {
-    if (0 == maxBounces) return Color.Black
+                     random: DoubleSupplier): (Color, Int) = {
+    if (0 == maxBounces) return (Color.Black, 1)
 
     val intersection = scene.getIntersection(ray, Double.PositiveInfinity)
     if (!intersection.hitObject) {
       val dist = scene.skyDistance
       val point = ray.atDistance(dist)
-      return scene.skyMaterial.getEmittance(ray.normal)
+      return (scene.skyMaterial.getEmittance(ray.normal), 1)
     } else {
       val depth = intersection.depth
 
-      if (intersection.material.emittance != Color.Black) {
-        return intersection.material.emittance
+      if (intersection.material.emission != Color.Black) {
+        return (intersection.material.emission, 1)
       }
 
       val point = ray.atDistance(depth)
       val surfaceNormal = intersection.normal()
-      val info = intersection.material.getInfo(
+      val scatterings = intersection.material.getScattering(
         incomingNormal = ray.normal,
         surfaceNormal = surfaceNormal,
-        textureCoordinate = intersection.textureCoordinate(),
-        airRefractiveIndex = 1,
+        uv = intersection.textureCoordinate(),
+        outsideIor = 1,
         random = random)
 
-      val scattering = info.scattering
       var color = Color.Black
       val hints = scene.lightHints
       var h = 0
@@ -46,16 +41,21 @@ object RayTracer extends Tracer {
         val hint = hints(h)
         if (hint.applicableFor(point)) {
           val lightRay = hint.target.createRandomRay(point, random)
-          val contribution = scattering.getContribution(lightRay.normal)
+          val contribution = surfaceNormal.dot(lightRay.normal).toFloat
           if (contribution > 0) {
             val angle = hint.target.getSolidAngle(point).toFloat
             val lightIntersection = scene.getIntersection(lightRay, Double.PositiveInfinity)
-            color += lightIntersection.material.emittance * angle * contribution
+            color += lightIntersection.material.emission * angle * contribution
           }
         }
         h += 1
       }
-      return info.reflectance * color
+      var i = 0
+      while (i < scatterings.length) {
+        color *= scatterings(i).color
+        i += 1
+      }
+      return (color, 1)
     }
   }
 }

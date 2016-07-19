@@ -1,34 +1,24 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Units.cm
-import kaloffl.spath.math.Units.mm
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.LensCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.materials.UniformSky
+import kaloffl.spath.math.Units.{cm, mm}
+import kaloffl.spath.math.{Color, Vec3d}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, TransparentMaterial, UniformSky}
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.tracing.RecursivePathTracer
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.RtApplication
-import kaloffl.spath.scene.PinholeCamera
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RtApplication}
 
 object Bunny {
 
   def main(args: Array[String]): Unit = {
 
     val matGlass = new TransparentMaterial(
-      color = Color(0.4f, 0.7f, 1.0f),
+      volumeColor = Color(0.4f, 0.7f, 1.0f),
       absorbtionDepth = mm(1),
       scatterProbability = 4,
-      refractiveIndex = 1.7f)
+      ior = 1.7f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
     val matBunny = DiffuseMaterial(Color(0.8f, 0.4f, 0.2f))
 
@@ -62,8 +52,5 @@ object Bunny {
         root = SceneNode(Array(floor, bunny)),
         skyMaterial = new UniformSky(Color(1.0f, 0.95f, 0.9f) * 2),
         camera = new PinholeCamera))
-//        camera = new LensCamera(
-//          lensRadius = mm(3),
-//          focussedDepth = distance.length.toFloat)))
   }
 }

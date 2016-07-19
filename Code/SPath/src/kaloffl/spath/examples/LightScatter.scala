@@ -1,22 +1,14 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
 import kaloffl.spath.filter.BloomFilter
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
+import kaloffl.spath.math.{Color, Vec3d}
 import kaloffl.spath.scene.hints.GlobalHint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, TransparentMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.Viewpoint
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object LightScatter {
 
@@ -24,9 +16,9 @@ object LightScatter {
 
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matAir = new TransparentMaterial(
-      color = Color(0.08f, 0.09f, 0.095f),
+      volumeColor = Color(0.08f, 0.09f, 0.095f),
       scatterProbability = 0.0125f)
-    val matLight = LightMaterial(Color(1, 0.9f, 0.8f) * 8)
+    val matLight = new EmittingMaterial(Color(1, 0.9f, 0.8f), 8)
 
     val lightSphere = new Sphere(Vec3d(0, 0, 0), 1)
 

@@ -1,7 +1,7 @@
 package kaloffl.spath.bvh
 
-import java.util.Arrays
-import java.util.Comparator
+import java.util.{Arrays, Comparator}
+
 import scala.reflect.ClassTag
 
 class SubArray[T](

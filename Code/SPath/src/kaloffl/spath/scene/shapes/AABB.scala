@@ -1,10 +1,6 @@
 package kaloffl.spath.scene.shapes
 
-import java.util.function.DoubleSupplier
-
-import kaloffl.spath.math.Ray
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.{Ray, Vec2d, Vec3d}
 
 /**
  * AABB stands for Axis Aligned Bounding Box and is a very simple and

@@ -1,7 +1,5 @@
 package kaloffl.spath.math
 
-import java.util.function.DoubleSupplier
-
 class Color(val r2: Float, val g2: Float, val b2: Float) {
 
   def r: Float = Math.sqrt(r2).toFloat
@@ -62,7 +60,7 @@ class Color(val r2: Float, val g2: Float, val b2: Float) {
       Math.pow(b2, c.b2).toFloat)
   }
 
-  def exp(): Color = {
+  def exp: Color = {
     new Color(
       Math.exp(r2).toFloat,
       Math.exp(g2).toFloat,
@@ -76,9 +74,7 @@ class Color(val r2: Float, val g2: Float, val b2: Float) {
     }
   }
 
-  override def toString(): String = {
-    return s"Color(r2: $r2, g2: $g2, b2: $b2)"
-  }
+  override def toString: String = s"Color(r2: $r2, g2: $g2, b2: $b2)"
 
   def toInt: Int = {
     val ia = 0xff << 24
@@ -118,7 +114,7 @@ object Color {
       val p = brightness * (1.0f - saturation)
       val q = brightness * (1.0f - saturation * f)
       val t = brightness * (1.0f - (saturation * (1.0f - f)))
-      (h.toInt) match {
+      h.toInt match {
         case 0 ⇒
           Color(brightness, t, p)
         case 1 ⇒

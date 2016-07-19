@@ -1,41 +1,34 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.RefractiveMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.math.{Color, Vec3d}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, TransparentMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Refraction {
 
   def main(args: Array[String]): Unit = {
 
-    val matWhiteGlass0 = RefractiveMaterial(Color.White, 1.0f)
-    val matWhiteGlass1 = RefractiveMaterial(Color.White, 1.1f)
-    val matWhiteGlass2 = RefractiveMaterial(Color.White, 1.2f)
-    val matWhiteGlass3 = RefractiveMaterial(Color.White, 1.3f)
-    val matWhiteGlass4 = RefractiveMaterial(Color.White, 1.4f)
-    val matWhiteGlass5 = RefractiveMaterial(Color.White, 1.5f)
-    val matWhiteGlass6 = RefractiveMaterial(Color.White, 1.6f)
-    val matWhiteGlass7 = RefractiveMaterial(Color.White, 1.7f)
-    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f)
-    val matWhiteGlass9 = RefractiveMaterial(Color.White, 1.9f)
+    val matWhiteGlass0 = new TransparentMaterial(ior = 1.0f)
+    val matWhiteGlass1 = new TransparentMaterial(ior = 1.1f)
+    val matWhiteGlass2 = new TransparentMaterial(ior = 1.2f)
+    val matWhiteGlass3 = new TransparentMaterial(ior = 1.3f)
+    val matWhiteGlass4 = new TransparentMaterial(ior = 1.4f)
+    val matWhiteGlass5 = new TransparentMaterial(ior = 1.5f)
+    val matWhiteGlass6 = new TransparentMaterial(ior = 1.6f)
+    val matWhiteGlass7 = new TransparentMaterial(ior = 1.7f)
+    val matWhiteGlass8 = new TransparentMaterial(ior = 1.8f)
+    val matWhiteGlass9 = new TransparentMaterial(ior = 1.9f)
 
     val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
     val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
     val matBlueDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.9f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = LightMaterial(Color.White * 2)
+    val matWhiteLight = new EmittingMaterial(Color.White, 2)
 
     val glassTest = SceneNode(Array(
       SceneNode(new Sphere(Vec3d(-9, 1, 0), 1), matWhiteGlass0),

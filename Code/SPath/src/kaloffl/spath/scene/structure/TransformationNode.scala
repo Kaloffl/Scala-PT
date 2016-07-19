@@ -1,11 +1,8 @@
 package kaloffl.spath.scene.structure
 
-import kaloffl.spath.math.Transformation
-import kaloffl.spath.math.Ray
+import kaloffl.spath.math.{Ray, Transformation}
+import kaloffl.spath.scene.shapes.{AABB, Bounded}
 import kaloffl.spath.tracing.Intersection
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.shapes.Bounded
 
 class TransformationNode(val transformation: Transformation,
                          val childNode: SceneNode) extends SceneNode {

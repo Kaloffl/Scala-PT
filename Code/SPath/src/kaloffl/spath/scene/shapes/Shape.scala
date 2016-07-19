@@ -1,9 +1,6 @@
 package kaloffl.spath.scene.shapes
 
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.math.Ray
-import java.util.function.DoubleSupplier
-import kaloffl.spath.math.Vec2d
+import kaloffl.spath.math.{Vec2d, Vec3d}
 
 /**
  * The general contract of a shape that can be rendered by the path tracer.

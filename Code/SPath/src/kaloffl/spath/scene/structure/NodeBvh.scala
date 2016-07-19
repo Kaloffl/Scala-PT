@@ -2,8 +2,8 @@ package kaloffl.spath.scene.structure
 
 import kaloffl.spath.bvh.Bvh
 import kaloffl.spath.math.Ray
-import kaloffl.spath.tracing.Intersection
 import kaloffl.spath.scene.shapes.Bounded
+import kaloffl.spath.tracing.Intersection
 
 class NodeBvh (val bvh: Bvh[_ <: SceneNode]) extends SceneNode with Bounded {
 

@@ -81,6 +81,7 @@ pathtracer TODOs
 	- AABB Projectable implementation
 	- Triable Projectable implementation
 	- Fix corners of transparent AABBs
+	- create a light hint manager that calculates the importance of a hint for any place in the scene
 	
 
 - done

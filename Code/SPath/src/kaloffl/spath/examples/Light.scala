@@ -1,21 +1,12 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.RefractiveMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Plane
-import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.structure.BoundlessNode
-import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.math.{Color, Vec3d}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, TransparentMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Plane, Sphere}
+import kaloffl.spath.scene.structure.{BoundlessNode, SceneNode}
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Light {
 
@@ -23,7 +14,7 @@ object Light {
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteGlass8 = RefractiveMaterial(Color.White, 1.8f)
+    val matWhiteGlass8 = new TransparentMaterial(ior = 1.8f)
 
     val coloredLights = BoundlessNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matWhiteGlass8),
@@ -34,13 +25,13 @@ object Light {
 
       SceneNode(
         AABB(Vec3d(-4, 7.5, 4), Vec3d(3, 0.125, 22)),
-        LightMaterial(Color(0.9f, 0.1f, 0.1f) * 2)),
+        new EmittingMaterial(Color(0.9f, 0.1f, 0.1f), 2)),
       SceneNode(
         AABB(Vec3d(0, 7.5, 4), Vec3d(3, 0.125, 22)),
-        LightMaterial(Color(0.1f, 0.9f, 0.1f) * 2)),
+        new EmittingMaterial(Color(0.1f, 0.9f, 0.1f), 2)),
       SceneNode(
         AABB(Vec3d(4, 7.5, 4), Vec3d(3, 0.125, 22)),
-        LightMaterial(Color(0.1f, 0.1f, 0.9f) * 2)),
+        new EmittingMaterial(Color(0.1f, 0.1f, 0.9f), 2)),
 
       BoundlessNode(new Plane(Vec3d.Left, 8), matWhiteDiffuse),
       BoundlessNode(new Plane(Vec3d.Right, 8), matWhiteDiffuse),

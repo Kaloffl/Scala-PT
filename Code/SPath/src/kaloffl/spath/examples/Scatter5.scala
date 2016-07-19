@@ -1,25 +1,12 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
+import kaloffl.spath.{JfxDisplay, RenderEngine}
+import kaloffl.spath.math.{Color, Vec3d}
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.scene.hints.GlobalHint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.ReflectiveMaterial
-import kaloffl.spath.scene.materials.RefractiveMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.materials.UniformSky
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Plane
-import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.structure.BoundlessNode
-import kaloffl.spath.scene.structure.ClippingNode
-import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.materials._
+import kaloffl.spath.scene.shapes.{AABB, Plane, Sphere}
+import kaloffl.spath.scene.structure.{BoundlessNode, ClippingNode, SceneNode}
 import kaloffl.spath.tracing.RecursivePathTracer
 
 object Scatter5 {
@@ -27,15 +14,15 @@ object Scatter5 {
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteLight = LightMaterial(Color.White * 16)
+    val matWhiteLight = new EmittingMaterial(Color.White, 16)
 
     val matRedGlass = new TransparentMaterial(
-      color = Color(0.1f, 0.5f, 0.5f),
-      scatterProbability = 0.1,
-      refractiveIndex = 1.7f)
-    val matClearGlass = RefractiveMaterial(Color.White, 1.7f)
+      volumeColor = Color(0.1f, 0.5f, 0.5f),
+      scatterProbability = 0.1f,
+      ior  = 1.7f)
+    val matClearGlass = new TransparentMaterial(ior = 1.7f)
 
-    val matMirror = ReflectiveMaterial(Color.White, 0.0001f)
+    val matMirror = new MetalMaterial((_, _) => Color.White * 0.0001f)
 
     val lightShape = new Sphere(Vec3d(0, 80, 0), 20)
 

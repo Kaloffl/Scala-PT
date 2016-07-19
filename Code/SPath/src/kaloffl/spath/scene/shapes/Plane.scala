@@ -1,8 +1,6 @@
 package kaloffl.spath.scene.shapes
 
-import kaloffl.spath.math.Ray
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.{Ray, Vec2d, Vec3d}
 
 class Plane(normal: Vec3d, distance: Float) extends Shape {
  
@@ -15,5 +13,5 @@ class Plane(normal: Vec3d, distance: Float) extends Shape {
   
   override def getNormal(point: Vec3d): Vec3d = normal
 
-  override def getTextureCoordinate(point: Vec3d): Vec2d = ???
+  override def getTextureCoordinate(point: Vec3d): Vec2d = Vec2d()
 }

@@ -1,7 +1,7 @@
 package kaloffl.spath.bvh
 
 class ValuedArrayStack[T] {
-  val bufferSize = 24
+  val bufferSize = 32
   var data: Array[T] = new Array[AnyRef](bufferSize).asInstanceOf[Array[T]]
   var values: Array[Double] = new Array(bufferSize)
   var start = bufferSize
@@ -24,12 +24,12 @@ class ValuedArrayStack[T] {
     return index - 1
   }
 
-  private def checkEmpty {
+  private def checkEmpty(): Unit = {
     if (empty) throw new RuntimeException("Cant pop from an empty stack")
   }
   
   def pop: (T, Double) = {
-    checkEmpty
+    checkEmpty()
     val element = data(start)
     val value = values(start)
     start += 1
@@ -37,40 +37,40 @@ class ValuedArrayStack[T] {
   }
 
   def popElement: T = {
-    checkEmpty
+    checkEmpty()
     val element = data(start)
     start += 1
     return element
   }
 
   def popValue: Double = {
-    checkEmpty
+    checkEmpty()
     val value = values(start)
     start += 1
     return value
   }
 
   def peek: (T, Double) = {
-    checkEmpty
+    checkEmpty()
     (data(start), values(start))
   }
 
   def peekElement: T = {
-    checkEmpty
+    checkEmpty()
     data(start)
   }
 
   def peekValue: Double = {
-    checkEmpty
+    checkEmpty()
     values(start)
   }
 
-  def clear: Unit = {
+  def clear(): Unit = {
     data = new Array[AnyRef](bufferSize).asInstanceOf[Array[T]]
     start = bufferSize
   }
 
-  def size = (bufferSize - start)
+  def size = bufferSize - start
 
-  def empty = (start == bufferSize)
+  def empty = start == bufferSize
 }

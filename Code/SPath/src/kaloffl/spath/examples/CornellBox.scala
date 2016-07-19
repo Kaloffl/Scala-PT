@@ -1,20 +1,13 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
+import kaloffl.spath.math.{Color, Vec3d}
 import kaloffl.spath.scene.hints.GlobalHint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.shapes.Triangle
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Sphere, Triangle}
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object CornellBox {
 
@@ -23,7 +16,7 @@ object CornellBox {
     val cmatWhite = DiffuseMaterial(new Color(0.737f, 0.728f, 0.767f))
     val cmatRed = DiffuseMaterial(new Color(0.642f, 0.063f, 0.061f))
     val cmatGreen = DiffuseMaterial(new Color(0.159f, 0.373f, 0.101f))
-    val cmatLight = LightMaterial(new Color(34.0f, 23.6f, 8.0f))
+    val cmatLight = new EmittingMaterial(new Color(34.0f, 23.6f, 8.0f), 1)
 
     val roomWidth = 552.5
     val roomHeight = 548.8

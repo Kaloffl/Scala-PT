@@ -19,5 +19,5 @@ trait Job {
    * This method is supposed to contain the computationally expensive code that
    * will be run in parallel by the job pool.
    */
-  def execute: Unit
+  def execute(): Unit
 }

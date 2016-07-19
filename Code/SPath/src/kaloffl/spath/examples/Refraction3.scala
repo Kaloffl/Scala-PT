@@ -1,19 +1,12 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.math.{Color, Vec3d}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, TransparentMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Refraction3 {
   def main(args: Array[String]): Unit = {
@@ -21,7 +14,7 @@ object Refraction3 {
     val glassColor = Color(0.2f, 0.4f, 0.5f)
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matWhiteLight = LightMaterial(Color.White * 2)
+    val matWhiteLight = new EmittingMaterial(Color.White, 2)
 
     val environment = Array(
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),
@@ -37,9 +30,9 @@ object Refraction3 {
       SceneNode(
         new Sphere(Vec3d(x * -2 + 10, 0.501, y * 2 - 10), 0.5f),
         new TransparentMaterial(
-          color = glassColor,
+          volumeColor = glassColor,
           absorbtionDepth = x * x / 200f + 0.01f,
-          refractiveIndex = 1 + y / 10.0f))
+          ior = 1 + y / 10.0f))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

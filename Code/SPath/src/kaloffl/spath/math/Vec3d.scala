@@ -1,7 +1,5 @@
 package kaloffl.spath.math
 
-import java.util.function.DoubleSupplier
-
 /**
  * A 3 dimensional mathematical vector of double precision floating point
  * numbers. It implements the usual operations like addition and scaling but
@@ -10,7 +8,7 @@ import java.util.function.DoubleSupplier
  * These vectors are immutable and each operation creates a new instance with
  * the new values.
  */
-case class Vec3d(val x: Double, val y: Double, val z: Double) {
+case class Vec3d(x: Double, y: Double, z: Double) {
 
   def +(v: Vec3d): Vec3d = Vec3d(x + v.x, y + v.y, z + v.z)
   def +(f: Double): Vec3d = Vec3d(x + f, y + f, z + f)
@@ -97,9 +95,11 @@ case class Vec3d(val x: Double, val y: Double, val z: Double) {
 
   def refractance(v: Vec3d, i1: Double, i2: Double): Double = {
     val cosI = -dot(v)
+    if (0 == cosI || i1 == i2) return 0
+
     val n = i1 / i2
     val sinT2 = n * n * (1.0 - cosI * cosI)
-    if (sinT2 > 1.0) {
+    if (sinT2 >= 1.0) {
       return 1.0
     }
     val cosT = Math.sqrt(1.0 - sinT2)
@@ -110,10 +110,12 @@ case class Vec3d(val x: Double, val y: Double, val z: Double) {
 
   def refract(v: Vec3d, i1: Double, i2: Double): Vec3d = {
     val cosI = -dot(v)
+    if (0 == cosI || i1 == i2) return this
+
     val n = i1 / i2
     val sinT2 = n * n * (1.0 - cosI * cosI)
 
-    if (sinT2 > 1.0) {
+    if (sinT2 >= 1.0) {
       val a = cosI * -2.0f
       return Vec3d(
         x - (v.x * a),
@@ -130,7 +132,7 @@ case class Vec3d(val x: Double, val y: Double, val z: Double) {
 
   def ortho: Vec3d = {
     //  See : http://lolengine.net/blog/2013/09/21/picking-orthogonal-vector-combing-coconuts
-    return if (Math.abs(x) > Math.abs(z)) Vec3d(-y, x, 0) else Vec3d(0, -z, y);
+    return if (Math.abs(x) > Math.abs(z)) Vec3d(-y, x, 0) else Vec3d(0, -z, y)
   }
 
   def randomConeSample(random: Vec2d, extent: Double, bias: Double): Vec3d = {
@@ -144,17 +146,11 @@ case class Vec3d(val x: Double, val y: Double, val z: Double) {
       this * rnd
   }
 
-  def randomHemisphere(random: Vec2d, bias: Double): Vec3d = {
-    return randomConeSample(random, 1.0, bias)
-  }
+  def randomHemisphere(random: Vec2d, bias: Double): Vec3d = randomConeSample(random, 1.0, bias)
 
-  def randomHemisphere(random: Vec2d): Vec3d = {
-    return randomConeSample(random, 1.0, 0.0)
-  }
+  def randomHemisphere(random: Vec2d): Vec3d = randomConeSample(random, 1.0, 0.0)
 
-  def weightedHemisphere(random: Vec2d): Vec3d = {
-    return randomConeSample(random, 1.0, 1.0)
-  }
+  def weightedHemisphere(random: Vec2d): Vec3d = randomConeSample(random, 1.0, 1.0)
 }
 
 /**

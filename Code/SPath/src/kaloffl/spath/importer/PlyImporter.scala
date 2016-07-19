@@ -1,13 +1,9 @@
 package kaloffl.spath.importer
 
-import java.io.BufferedInputStream
-import java.io.FileInputStream
-import java.io.InputStream
+import java.io.{BufferedInputStream, FileInputStream, InputStream}
 import java.util.Scanner
-import java.util.regex.PatternSyntaxException
 
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.shapes.Shape
 import kaloffl.spath.scene.shapes.Triangle
 
 /**
@@ -33,7 +29,7 @@ object PlyImporter {
     println("Parsing header")
     var header = true
     var headerSize = 0
-    while (header && scanner.hasNextLine()) {
+    while (header && scanner.hasNextLine) {
       val line = scanner.nextLine
       val segments = line.split(' ')
 
@@ -56,7 +52,7 @@ object PlyImporter {
           faceCount = Integer.parseInt(segments(2))
           println("faces: " + faceCount)
         }
-      } else if (segments(0) equals ("end_header")) {
+      } else if (segments(0) equals "end_header") {
         header = false
       }
     }
@@ -239,7 +235,7 @@ object PlyImporter {
     }
     println("import done")
 
-    scanner.close
+    scanner.close()
 
     return faces
   }

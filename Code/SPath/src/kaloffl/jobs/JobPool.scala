@@ -42,16 +42,16 @@ class JobPool {
    * Parks the calling thread and decreases the CountLatch that keeps track of
    * the active workers.
    */
-  private def park() = {
+  private def park(): Unit = {
     counter.countDown
-    LockSupport.park
+    LockSupport.park()
   }
 
   /**
    * Wakes up the given thread and increases the CountLatch that keeps track of
    * the active workers.
    */
-  private def unpark(t: Thread) = {
+  private def unpark(t: Thread): Unit = {
     LockSupport.unpark(t)
     counter.countUp
   }
@@ -60,13 +60,13 @@ class JobPool {
    * The caller of this method will also act as a worker in this pool until all
    * Jobs were executed, only then will it return from this method.
    */
-  def execute: Unit = {
+  def execute(): Unit = {
     // TODO I'm pretty sure that the pool won't stop while some jobs are
     // still unfinished. However the stopping criteria is that no worker 
     // is doing anything, so I'm not 100% convinced that it is correct.
     mainWorker.running = true
-    mainWorker.run
-    counter.await
+    mainWorker.run()
+    counter.await()
   }
 
   /**
@@ -77,7 +77,7 @@ class JobPool {
     worker.running = false
     if (worker != mainWorker) {
       waitingWorkers.add(worker)
-      park
+      park()
     }
   }
 
@@ -85,7 +85,7 @@ class JobPool {
    * Searches the submitted jobs for executable ones and returns the first it
    * finds.
    */
-  def pollJob: Job = {
+  def pollJob(): Job = {
     // TODO this setup isn't ideal: as long as there are jobs, the 
     // workers will poll the queue for work, even if none of the jobs 
     // can be executed.

@@ -1,8 +1,7 @@
 package kaloffl.spath.bvh
 
 import kaloffl.spath.math.Ray
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Intersectable
+import kaloffl.spath.scene.shapes.{AABB, Intersectable}
 
 class Bvh[T <: Intersectable](
     val children: Array[Bvh[T]],
@@ -10,7 +9,7 @@ class Bvh[T <: Intersectable](
     val hull: AABB,
     val level: Int) {
 
-  def isLeaf = (null != elements)
+  def isLeaf = null != elements
 
   def hullDepth(ray: Ray): Double = {
     if (hull.contains(ray.start)) return 0.0

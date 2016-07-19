@@ -1,14 +1,9 @@
 package kaloffl.spath.bvh
 
 import java.util.Comparator
-import kaloffl.jobs.Job
-import kaloffl.jobs.JobPool
-import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Bounded
-import kaloffl.spath.scene.shapes.Intersectable
-import kaloffl.spath.scene.shapes.Shape
-import kaloffl.spath.scene.structure.SceneNode
+
+import kaloffl.jobs.{Job, JobPool}
+import kaloffl.spath.scene.shapes.{AABB, Bounded, Intersectable}
 
 object BvhBuilder {
 
@@ -36,7 +31,7 @@ object BvhBuilder {
         objects = new SubArray(objects),
         consumer = { root = _ },
         level = 0))
-    pool.execute
+    pool.execute()
 
     val duration = System.nanoTime - start
 
@@ -56,7 +51,7 @@ class SplittingJob[T <: Intersectable with Bounded](
     consumer: Bvh[T] ⇒ Unit,
     level: Int) extends Job {
 
-  override def execute: Unit = {
+  override def execute(): Unit = {
     // If the array is small enough we create a leaf and return
     if (objects.length <= BvhBuilder.MaxLeafSize) {
       val elements = objects.toArray
@@ -143,12 +138,12 @@ class SplittingJob[T <: Intersectable with Bounded](
 
 class MergeJob[T <: Intersectable](level: Int, consumer: Bvh[T] ⇒ Unit) extends Job {
 
-  var left: Bvh[T] = null
-  var right: Bvh[T] = null
+  var left: Bvh[T] = _
+  var right: Bvh[T] = _
 
-  override def canExecute = (null != left && null != right)
+  override def canExecute: Boolean = null != left && null != right
 
-  override def execute: Unit = {
+  override def execute(): Unit = {
     val children = Array(left, right)
     val bb = AABB.enclosing[Bvh[T]](children, _.hull)
 

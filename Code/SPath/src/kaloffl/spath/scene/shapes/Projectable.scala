@@ -2,8 +2,7 @@ package kaloffl.spath.scene.shapes
 
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.math.Ray
-import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.{Ray, Vec3d}
 
 trait Projectable {
 

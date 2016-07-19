@@ -1,28 +1,20 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.LensCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.ReflectiveMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.math.{Color, Vec3d}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, MetalMaterial, TransparentMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{LensCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Mirrored {
 
   def main(args: Array[String]): Unit = {
 
-    val matMirror = ReflectiveMaterial(Color.White)
+    val matMirror = new MetalMaterial((_, _) => Color.White)
     val matAir = new TransparentMaterial(
-      color = Color(0.02f, 0.01f, 0.005f),
+      volumeColor = Color(0.02f, 0.01f, 0.005f),
       scatterProbability = 0.002f)
 
     val coloredSpheres = SceneNode(Array(
@@ -32,10 +24,10 @@ object Mirrored {
 
       SceneNode(
         AABB(Vec3d(0, -0.5, 0), Vec3d(16, 1, 24)),
-        ReflectiveMaterial(Color(0.2f, 0.8f, 0.2f), 0.4f)),
+        new MetalMaterial((_, _) => Color(0.2f, 0.8f, 0.2f) * 0.4f)),
       SceneNode(
         AABB(Vec3d(0, 32.5, 0), Vec3d(16, 1, 24)),
-        LightMaterial(Color.White)),
+        new EmittingMaterial(Color.White, 1)),
       SceneNode(AABB(Vec3d(8.5f, 16, 0), Vec3d(1, 32, 24)), matMirror),
       SceneNode(AABB(Vec3d(-8.5f, 16, 0), Vec3d(1, 32, 24)), matMirror),
       SceneNode(AABB(Vec3d(0, 16, -12.5f), Vec3d(16, 32, 1)), matMirror),

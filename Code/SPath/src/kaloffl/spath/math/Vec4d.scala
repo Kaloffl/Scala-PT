@@ -1,7 +1,5 @@
 package kaloffl.spath.math
 
-import java.util.function.DoubleSupplier
-
 /**
  * A 3 dimensional mathematical vector of double precision floating point
  * numbers. It implements the usual operations like addition and scaling but
@@ -10,7 +8,7 @@ import java.util.function.DoubleSupplier
  * These vectors are immutable and each operation creates a new instance with
  * the new values.
  */
-case class Vec4d(val x: Double, val y: Double, val z: Double, val w: Double) {
+case class Vec4d(x: Double, y: Double, z: Double, w: Double) {
 
   def +(v: Vec4d): Vec4d = Vec4d(x + v.x, y + v.y, z + v.z, w + v.w)
   def +(f: Double): Vec4d = Vec4d(x + f, y + f, z + f, w + f)

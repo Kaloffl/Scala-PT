@@ -2,22 +2,24 @@ package kaloffl.spath.tracing
 
 import java.util.ArrayList
 
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec2d
+import kaloffl.spath.math.{Color, Vec2d}
 
 trait SampleStorage {
-  def addSample(x: Float, y: Float, color: Color): Unit
+  def addSample(x: Float, y: Float, color: Color, pathCount: Int = 1): Unit
   def getColor(x: Float, y: Float): Color
 }
 
 class DiscreteSampleStorage(val width: Int, val height: Int) extends SampleStorage {
 
-  val sampleCounts = new Array[Short](width * height)
+  val sampleCounts = new Array[Long](width * height)
   val samples = new Array[Float](width * height * 3)
 
-  override def addSample(x: Float, y: Float, color: Color): Unit = {
+  override def addSample(x: Float, y: Float, color: Color, pathCount: Int = 1): Unit = {
     val index = x.toInt * height + y.toInt
-    sampleCounts(index) = (sampleCounts(index) + 1).toShort
+    sampleCounts(index) += pathCount
+    if(sampleCounts(index) < 0) {
+      System.err.println("integer overflow in sample storage!")
+    }
     samples(index * 3) += color.r2
     samples(index * 3 + 1) += color.g2
     samples(index * 3 + 2) += color.b2
@@ -41,9 +43,9 @@ class InterpolationSampleStorage extends SampleStorage {
     val positions = new ArrayList[Vec2d]
     val colors = new ArrayList[Color]
   
-    override def addSample(x: Float, y: Float, color: Color): Unit = {
+    override def addSample(x: Float, y: Float, color: Color, pathCount: Int = 1): Unit = {
       positions.add(Vec2d(x, y))
-      colors.add(color)
+      colors.add(color / pathCount)
     }
   
     override def getColor(x: Float, y: Float): Color = {

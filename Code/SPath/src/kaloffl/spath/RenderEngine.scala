@@ -3,14 +3,11 @@ package kaloffl.spath
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.DoubleSupplier
 
-import scala.util.Sorting
+import kaloffl.jobs.{Job, JobPool}
+import kaloffl.spath.scene.{Scene, Viewpoint}
+import kaloffl.spath.tracing.{Tracer, TracingWorker}
 
-import kaloffl.jobs.Job
-import kaloffl.jobs.JobPool
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.tracing.Tracer
-import kaloffl.spath.tracing.TracingWorker
+import scala.util.Sorting
 
 /**
  * The Engine that can render an image of a given scene. This object handles
@@ -31,7 +28,6 @@ object RenderEngine {
   val rows = Math.sqrt(numberOfWorkers).toInt
   val cols = numberOfWorkers / rows
 
-
   /**
    * Renders the scene with the given number of passes onto the display. In each
    * pass, Rays are shot through each pixel of the image and tested for
@@ -48,14 +44,14 @@ object RenderEngine {
    * @param samplesAtOnce the number of samples that should be taken for every pixel before updating the target. Higher values are more efficient but take longer to show up in the preview (default 1)
    * @param cpuSaturation on a scale from 0 (none) to 1 (all) how much cpu time the rendering should try to take (default 1)
    */
-  def render(target: RenderTarget, 
-             tracer: Tracer, 
-             logger: String => Unit = print(_),
-             scene: Scene, 
-             view: Viewpoint, 
-             bounces: Int = 8,
-             samplesAtOnce: Int = 1,
-             cpuSaturation: Float = 1) {
+  def render(target: RenderTarget,
+    tracer: Tracer,
+    logger: String => Unit = print(_),
+    scene: Scene,
+    view: Viewpoint,
+    bounces: Int = 8,
+    samplesAtOnce: Int = 1,
+    cpuSaturation: Float = 1) {
 
     logger("number of chunks: " + numberOfWorkers + '\n')
     logger("target cpu saturation: " + cpuSaturation + '\n')
@@ -81,25 +77,25 @@ object RenderEngine {
     val order = Array.tabulate(numberOfWorkers)(identity)
     val costs = new Array[Long](numberOfWorkers)
     while (true) {
-      if(1 == samplesAtOnce) {
-      	  logger("Starting pass #" + pass + '\n')
+      if (1 == samplesAtOnce) {
+        logger("Starting pass #" + pass + '\n')
       } else {
-      	  logger("Starting passes #" + pass + " - #" + (pass + samplesAtOnce - 1) + '\n')
+        logger("Starting passes #" + pass + " - #" + (pass + samplesAtOnce - 1) + '\n')
       }
 
       val before = System.nanoTime
       for (i ← 0 until numberOfWorkers) {
         val worker = tracingWorkers(order(i))
         pool.submit(new Job {
-          override def execute = {
+          override def execute(): Unit = {
             val start = System.nanoTime
             worker.render(view, bounces, samplesAtOnce, cpuSaturation)
-            worker.draw
+            worker.draw()
             costs(order(i)) += System.nanoTime - start
           }
         })
       }
-      pool.execute
+      pool.execute()
 
       // A small optimization: we sort the parts that will take the longest to
       // the front so that they will be done first. That way we have the small
@@ -118,7 +114,7 @@ object RenderEngine {
       } else {
         logger("rendertime: " + Math.floor(duration / 10000.0) / 100.0 + "ms")
       }
-      if(samplesAtOnce > 1) {
+      if (samplesAtOnce > 1) {
         val singleDur = duration / samplesAtOnce
         if (singleDur > 1000000000) {
           logger(" (~" + Math.floor(singleDur / 10000000.0) / 100.0 + "s/sample)")
@@ -131,7 +127,7 @@ object RenderEngine {
       // After each rendering pass, the workers will have written their results
       // into the target and all that's left is calling commit to signal that 
       // the pass is done.
-      target.commit
+      target.commit()
       pass += samplesAtOnce
     }
   }

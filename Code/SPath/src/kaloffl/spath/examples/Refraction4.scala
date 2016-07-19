@@ -3,30 +3,22 @@ package kaloffl.spath.examples
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.math.{Color, Vec2d, Vec3d}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, TransparentMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Refraction4 {
   def main(args: Array[String]): Unit = {
     val rng = new DoubleSupplier() {
-      override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
+      override def getAsDouble: Double = ThreadLocalRandom.current.nextDouble
     }
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matWhiteLight = LightMaterial(Color.White * 2)
+    val matWhiteLight = new EmittingMaterial(Color.White, 2)
 
     val environment = Array(
       SceneNode(AABB(Vec3d(0, 16.5, 0), Vec3d(32, 1, 32)), matWhiteLight),
@@ -42,9 +34,9 @@ object Refraction4 {
       SceneNode(
         new Sphere(Vec3d(x * 1.1 - 10.5, 0.501, y * 1.1 - 10.5), 0.5f),
         new TransparentMaterial(
-          color = Color.randomColor(Vec2d.random(rng), 0.5f),
+          volumeColor = Color.randomColor(Vec2d.random(rng), 0.5f),
           absorbtionDepth = 0.125f,
-          refractiveIndex = 1.8f))
+          ior = 1.8f))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

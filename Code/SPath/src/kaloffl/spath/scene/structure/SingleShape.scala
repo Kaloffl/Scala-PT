@@ -2,8 +2,7 @@ package kaloffl.spath.scene.structure
 
 import kaloffl.spath.math.Ray
 import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.shapes.Bounded
-import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.scene.shapes.{Bounded, Shape}
 import kaloffl.spath.tracing.Intersection
 
 class SingleShape(val shape: Shape, material: Material) extends SceneNode {

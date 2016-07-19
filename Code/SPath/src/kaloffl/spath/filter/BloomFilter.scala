@@ -1,7 +1,5 @@
 package kaloffl.spath.filter
 
-import java.util.Arrays
-
 import kaloffl.spath.RenderTarget
 import kaloffl.spath.math.Color
 
@@ -39,7 +37,7 @@ class BloomFilter(override val target: RenderTarget, val fallFactor: Float, val 
     }
   }
 
-  override def commit: Unit = {
+  override def commit(): Unit = {
     for (x ← 0 until width; y ← 0 until height) {
       val i = (x * height + y) * 3
       val color = new Color(
@@ -51,7 +49,6 @@ class BloomFilter(override val target: RenderTarget, val fallFactor: Float, val 
       colorBuffer(i + 2) = 0
       target.setPixel(x, y, color)
     }
-    //    Arrays.fill(colorBuffer, 0f)
-    target.commit
+    target.commit()
   }
 }

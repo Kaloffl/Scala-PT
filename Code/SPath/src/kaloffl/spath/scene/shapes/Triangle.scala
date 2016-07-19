@@ -1,12 +1,8 @@
 package kaloffl.spath.scene.shapes
 
-import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Mat3d
-import kaloffl.spath.math.Mat4d
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.math.Vec4d
+
+import kaloffl.spath.math.{Mat4d, Ray, Vec2d, Vec3d}
 
 /**
  * @author Lars
@@ -80,9 +76,9 @@ class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape with 
     val a = vertA - point
     val b = a + edgeA
     val c = a + edgeB
-    val na = (c cross b)
-    val nb = (a cross c)
-    val nc = (b cross a)
+    val na = c cross b
+    val nb = a cross c
+    val nc = b cross a
     val la = na length
     val lb = nb length
     val lc = nc length

@@ -1,10 +1,8 @@
 package kaloffl.spath.scene.shapes
 
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.math.Ray
 import java.util.function.DoubleSupplier
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.FastMath
+
+import kaloffl.spath.math.{FastMath, Ray, Vec2d, Vec3d}
 
 /**
  * A sphere shape consisting of a location and a radius.
@@ -65,7 +63,7 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projecta
   }
   
   override def createRandomRay(start: Vec3d, random: DoubleSupplier): Ray = {
-    val direction = (position - start)
+    val direction = position - start
     val maxOffset = radius * Math.sqrt(1 - radius * radius / direction.lengthSq)
     val angle = random.getAsDouble * Math.PI * 2
     val offset = Math.sqrt(random.getAsDouble) * maxOffset

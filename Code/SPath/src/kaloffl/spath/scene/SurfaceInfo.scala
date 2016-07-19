@@ -1,9 +1,0 @@
-package kaloffl.spath.scene
-
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.materials.Scattering
-
-class SurfaceInfo(
-  val reflectance: Color,
-  val scattering: Scattering)

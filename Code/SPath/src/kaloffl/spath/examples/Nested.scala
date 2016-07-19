@@ -1,31 +1,25 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.materials.UniformSky
+import kaloffl.spath.math.{Color, Vec3d}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, TransparentMaterial, UniformSky}
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Nested {
 
   def main(args: Array[String]): Unit = {
 
     val matGlassRed = new TransparentMaterial(
-      color = Color(0.1f, 0.9f, 0.9f),
+      volumeColor = Color(0.1f, 0.9f, 0.9f),
       absorbtionDepth = 0.75f)
     val matGlassGreen = new TransparentMaterial(
-      color = Color(0.9f, 0.1f, 0.9f),
+      volumeColor = Color(0.9f, 0.1f, 0.9f),
       absorbtionDepth = 0.5f)
     val matGlassBlue = new TransparentMaterial(
-      color = Color(0.9f, 0.9f, 0.1f),
+      volumeColor = Color(0.9f, 0.9f, 0.1f),
       absorbtionDepth = 0.25f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.6f, 0.6f))
 

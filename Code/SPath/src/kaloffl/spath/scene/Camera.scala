@@ -2,8 +2,7 @@ package kaloffl.spath.scene
 
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.math.Ray
-import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.{Ray, Vec3d}
 
 /**
  * A camera that has a position and orientation in space and can be used to

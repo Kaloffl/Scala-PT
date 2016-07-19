@@ -1,8 +1,8 @@
 package kaloffl.jobs
 
+import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
 import java.util.concurrent.locks.LockSupport
-import java.util.concurrent.ConcurrentLinkedQueue
 
 /**
  * This class offers similar functionality to the
@@ -31,7 +31,7 @@ class CountLatch(initialValue: Int) {
   def addAndGet(i: Int): Int = {
     val number = counter.addAndGet(i)
     if (0 == number) {
-      wakeThreads
+      wakeThreads()
     }
     return number
   }
@@ -56,12 +56,12 @@ class CountLatch(initialValue: Int) {
    * of this object reaches 0. Then the thread is woken up and it will return to
    * wherever this method was called from.
    */
-  def await: Unit = {
+  def await(): Unit = {
     counter.synchronized {
       waiting.add(Thread.currentThread())
     }
     while (0 != counter.get) {
-      LockSupport.park
+      LockSupport.park()
     }
     counter.synchronized {
       waiting.clear()
@@ -72,7 +72,7 @@ class CountLatch(initialValue: Int) {
    * Wakes up all waiting threads. If the internal value is not 0 yet, they will
    * immediately go back to sleep.
    */
-  def wakeThreads: Unit = {
+  def wakeThreads(): Unit = {
     val iter = waiting.iterator
     while (iter.hasNext) { LockSupport.unpark(iter.next) }
   }

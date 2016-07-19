@@ -1,9 +1,7 @@
 package kaloffl.spath.tracing
 
+import kaloffl.spath.math.{Vec2d, Vec3d}
 import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.shapes.Shape
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.math.Vec2d
 
 class Intersection(
     val depth: Double,

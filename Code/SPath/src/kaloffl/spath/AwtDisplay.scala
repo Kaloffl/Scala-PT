@@ -1,13 +1,9 @@
 package kaloffl.spath
 
-import java.awt.Canvas
-import java.awt.Dimension
-import java.awt.Graphics
-import java.awt.image.BufferedImage
-import java.awt.image.DataBufferInt
+import java.awt.{Canvas, Dimension, Graphics}
+import java.awt.image.{BufferedImage, DataBufferInt}
+import javax.swing.{JFrame, WindowConstants}
 
-import javax.swing.JFrame
-import javax.swing.WindowConstants
 import kaloffl.spath.math.Color
 
 /**
@@ -25,7 +21,7 @@ class AwtDisplay(override val width: Int, override val height: Int) extends Rend
     }
   }
   private val buffer = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB)
-  private val raster = (buffer.getRaster.getDataBuffer.asInstanceOf[DataBufferInt]).getData();
+  private val raster = buffer.getRaster.getDataBuffer.asInstanceOf[DataBufferInt].getData()
 
   window.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
   window.setResizable(false)
@@ -41,13 +37,13 @@ class AwtDisplay(override val width: Int, override val height: Int) extends Rend
   /**
    * Displays the current image to the screen
    */
-  override def commit: Unit = {
+  override def commit(): Unit = {
     val graphicsContext = strategy.getDrawGraphics
 
     graphicsContext.drawImage(buffer, 0, 0, null)
 
-    graphicsContext.dispose
-    strategy.show
+    graphicsContext.dispose()
+    strategy.show()
   }
 
   /**

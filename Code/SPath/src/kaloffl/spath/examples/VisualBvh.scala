@@ -1,19 +1,12 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 import kaloffl.spath.bvh.BvhBuilder
 import kaloffl.spath.importer.PlyImporter
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.math.{Color, Vec3d}
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, TransparentMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.PathTracer
 
@@ -22,12 +15,12 @@ object VisualBvh {
   def main(args: Array[String]): Unit = {
 
     val matAir = new TransparentMaterial(
-      color = Color.Black,
-      scatterProbability = 0.0625)
-    val matSky = LightMaterial(Color(1.0f, 0.95f, 0.9f) * 2)
-    val matGlassRed = new TransparentMaterial(Color(0.7f, 4, 4), 20, 1.7f)
-    val matGlassGreen = new TransparentMaterial(Color(4, 0.7f, 4), 20, 1.7f)
-    val matGlassBlue = new TransparentMaterial(Color(4, 4, 0.7f), 20, 1.7f)
+      volumeColor = Color.Black,
+      scatterProbability = 0.0625f)
+    val matSky = new EmittingMaterial(Color(1.0f, 0.95f, 0.9f), 2)
+    val matGlassRed = new TransparentMaterial(volumeColor = Color(0.7f, 4, 4), absorbtionDepth = 20, ior = 1.7f)
+    val matGlassGreen = new TransparentMaterial(volumeColor = Color(4, 0.7f, 4), absorbtionDepth = 20, ior = 1.7f)
+    val matGlassBlue = new TransparentMaterial(volumeColor = Color(4, 4, 0.7f), absorbtionDepth = 20, ior = 1.7f)
     val matFloor = DiffuseMaterial(Color(0.7f, 0.75f, 0.9f))
 
     val bunny = BvhBuilder.buildTree(

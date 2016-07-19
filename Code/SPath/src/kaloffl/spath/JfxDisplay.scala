@@ -1,23 +1,16 @@
 package kaloffl.spath
 
-import javafx.application.Application
-import javafx.application.Platform
+import java.util.{HashMap, LinkedList}
+import javafx.application.{Application, Platform}
 import javafx.event.EventHandler
 import javafx.scene.Scene
-import javafx.scene.image.ImageView
-import javafx.scene.image.WritableImage
-import javafx.scene.input.Clipboard
-import javafx.scene.input.ClipboardContent
-import javafx.scene.input.KeyCode
-import javafx.scene.input.KeyEvent
+import javafx.scene.image.{ImageView, WritableImage}
+import javafx.scene.input.{Clipboard, ClipboardContent, KeyCode, MouseButton}
 import javafx.scene.layout.BorderPane
-import javafx.stage.Stage
-import javafx.stage.WindowEvent
+import javafx.stage.{Stage, WindowEvent}
+
+import kaloffl.spath.KeyEvent.Key
 import kaloffl.spath.math.Color
-import java.util.concurrent.locks.LockSupport
-import java.util.LinkedList
-import kaloffl.spath.InputEvent.Key
-import java.util.HashMap
 
 class JfxDisplay(
     override val width: Int,
@@ -27,9 +20,9 @@ class JfxDisplay(
     ActualDisplay.instance.backBuffer.getPixelWriter.setArgb(x, y, color.toInt)
   }
 
-  override def commit {
+  override def commit(): Unit = {
     Platform.runLater(new Runnable {
-      override def run {
+      override def run(): Unit = {
         ActualDisplay.instance.view.setImage(ActualDisplay.instance.backBuffer)
         val temp = ActualDisplay.instance.image
         ActualDisplay.instance.image = ActualDisplay.instance.backBuffer
@@ -47,11 +40,11 @@ class JfxDisplay(
   ActualDisplay.height = height
 
   new Thread(new Runnable {
-    override def run {
+    override def run(): Unit = {
       Application.launch(classOf[ActualDisplay])
     }
 
-  }).start
+  }).start()
   while (null == ActualDisplay.instance) {
     Thread.sleep(100)
   }
@@ -60,70 +53,70 @@ class JfxDisplay(
 object ActualDisplay {
   var width = 0
   var height = 0
-  var instance: ActualDisplay = null
-  
-    val jfxKeyMap = {
+  var instance: ActualDisplay = _
+
+  val jfxKeyMap = {
     val map = new HashMap[KeyCode, Key]
-    map.put(KeyCode.A, InputEvent.Key_A)
-    map.put(KeyCode.B, InputEvent.Key_B)
-    map.put(KeyCode.C, InputEvent.Key_C)
-    map.put(KeyCode.D, InputEvent.Key_D)
-    map.put(KeyCode.E, InputEvent.Key_E)
-    map.put(KeyCode.F, InputEvent.Key_F)
-    map.put(KeyCode.G, InputEvent.Key_G)
-    map.put(KeyCode.H, InputEvent.Key_H)
-    map.put(KeyCode.I, InputEvent.Key_I)
-    map.put(KeyCode.J, InputEvent.Key_J)
-    map.put(KeyCode.K, InputEvent.Key_K)
-    map.put(KeyCode.L, InputEvent.Key_L)
-    map.put(KeyCode.M, InputEvent.Key_M)
-    map.put(KeyCode.N, InputEvent.Key_N)
-    map.put(KeyCode.O, InputEvent.Key_O)
-    map.put(KeyCode.P, InputEvent.Key_P)
-    map.put(KeyCode.Q, InputEvent.Key_Q)
-    map.put(KeyCode.R, InputEvent.Key_R)
-    map.put(KeyCode.S, InputEvent.Key_S)
-    map.put(KeyCode.T, InputEvent.Key_T)
-    map.put(KeyCode.U, InputEvent.Key_U)
-    map.put(KeyCode.V, InputEvent.Key_V)
-    map.put(KeyCode.W, InputEvent.Key_W)
-    map.put(KeyCode.X, InputEvent.Key_X)
-    map.put(KeyCode.Y, InputEvent.Key_Y)
-    map.put(KeyCode.Z, InputEvent.Key_Z)
-    map.put(KeyCode.DIGIT0, InputEvent.Key_0)
-    map.put(KeyCode.DIGIT1, InputEvent.Key_1)
-    map.put(KeyCode.DIGIT2, InputEvent.Key_2)
-    map.put(KeyCode.DIGIT3, InputEvent.Key_3)
-    map.put(KeyCode.DIGIT4, InputEvent.Key_4)
-    map.put(KeyCode.DIGIT5, InputEvent.Key_5)
-    map.put(KeyCode.DIGIT6, InputEvent.Key_6)
-    map.put(KeyCode.DIGIT7, InputEvent.Key_7)
-    map.put(KeyCode.DIGIT8, InputEvent.Key_8)
-    map.put(KeyCode.DIGIT9, InputEvent.Key_9)
-    map.put(KeyCode.F1, InputEvent.Key_F1)
-    map.put(KeyCode.F2, InputEvent.Key_F2)
-    map.put(KeyCode.F3, InputEvent.Key_F3)
-    map.put(KeyCode.F4, InputEvent.Key_F4)
-    map.put(KeyCode.F5, InputEvent.Key_F5)
-    map.put(KeyCode.F6, InputEvent.Key_F6)
-    map.put(KeyCode.F7, InputEvent.Key_F7)
-    map.put(KeyCode.F8, InputEvent.Key_F8)
-    map.put(KeyCode.F9, InputEvent.Key_F9)
-    map.put(KeyCode.F10, InputEvent.Key_F10)
-    map.put(KeyCode.F11, InputEvent.Key_F11)
-    map.put(KeyCode.F12, InputEvent.Key_F12)
-    map.put(KeyCode.TAB, InputEvent.Key_Tab)
-    map.put(KeyCode.SPACE, InputEvent.Key_Space)
-    map.put(KeyCode.BACK_SPACE, InputEvent.Key_Backspace)
-    map.put(KeyCode.ENTER, InputEvent.Key_Enter)
-    map.put(KeyCode.SHIFT, InputEvent.Key_Shift)
-    map.put(KeyCode.CONTROL, InputEvent.Key_Control)
-    map.put(KeyCode.ALT, InputEvent.Key_Alt)
-    map.put(KeyCode.ESCAPE, InputEvent.Key_Escape)
-    map.put(KeyCode.UP, InputEvent.Key_Up)
-    map.put(KeyCode.DOWN, InputEvent.Key_Down)
-    map.put(KeyCode.LEFT, InputEvent.Key_Left)
-    map.put(KeyCode.RIGHT, InputEvent.Key_Right)
+    map.put(KeyCode.A, KeyEvent.Key_A)
+    map.put(KeyCode.B, KeyEvent.Key_B)
+    map.put(KeyCode.C, KeyEvent.Key_C)
+    map.put(KeyCode.D, KeyEvent.Key_D)
+    map.put(KeyCode.E, KeyEvent.Key_E)
+    map.put(KeyCode.F, KeyEvent.Key_F)
+    map.put(KeyCode.G, KeyEvent.Key_G)
+    map.put(KeyCode.H, KeyEvent.Key_H)
+    map.put(KeyCode.I, KeyEvent.Key_I)
+    map.put(KeyCode.J, KeyEvent.Key_J)
+    map.put(KeyCode.K, KeyEvent.Key_K)
+    map.put(KeyCode.L, KeyEvent.Key_L)
+    map.put(KeyCode.M, KeyEvent.Key_M)
+    map.put(KeyCode.N, KeyEvent.Key_N)
+    map.put(KeyCode.O, KeyEvent.Key_O)
+    map.put(KeyCode.P, KeyEvent.Key_P)
+    map.put(KeyCode.Q, KeyEvent.Key_Q)
+    map.put(KeyCode.R, KeyEvent.Key_R)
+    map.put(KeyCode.S, KeyEvent.Key_S)
+    map.put(KeyCode.T, KeyEvent.Key_T)
+    map.put(KeyCode.U, KeyEvent.Key_U)
+    map.put(KeyCode.V, KeyEvent.Key_V)
+    map.put(KeyCode.W, KeyEvent.Key_W)
+    map.put(KeyCode.X, KeyEvent.Key_X)
+    map.put(KeyCode.Y, KeyEvent.Key_Y)
+    map.put(KeyCode.Z, KeyEvent.Key_Z)
+    map.put(KeyCode.DIGIT0, KeyEvent.Key_0)
+    map.put(KeyCode.DIGIT1, KeyEvent.Key_1)
+    map.put(KeyCode.DIGIT2, KeyEvent.Key_2)
+    map.put(KeyCode.DIGIT3, KeyEvent.Key_3)
+    map.put(KeyCode.DIGIT4, KeyEvent.Key_4)
+    map.put(KeyCode.DIGIT5, KeyEvent.Key_5)
+    map.put(KeyCode.DIGIT6, KeyEvent.Key_6)
+    map.put(KeyCode.DIGIT7, KeyEvent.Key_7)
+    map.put(KeyCode.DIGIT8, KeyEvent.Key_8)
+    map.put(KeyCode.DIGIT9, KeyEvent.Key_9)
+    map.put(KeyCode.F1, KeyEvent.Key_F1)
+    map.put(KeyCode.F2, KeyEvent.Key_F2)
+    map.put(KeyCode.F3, KeyEvent.Key_F3)
+    map.put(KeyCode.F4, KeyEvent.Key_F4)
+    map.put(KeyCode.F5, KeyEvent.Key_F5)
+    map.put(KeyCode.F6, KeyEvent.Key_F6)
+    map.put(KeyCode.F7, KeyEvent.Key_F7)
+    map.put(KeyCode.F8, KeyEvent.Key_F8)
+    map.put(KeyCode.F9, KeyEvent.Key_F9)
+    map.put(KeyCode.F10, KeyEvent.Key_F10)
+    map.put(KeyCode.F11, KeyEvent.Key_F11)
+    map.put(KeyCode.F12, KeyEvent.Key_F12)
+    map.put(KeyCode.TAB, KeyEvent.Key_Tab)
+    map.put(KeyCode.SPACE, KeyEvent.Key_Space)
+    map.put(KeyCode.BACK_SPACE, KeyEvent.Key_Backspace)
+    map.put(KeyCode.ENTER, KeyEvent.Key_Enter)
+    map.put(KeyCode.SHIFT, KeyEvent.Key_Shift)
+    map.put(KeyCode.CONTROL, KeyEvent.Key_Control)
+    map.put(KeyCode.ALT, KeyEvent.Key_Alt)
+    map.put(KeyCode.ESCAPE, KeyEvent.Key_Escape)
+    map.put(KeyCode.UP, KeyEvent.Key_Up)
+    map.put(KeyCode.DOWN, KeyEvent.Key_Down)
+    map.put(KeyCode.LEFT, KeyEvent.Key_Left)
+    map.put(KeyCode.RIGHT, KeyEvent.Key_Right)
     map
   }
 }
@@ -139,17 +132,62 @@ class ActualDisplay extends Application {
     val content = new BorderPane
     content.setCenter(view)
     val scene = new Scene(content, ActualDisplay.width, ActualDisplay.height)
-    scene.setOnKeyPressed(new EventHandler[KeyEvent] {
-      override def handle(ev: KeyEvent): Unit = {
+    scene.setOnKeyPressed(new EventHandler[javafx.scene.input.KeyEvent] {
+      override def handle(ev: javafx.scene.input.KeyEvent): Unit = {
         val key = ActualDisplay.jfxKeyMap.get(ev.getCode)
-        if(null != key) {
-        	events.add(new InputEvent(key, ev.getEventType == KeyEvent.KEY_PRESSED))
+        if (null != key) {
+          events.add(new KeyEvent(key, true))
         }
         if (ev.isControlDown && ev.getCode == KeyCode.C) {
           val content = new ClipboardContent
           content.putImage(image)
           Clipboard.getSystemClipboard.setContent(content)
         }
+      }
+    })
+    scene.setOnKeyReleased(new EventHandler[javafx.scene.input.KeyEvent] {
+      override def handle(ev: javafx.scene.input.KeyEvent): Unit = {
+        val key = ActualDisplay.jfxKeyMap.get(ev.getCode)
+        if (null != key) {
+          events.add(new KeyEvent(key, false))
+        }
+        if (ev.isControlDown && ev.getCode == KeyCode.C) {
+          val content = new ClipboardContent
+          content.putImage(image)
+          Clipboard.getSystemClipboard.setContent(content)
+        }
+      }
+    })
+    scene.setOnMousePressed(new EventHandler[javafx.scene.input.MouseEvent] {
+      override def handle(ev: javafx.scene.input.MouseEvent): Unit = {
+        val key = ev.getButton match {
+          case MouseButton.PRIMARY => KeyEvent.Mouse_1
+          case MouseButton.SECONDARY => KeyEvent.Mouse_2
+          case MouseButton.MIDDLE => KeyEvent.Mouse_3
+          case _ => null
+        }
+        events.add(new KeyEvent(key, true))
+      }
+    })
+    scene.setOnMouseReleased(new EventHandler[javafx.scene.input.MouseEvent] {
+      override def handle(ev: javafx.scene.input.MouseEvent): Unit = {
+        val key = ev.getButton match {
+          case MouseButton.PRIMARY => KeyEvent.Mouse_1
+          case MouseButton.SECONDARY => KeyEvent.Mouse_2
+          case MouseButton.MIDDLE => KeyEvent.Mouse_3
+          case _ => null
+        }
+        events.add(new KeyEvent(key, false))
+      }
+    })
+    scene.setOnMouseMoved(new EventHandler[javafx.scene.input.MouseEvent] {
+      override def handle(ev: javafx.scene.input.MouseEvent): Unit = {
+        events.add(MouseEvent(ev.getX.toInt, ev.getY.toInt, dragged = false))
+      }
+    })
+    scene.setOnMouseDragged(new EventHandler[javafx.scene.input.MouseEvent] {
+      override def handle(ev: javafx.scene.input.MouseEvent): Unit = {
+        events.add(MouseEvent(ev.getX.toInt, ev.getY.toInt, dragged = true))
       }
     })
     stage.setScene(scene)

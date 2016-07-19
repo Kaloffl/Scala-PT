@@ -1,27 +1,19 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
 import kaloffl.spath.importer.PlyImporter
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Quaternion
-import kaloffl.spath.math.Transformation
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
+import kaloffl.spath.math.{Color, Quaternion, Transformation, Vec3d}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial}
 import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.structure.BoundedTransformationNode
-import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.structure.{BoundedTransformationNode, SceneNode}
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Transformed {
 
   def main(args: Array[String]): Unit = {
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
-    val matLight = LightMaterial(Color(0.8f, 0.9f, 2f))
+    val matLight = new EmittingMaterial(Color(0.8f, 0.9f, 2f), 1)
 
     val bunny = SceneNode(
       PlyImporter.load(file = "C:/dev/bunny_flipped.ply", scale = Vec3d(10)),

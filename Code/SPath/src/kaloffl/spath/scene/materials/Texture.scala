@@ -1,7 +1,8 @@
 package kaloffl.spath.scene.materials
 
-import kaloffl.spath.math.Color
 import java.awt.image.BufferedImage
+
+import kaloffl.spath.math.Color
 
 trait Texture {
   def width: Int

@@ -2,26 +2,30 @@ package kaloffl.spath.tracing
 
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Ray
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Vec3d
+import kaloffl.spath.math.{Color, Ray, Vec2d, Vec3d}
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.Material
 
 object RecursivePathTracer extends Tracer {
 
   override def trace(ray: Ray,
-                     scene: Scene,
-                     maxBounces: Int,
-                     random: DoubleSupplier): Color = {
+    scene: Scene,
+    maxBounces: Int,
+    random: DoubleSupplier): (Color, Int) = {
     val mediaStack = scene.initialMediaStack
     val mediaHead = mediaStack.length - 1
-    return trace(ray, scene, mediaStack, mediaHead, maxBounces, random)
+    return trace(ray, scene, mediaStack, mediaHead, 0, maxBounces, random)
   }
 
-  def trace(ray: Ray, scene: Scene, media: Array[Material], mediaHead: Int, i: Int, random: DoubleSupplier): Color = {
-    if (0 == i) return Color.Black
+  def trace(
+    ray: Ray,
+    scene: Scene,
+    media: Array[Material],
+    mediaHead: Int,
+    i: Int,
+    maxBounces: Int,
+    random: DoubleSupplier): (Color, Int) = {
+    if (i == maxBounces) return (Color.Black, 1)
 
     // First we determine the distance it will take the ray to hit an air 
     // particle and be scattered. If the current air has a scatter probability 
@@ -43,19 +47,17 @@ object RecursivePathTracer extends Tracer {
         val dist = scene.skyDistance
         val point = ray.atDistance(dist)
         val emitted = scene.skyMaterial.getEmittance(ray.normal)
-        val absorbed =
           if (java.lang.Double.isInfinite(dist)) {
-            Color.White
+            return (emitted, 1)
           } else {
-            (media(mediaHead).absorbtion * -dist.toFloat).exp
+            return (emitted * (media(mediaHead).absorbtion * -dist.toFloat).exp, 1)
           }
-        return emitted * absorbed
       }
 
       val point = ray.atDistance(scatterDist)
       val absorbed = (media(mediaHead).absorbtion * -scatterDist.toFloat).exp
       val randomRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
-      var color = trace(randomRay, scene, media, mediaHead, i - 1, random)
+      var (color, paths) = trace(randomRay, scene, media, mediaHead, i + 1, maxBounces, random)
       if (i > 1) {
         var h = 0
         val hints = scene.lightHints
@@ -64,41 +66,44 @@ object RecursivePathTracer extends Tracer {
           if (hint.applicableFor(point)) {
             val lightRay = hint.target.createRandomRay(point, random)
             val angle = hint.target.getSolidAngle(point).toFloat
-            color += trace(lightRay, scene, media, mediaHead, i / 2, random) * angle
+            val (c, p) = trace(lightRay, scene, media, mediaHead, i * 2, maxBounces, random)
+            color += c * angle
+            paths += p
           }
           h += 1
         }
       }
-      return absorbed * color
+      return (absorbed * color, paths)
     } else {
       val depth = intersection.depth
-      val absorbed = if(media(mediaHead).absorbtion != Color.Black) {
+      val absorbed = if (media(mediaHead).absorbtion != Color.Black) {
         (media(mediaHead).absorbtion * -depth.toFloat).exp
       } else {
         Color.White
       }
 
-      if (intersection.material.emittance != Color.Black) {
-        return intersection.material.emittance * absorbed
+      if (intersection.material.emission != Color.Black) {
+        return (intersection.material.emission * absorbed, 1)
       }
 
       val point = ray.atDistance(depth)
       val surfaceNormal = intersection.normal()
-      val info = intersection.material.getInfo(
+      val scatterings = intersection.material.getScattering(
         incomingNormal = ray.normal,
         surfaceNormal = surfaceNormal,
-        textureCoordinate = intersection.textureCoordinate(),
-        airRefractiveIndex = media(mediaHead).refractiveIndex,
+        uv = intersection.textureCoordinate(),
+        outsideIor = media(mediaHead).ior,
         random = random)
 
-      val scattering = info.scattering
-      val paths = scattering.paths
       var color = Color.Black
+      var evaluatedPaths = 0
       var d = 0
-      while (d < paths) {
-        val weight = scattering.getWeight(d)
-        if (weight > 0.0001) {
-          val newDir = scattering.getNormal(d)
+      val minWeight = i.toFloat / maxBounces
+      while (d < scatterings.length) {
+        val s = scatterings(d)
+        val weight = s.weight
+        if (weight > minWeight) {
+          val newDir = s.normal
           val newRay = new Ray(point, newDir)
           if (newDir.dot(surfaceNormal) < 0) {
             // if the new ray has entered a surface
@@ -106,34 +111,23 @@ object RecursivePathTracer extends Tracer {
             val newMedia = new Array[Material](newHead + 1)
             System.arraycopy(media, 0, newMedia, 0, newHead)
             newMedia(newHead) = intersection.material
-            color += trace(newRay, scene, newMedia, mediaHead + 1, i - 1, random) * weight
+            val (c, p) = trace(newRay, scene, newMedia, mediaHead + 1, i + 1, maxBounces, random)
+            color += c * weight * s.color
+            evaluatedPaths += p
           } else if (ray.normal.dot(surfaceNormal) >= 0 && mediaHead > 0) {
             // if the ray is exiting a surface
-            color += trace(newRay, scene, media, mediaHead - 1, i - 1, random) * weight
+            val (c, p) = trace(newRay, scene, media, mediaHead - 1, i + 1, maxBounces, random)
+            color += c * weight * s.color
+            evaluatedPaths += p
           } else {
-            color += trace(newRay, scene, media, mediaHead, i - 1, random) * weight
-            if (i > 1 && scene.lightHints.length > 0) {
-            	val hints = scene.lightHints
-//              var h = 0
-//              while (h < hints.length) {
-//                val hint = hints(h)
-                val hint = hints((hints.length * random.getAsDouble).toInt)
-                if (hint.applicableFor(point)) {
-                  val lightRay = hint.target.createRandomRay(point, random)
-                  val contribution = scattering.getContribution(lightRay.normal)
-                  if (contribution > 0) {
-                    val angle = hint.target.getSolidAngle(point).toFloat
-                    color += trace(lightRay, scene, media, mediaHead, 1, random) * angle * contribution
-                  }
-                }
-//                h += 1
-//              }
-            }
+            val (c, p) = trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random)
+          	 color += c * weight * s.color
+          	 evaluatedPaths += p
           }
         }
         d += 1
       }
-      return info.reflectance * absorbed * color
+      return (absorbed * color, evaluatedPaths)
     }
   }
 }

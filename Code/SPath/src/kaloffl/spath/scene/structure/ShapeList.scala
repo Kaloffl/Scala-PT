@@ -2,9 +2,7 @@ package kaloffl.spath.scene.structure
 
 import kaloffl.spath.math.Ray
 import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Bounded
-import kaloffl.spath.scene.shapes.Shape
+import kaloffl.spath.scene.shapes.{AABB, Bounded, Shape}
 import kaloffl.spath.tracing.Intersection
 
 class ShapeList[T <: Shape](val shapes: Array[T], val material: Material) extends SceneNode {

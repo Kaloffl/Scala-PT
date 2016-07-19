@@ -25,7 +25,7 @@ class AutoBalance(override val target: RenderTarget) extends Filter {
     colorBuffer(x * height + y) = color
   }
 
-  override def commit: Unit = {
+  override def commit(): Unit = {
     val diffR = maxR - minR
     val diffG = maxG - minG
     val diffB = maxB - minB
@@ -42,6 +42,6 @@ class AutoBalance(override val target: RenderTarget) extends Filter {
     maxR = 0f
     maxG = 0f
     maxB = 0f
-    target.commit
+    target.commit()
   }
 }

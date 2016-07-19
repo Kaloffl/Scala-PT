@@ -9,5 +9,5 @@ trait RenderTarget {
 
   def setPixel(x: Int, y: Int, color: Color): Unit
 
-  def commit: Unit
+  def commit(): Unit
 }

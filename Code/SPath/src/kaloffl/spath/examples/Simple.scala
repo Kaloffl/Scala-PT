@@ -1,21 +1,13 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
+import kaloffl.spath.math.{Color, Vec3d}
 import kaloffl.spath.scene.hints.GlobalHint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.ReflectiveMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Sphere
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, MetalMaterial, TransparentMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Simple {
 
@@ -27,11 +19,11 @@ object Simple {
     val matBlackDiffuse = DiffuseMaterial(Color(0.1f, 0.1f, 0.1f))
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matMirror = ReflectiveMaterial(Color.White)
+    val matMirror = new MetalMaterial((_, _) => Color.White)
     val matGlass = new TransparentMaterial(
-      color = Color(0.09f, 0.09f, 0.09f),
-      refractiveIndex = 2.0f)
-    val matLight = LightMaterial(Color.White * 8f)
+      volumeColor = Color(0.09f, 0.09f, 0.09f),
+      ior = 2.0f)
+    val matLight = new EmittingMaterial(Color.White, 8f)
 
     val light1 = new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f)
     val light2 = new Sphere(Vec3d(-1.0f, 3.0f, -5.9f), 1f)
@@ -65,7 +57,7 @@ object Simple {
         up = up),
       scene = new Scene(
         root = coloredSpheres,
-        lightHints = Array(new GlobalHint(light1), new GlobalHint(light2)),
+        lightHints = Array(GlobalHint(light1), GlobalHint(light2)),
         camera = new PinholeCamera))
   }
 }

@@ -1,9 +1,13 @@
 package kaloffl.spath
 
-case class InputEvent(key: InputEvent.Key, pressed: Boolean)
+trait InputEvent
 
-object InputEvent {
-  case class Key(val id: Int)
+case class MouseEvent(x: Int, y: Int, dragged: Boolean) extends InputEvent
+
+case class KeyEvent(key: KeyEvent.Key, pressed: Boolean) extends InputEvent
+
+object KeyEvent {
+  case class Key(id: Int)
 
   val Key_A = Key(0)
   val Key_B = Key(1)
@@ -69,4 +73,10 @@ object InputEvent {
   val Key_Down = Key(57)
   val Key_Left = Key(58)
   val Key_Right = Key(59)
+  
+  val Mouse_1 = Key(60)
+  val Mouse_2 = Key(61)
+  val Mouse_3 = Key(62)
+  val Mouse_4 = Key(63)
+  val Mouse_5 = Key(64)
 }

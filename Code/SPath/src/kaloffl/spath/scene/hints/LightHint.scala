@@ -1,8 +1,7 @@
 package kaloffl.spath.scene.hints
 
 import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.shapes.Projectable
-import kaloffl.spath.scene.shapes.Closed
+import kaloffl.spath.scene.shapes.{Closed, Projectable}
 
 trait LightHint {
   def target: Projectable

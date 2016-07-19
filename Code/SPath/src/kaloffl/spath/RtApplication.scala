@@ -1,16 +1,13 @@
 package kaloffl.spath
 
 import java.util.concurrent.ThreadLocalRandom
-import java.util.concurrent.locks.LockSupport
 import java.util.function.DoubleSupplier
-import kaloffl.jobs.Job
-import kaloffl.jobs.JobPool
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.tracing.Tracer
-import kaloffl.spath.tracing.TracingWorker
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.math.Quaternion
+
+import kaloffl.jobs.{Job, JobPool}
 import kaloffl.spath.filter.ScaleFilter
+import kaloffl.spath.math.{Quaternion, Vec3d}
+import kaloffl.spath.scene.{Scene, Viewpoint}
+import kaloffl.spath.tracing.{Tracer, TracingWorker}
 
 object RtApplication {
 
@@ -23,7 +20,7 @@ object RtApplication {
 
   private var stopped = false
 
-  def stop: Unit = {
+  def stop(): Unit = {
     stopped = true
   }
 
@@ -41,55 +38,63 @@ object RtApplication {
     val pool = new JobPool
     while (!stopped) {
       while (events.hasNext) {
-        val event = events.next
-        if (event.pressed) {
-          view = event.key match {
-            case InputEvent.Key_W => {
-              reset = true
-              new Viewpoint(view.position + view.forward * 0.1, view.forward, view.up)
-            }
-            case InputEvent.Key_A => {
-              reset = true
-              new Viewpoint(view.position + view.right * -0.1, view.forward, view.up)
-            }
-            case InputEvent.Key_S => {
-              reset = true
-              new Viewpoint(view.position + view.forward * -0.1, view.forward, view.up)
-            }
-            case InputEvent.Key_D => {
-              reset = true
-              new Viewpoint(view.position + view.right * 0.1, view.forward, view.up)
-            }
+        events.next match {
+          case KeyEvent(key, true) => {
+            view = key match {
+              case KeyEvent.Key_W => {
+                reset = true
+                new Viewpoint(view.position + view.forward * 0.1, view.forward, view.up)
+              }
+              case KeyEvent.Key_A => {
+                reset = true
+                new Viewpoint(view.position + view.right * -0.1, view.forward, view.up)
+              }
+              case KeyEvent.Key_S => {
+                reset = true
+                new Viewpoint(view.position + view.forward * -0.1, view.forward, view.up)
+              }
+              case KeyEvent.Key_D => {
+                reset = true
+                new Viewpoint(view.position + view.right * 0.1, view.forward, view.up)
+              }
 
-            case InputEvent.Key_Q => {
-              reset = true
-              val quat = Quaternion(view.up, Math.PI / 8)
-              new Viewpoint(view.position, (quat * view.forward * ~quat).toVec3, view.up)
-            }
-            case InputEvent.Key_E => {
-              reset = true
-              val quat = Quaternion(view.up, 15 * Math.PI / 8)
-              new Viewpoint(view.position, (quat * view.forward * ~quat).toVec3, view.up)
-            }
-            case InputEvent.Key_R => {
-              reset = true
-              val quat = Quaternion(view.right, Math.PI / 8)
-              val iquat = ~quat
-              val forward = (quat * view.forward * iquat).toVec3
-              val up = (quat * view.up * iquat).toVec3
-              new Viewpoint(view.position, forward, up)
-            }
-            case InputEvent.Key_F => {
-              reset = true
-              val quat = Quaternion(view.right, 15 * Math.PI / 8)
-              val iquat = ~quat
-              val forward = (quat * view.forward * iquat).toVec3
-              val up = (quat * view.up * iquat).toVec3
-              new Viewpoint(view.position, forward, up)
-            }
+              case KeyEvent.Key_Q => {
+                reset = true
+                val quat = Quaternion(Vec3d.Up, Math.PI / 8)
+                new Viewpoint(
+                  view.position,
+                  (quat * view.forward * ~quat).toVec3,
+                  (quat * view.up * ~quat).toVec3)
+              }
+              case KeyEvent.Key_E => {
+                reset = true
+                val quat = Quaternion(Vec3d.Up, 15 * Math.PI / 8)
+                new Viewpoint(
+                  view.position,
+                  (quat * view.forward * ~quat).toVec3,
+                  (quat * view.up * ~quat).toVec3)
+              }
+              case KeyEvent.Key_R => {
+                reset = true
+                val quat = Quaternion(view.right, Math.PI / 8)
+                new Viewpoint(
+                  view.position,
+                  (quat * view.forward * ~quat).toVec3,
+                  (quat * view.up * ~quat).toVec3)
+              }
+              case KeyEvent.Key_F => {
+                reset = true
+                val quat = Quaternion(view.right, 15 * Math.PI / 8)
+                new Viewpoint(
+                  view.position,
+                  (quat * view.forward * ~quat).toVec3,
+                  (quat * view.up * ~quat).toVec3)
+              }
 
-            case _ => view
+              case _ => view
+            }
           }
+          case _ =>
         }
       }
       if (reset || target != actualTarget) {
@@ -113,13 +118,13 @@ object RtApplication {
       for (i ← 0 until numberOfWorkers) {
         val worker = tracingWorkers(i)
         pool.submit(new Job {
-          override def execute = {
-            worker.render(view, bounces, 0)
-            worker.draw
+          override def execute(): Unit = {
+            worker.render(view, bounces)
+            worker.draw()
           }
         })
       }
-      pool.execute
+      pool.execute()
 
       val after = System.nanoTime
       val duration = after - before
@@ -129,7 +134,7 @@ object RtApplication {
         println("rendertime: " + Math.floor(duration / 10000.0) / 100.0 + "ms")
       }
 
-      actualTarget.commit
+      actualTarget.commit()
     }
   }
 }

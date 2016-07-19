@@ -1,10 +1,7 @@
 package kaloffl.spath.scene.shapes
 
-import kaloffl.spath.math.Ray
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.math.Vec2d
+import kaloffl.spath.math.{Ray, Vec2d, Vec3d}
 import kaloffl.spath.scene.materials.Texture
-import kaloffl.spath.math.Color
 
 class NormalMappedShape(val base: Shape, val normalMap: Texture) extends Shape {
 

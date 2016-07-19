@@ -2,7 +2,7 @@ package kaloffl.spath.math
 
 import java.util.function.DoubleSupplier
 
-case class Vec2d(val x: Double, val y: Double) {
+case class Vec2d(x: Double, y: Double) {
 
   def +(v: Vec2d): Vec2d = Vec2d(x + v.x, y + v.y)
   def +(f: Double): Vec2d = Vec2d(x + f, y + f)
@@ -76,14 +76,14 @@ object Vec2d {
   }
 
   def fromXAndAngle(x: Double, angle: Double): Vec2d = {
-    return Vec2d(x, x / Math.sin(Math.PI / 2 - angle) * Math.sin(angle));
+    Vec2d(x, x / Math.sin(Math.PI / 2 - angle) * Math.sin(angle))
   }
 
   def fromYAndAngle(y: Double, angle: Double): Vec2d = {
-    return Vec2d(y / Math.sin(angle) * Math.sin(Math.PI / 2 - angle), y);
+    Vec2d(y / Math.sin(angle) * Math.sin(Math.PI / 2 - angle), y)
   }
 
   def fromLengthAndAngle(length: Double, angle: Double): Vec2d = {
-    return Vec2d(Math.cos(angle) * length, Math.sin(angle) * length);
+    Vec2d(Math.cos(angle) * length, Math.sin(angle) * length)
   }
 }

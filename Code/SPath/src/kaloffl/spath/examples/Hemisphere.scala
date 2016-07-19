@@ -3,25 +3,19 @@ package kaloffl.spath.examples
 import java.util.concurrent.ThreadLocalRandom
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.DirectionalSky
+import kaloffl.spath.math.{Color, Vec2d, Vec3d}
+import kaloffl.spath.scene.materials.{DiffuseMaterial, DirectionalSky}
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Hemisphere {
 
   def main(args: Array[String]): Unit = {
     val rng = new DoubleSupplier() {
-      override def getAsDouble(): Double = ThreadLocalRandom.current.nextDouble
+      override def getAsDouble: Double = ThreadLocalRandom.current.nextDouble
     }
 
     val matSky = new DirectionalSky(

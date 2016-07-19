@@ -2,39 +2,37 @@ package kaloffl.spath.scene.materials
 
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec2d
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.SurfaceInfo
+import kaloffl.spath.math.{Vec2d, Vec3d}
 
 class MaskedMaterial(
     val matA: Material,
     val matB: Material,
-    val mask: Mask) extends Material(Color.Black, Color.Black, DummyFunction) {
+    val mask: Mask) extends Material {
 
   def useA(num: Int, factor: Double): Boolean = {
     0 == (num * factor).toInt - ((num - 1) * factor).toInt
   }
 
-  override def getInfo(incomingNormal: Vec3d,
-                       surfaceNormal: ⇒ Vec3d,
-                       textureCoordinate: ⇒ Vec2d,
-                       refractiveIndex: Float,
-                       random: DoubleSupplier): SurfaceInfo = {
+  override def getScattering(
+                              incomingNormal: Vec3d,
+                              surfaceNormal: Vec3d,
+                              uv: Vec2d,
+                              currentRefractiveIndex: Float,
+                              random: DoubleSupplier): Array[Scattering] = {
 
-    if (random.getAsDouble < mask.maskAmount(textureCoordinate)) {
-      matA.getInfo(
+    if (random.getAsDouble < mask.maskAmount(uv)) {
+      matA.getScattering(
         incomingNormal,
         surfaceNormal,
-        textureCoordinate,
-        refractiveIndex,
+        uv,
+        currentRefractiveIndex,
         random)
     } else {
-      matB.getInfo(
+      matB.getScattering(
         incomingNormal,
         surfaceNormal,
-        textureCoordinate,
-        refractiveIndex,
+        uv,
+        currentRefractiveIndex,
         random)
     }
   }

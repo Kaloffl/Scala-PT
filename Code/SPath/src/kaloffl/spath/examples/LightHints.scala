@@ -1,24 +1,13 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.JfxDisplay
-import kaloffl.spath.RenderEngine
-import kaloffl.spath.math.Color
-import kaloffl.spath.math.Vec3d
-import kaloffl.spath.scene.PinholeCamera
-import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.Viewpoint
-import kaloffl.spath.scene.materials.DiffuseMaterial
-import kaloffl.spath.scene.materials.LightMaterial
-import kaloffl.spath.scene.materials.RefractiveMaterial
-import kaloffl.spath.scene.shapes.AABB
-import kaloffl.spath.scene.shapes.Plane
-import kaloffl.spath.scene.shapes.Sphere
-import kaloffl.spath.scene.structure.BoundlessNode
-import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.tracing.RecursivePathTracer
-import kaloffl.spath.scene.shapes.Triangle
+import kaloffl.spath.math.{Color, Vec3d}
 import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial}
+import kaloffl.spath.scene.shapes.{AABB, Plane, Sphere, Triangle}
+import kaloffl.spath.scene.structure.{BoundlessNode, SceneNode}
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
+import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object LightHints {
 
@@ -26,7 +15,7 @@ object LightHints {
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matLight = LightMaterial(Color.White * 100000)
+    val matLight = new EmittingMaterial(Color.White, 100000)
 
     val tri1 = new Triangle(Vec3d(5.1, 7, 0), Vec3d(4.9, 7, 0.1), Vec3d(4.9, 7, -0.1))
     val tri2 = new Triangle(Vec3d(-5.1, 7, 0), Vec3d(-4.9, 7, 0.1), Vec3d(-4.9, 7, -0.1))
@@ -38,7 +27,6 @@ object LightHints {
         matWhiteDiffuse),
       SceneNode(tri1, matLight),
       SceneNode(tri2, matLight),
-//      SceneNode(sphere, matLight),
       BoundlessNode(new Plane(Vec3d.Up, 0), matWhiteDiffuse)))
 
     val front = Vec3d(0, -2.5, -13)
@@ -54,7 +42,7 @@ object LightHints {
         up = up),
       scene = new Scene(
         root = objects,
-        lightHints = Array(new GlobalHint(tri1), new GlobalHint(sphere)),
+        lightHints = Array(GlobalHint(tri1), GlobalHint(sphere)),
         camera = new PinholeCamera))
   }
 }

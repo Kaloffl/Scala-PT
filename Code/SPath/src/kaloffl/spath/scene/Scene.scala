@@ -1,12 +1,8 @@
 package kaloffl.spath.scene
 
-import kaloffl.spath.math.Color
 import kaloffl.spath.math.Ray
 import kaloffl.spath.scene.hints.LightHint
-import kaloffl.spath.scene.materials.BlackSky
-import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.materials.SkyMaterial
-import kaloffl.spath.scene.materials.TransparentMaterial
+import kaloffl.spath.scene.materials.{BlackSky, Material, SkyMaterial, TransparentMaterial}
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.tracing.Intersection
 
@@ -16,7 +12,7 @@ import kaloffl.spath.tracing.Intersection
  */
 class Scene(val root: SceneNode,
             val camera: Camera,
-            val initialMediaStack: Array[Material] = Array(new TransparentMaterial(Color.Black)),
+            val initialMediaStack: Array[Material] = Array(new TransparentMaterial()),
             val skyMaterial: SkyMaterial = BlackSky,
             val skyDistance: Double = Double.PositiveInfinity,
             val lightHints: Array[LightHint] = Array()) {
