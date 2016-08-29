@@ -10,27 +10,28 @@ object RayTracer extends Tracer {
   override def trace(ray: Ray,
                      scene: Scene,
                      maxBounces: Int,
-                     random: DoubleSupplier): (Color, Int) = {
-    if (0 == maxBounces) return (Color.Black, 1)
+                     random: DoubleSupplier): Color = {
+    if (0 == maxBounces) return Color.Black
 
     val intersection = scene.getIntersection(ray, Double.PositiveInfinity)
     if (!intersection.hitObject) {
       val dist = scene.skyDistance
       val point = ray.atDistance(dist)
-      return (scene.skyMaterial.getEmittance(ray.normal), 1)
+      return scene.skyMaterial.getEmittance(ray.normal)
     } else {
       val depth = intersection.depth
 
       if (intersection.material.emission != Color.Black) {
-        return (intersection.material.emission, 1)
+        return intersection.material.emission
       }
 
       val point = ray.atDistance(depth)
       val surfaceNormal = intersection.normal()
+      val uv = intersection.textureCoordinate()
       val scatterings = intersection.material.getScattering(
         incomingNormal = ray.normal,
         surfaceNormal = surfaceNormal,
-        uv = intersection.textureCoordinate(),
+        uv = uv,
         outsideIor = 1,
         random = random)
 
@@ -43,19 +44,15 @@ object RayTracer extends Tracer {
           val lightRay = hint.target.createRandomRay(point, random)
           val contribution = surfaceNormal.dot(lightRay.normal).toFloat
           if (contribution > 0) {
+            val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, lightRay.normal, uv, 1.0f)
             val angle = hint.target.getSolidAngle(point).toFloat
             val lightIntersection = scene.getIntersection(lightRay, Double.PositiveInfinity)
-            color += lightIntersection.material.emission * angle * contribution
+            color += lightIntersection.material.emission * angle * contribution * bsdf
           }
         }
         h += 1
       }
-      var i = 0
-      while (i < scatterings.length) {
-        color *= scatterings(i).color
-        i += 1
-      }
-      return (color, 1)
+      return color
     }
   }
 }

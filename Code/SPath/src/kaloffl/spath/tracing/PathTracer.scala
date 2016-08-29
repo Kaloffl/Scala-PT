@@ -11,7 +11,7 @@ object PathTracer extends Tracer {
   override def trace(initialRay: Ray,
                      scene: Scene,
                      maxBounces: Int,
-                     random: DoubleSupplier): (Color, Int) = {
+                     random: DoubleSupplier): Color = {
     var ray = initialRay
     var color = Color.White
     var i = 0
@@ -26,7 +26,7 @@ object PathTracer extends Tracer {
       val survivability = Math.max(color.r2, Math.max(color.g2, color.b2)) * (maxBounces - i)
       if (survivability < 1) {
         if (random.getAsDouble > survivability) {
-          return (Color.Black, 1)
+          return Color.Black
         } else {
           color /= survivability
         }
@@ -58,7 +58,7 @@ object PathTracer extends Tracer {
             } else {
               (media(mediaIndex).absorbtion * -dist.toFloat).exp
             }
-          return (color * emitted * absorbed, 1)
+          return color * emitted * absorbed
         }
 
         val point = ray.atDistance(scatterDist)
@@ -75,26 +75,33 @@ object PathTracer extends Tracer {
         }
 
         if (intersection.material.emission != Color.Black) {
-          return (color * intersection.material.emission * absorbed, 1)
+          return color * intersection.material.emission * absorbed
         }
 
         val point = ray.atDistance(depth)
     		val surfaceNormal = intersection.normal()
+        val uv = intersection.textureCoordinate()
     		val scatterings = intersection.material.getScattering(
     				incomingNormal = ray.normal,
     				surfaceNormal = surfaceNormal,
-    				uv = intersection.textureCoordinate(),
+    				uv = uv,
     				outsideIor = media(mediaIndex).ior,
     				random = random)
 
-        val rnd = random.getAsDouble
-        var d = 0
-        var weights = scatterings(d).weight
-        while (weights < rnd) {
-          d += 1
-          weights += scatterings(d).weight
+        val weights = scatterings.map { v =>
+          intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, v, uv, media(mediaIndex).ior)
         }
-        val newDir = scatterings(d).normal
+
+        val max = weights.map(c => c.r2 + c.g2 + c.b2).sum
+
+        val rnd = random.getAsDouble * max
+        var sum = weights(0)
+        var i = 1
+        while (i < weights.length && rnd > sum.r2 + sum.g2 + sum.b2) {
+          sum += weights(i)
+          i += 1
+        }
+        val newDir = scatterings(i - 1)
 
         if (newDir.dot(surfaceNormal) < 0) {
           // if the new ray has entered a surface
@@ -110,11 +117,12 @@ object PathTracer extends Tracer {
           // the exiting detection.
           mediaIndex = Math.max(0, mediaIndex - 1)
         }
+        val bsdf = weights(i - 1)
         ray = new Ray(point, newDir)
-        color *= scatterings(d).color * absorbed
+        color *= bsdf * absorbed
       }
       i += 1
     }
-    return (Color.Black, 1)
+    return Color.Black
   }
 }

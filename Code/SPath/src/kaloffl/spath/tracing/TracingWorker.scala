@@ -49,13 +49,13 @@ class TracingWorker(
       for (_ <- 0 until passes) {
         val start = System.nanoTime
 
-        val (color, paths) = tracer.trace(
+        val color = tracer.trace(
           ray = ray,
           scene = scene,
           maxBounces = maxBounces,
           random = random)
 
-        sampleStorage.addSample(x, y, color, paths)
+        sampleStorage.addSample(x, y, color, 1)
         
         if(cpuSaturation < 1) {
           val stop = System.nanoTime

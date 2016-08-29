@@ -2,39 +2,64 @@ package kaloffl.spath.scene.materials
 
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.math.{Vec2d, Vec3d}
+import kaloffl.spath.math.{Color, Vec2d, Vec3d}
 
 class MaskedMaterial(
     val matA: Material,
     val matB: Material,
     val mask: Mask) extends Material {
 
-  def useA(num: Int, factor: Double): Boolean = {
-    0 == (num * factor).toInt - ((num - 1) * factor).toInt
-  }
-
   override def getScattering(
                               incomingNormal: Vec3d,
                               surfaceNormal: Vec3d,
                               uv: Vec2d,
-                              currentRefractiveIndex: Float,
-                              random: DoubleSupplier): Array[Scattering] = {
+                              outsideIor: Float,
+                              random: DoubleSupplier): Array[Vec3d] = {
 
-    if (random.getAsDouble < mask.maskAmount(uv)) {
+    val matAResult =
       matA.getScattering(
         incomingNormal,
         surfaceNormal,
         uv,
-        currentRefractiveIndex,
+        outsideIor,
         random)
-    } else {
+
+    val matBResult =
       matB.getScattering(
         incomingNormal,
         surfaceNormal,
         uv,
-        currentRefractiveIndex,
+        outsideIor,
         random)
-    }
+
+    val result = new Array[Vec3d](matAResult.length + matBResult.length)
+    for (i <- matAResult.indices) result(i) = matAResult(i)
+    for (i <- matBResult.indices) result(i + matAResult.length) = matBResult(i)
+
+    return result
+  }
+
+  override def evaluateBSDF(
+                             toEye: Vec3d,
+                             surfaceNormal: Vec3d,
+                             toLight: Vec3d,
+                             uv: Vec2d,
+                             outsideIor: Float): Color = {
+
+    val weightA = mask.maskAmount(uv)
+    val resultA = matA.evaluateBSDF(
+        toEye,
+        surfaceNormal,
+        toLight,
+        uv,
+        outsideIor)
+    val resultB = matB.evaluateBSDF(
+        toEye,
+        surfaceNormal,
+        toLight,
+        uv,
+        outsideIor)
+    return resultA * weightA + resultB * (1 - weightA)
   }
 
 }

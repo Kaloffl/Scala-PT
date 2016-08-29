@@ -10,5 +10,5 @@ trait Tracer {
   def trace(ray: Ray,
             scene: Scene,
             maxBounces: Int,
-            random: DoubleSupplier): (Color, Int)
+            random: DoubleSupplier): Color
 }

@@ -9,7 +9,8 @@ trait Material {
   def scatterProbability: Float = 0
   def emission: Color = Color.Black
   def ior: Float = 1.0f
-  def getScattering(incomingNormal: Vec3d, surfaceNormal: Vec3d, uv: Vec2d, outsideIor: Float, random: DoubleSupplier): Array[Scattering]
+  def getScattering(incomingNormal: Vec3d, surfaceNormal: Vec3d, uv: Vec2d, outsideIor: Float, random: DoubleSupplier): Array[Vec3d]
+  def evaluateBSDF(toEye: Vec3d, surfaceNormal: Vec3d, toLight: Vec3d, uv: Vec2d, outsideIor: Float): Color
 }
 
 class Scattering(
@@ -20,7 +21,6 @@ class Scattering(
 class DielectricMaterial(
                         val albedo: (Float, Float) => Color,
                         val roughness: (Float, Float) => Float = (_, _) => 0f,
-                        val reflectivity: (Float, Float) => Float = (_, _) => 0f,
                         override val ior: Float = 1.42f
                         ) extends Material {
 
@@ -29,25 +29,35 @@ class DielectricMaterial(
                               surfaceNormal: Vec3d,
                               uv: Vec2d,
                               outsideIor: Float,
-                              random: DoubleSupplier): Array[Scattering] = {
+                              random: DoubleSupplier): Array[Vec3d] = {
     val u = uv.x.toFloat
     val v = uv.y.toFloat
     val rough = Math.pow(roughness(u, v), 4).toFloat
     val axis = surfaceNormal.randomConeSample(Vec2d.random(random), rough, 0)
     val reflected = incomingNormal.reflect(axis)
-    val r = incomingNormal.refractance(surfaceNormal, outsideIor, ior).toFloat
-    val f0 = reflectivity(u, v)
-    val fresnel = (f0 + (1 - f0) * r) * (1 - rough)
 
     Array(
-      new Scattering(
-        weight = fresnel,
-        color = Color.White,
-        normal = if(reflected.dot(surfaceNormal) < 0) -reflected else reflected),
-      new Scattering(
-        weight = 1 - fresnel,
-        color = albedo(u, v),
-        normal = surfaceNormal.weightedHemisphere(Vec2d.random(random))))
+      if(reflected.dot(surfaceNormal) < 0) -reflected else reflected,
+      surfaceNormal.randomHemisphere(Vec2d.random(random)))
+  }
+
+  override def evaluateBSDF(
+                             toEye: Vec3d,
+                             surfaceNormal: Vec3d,
+                             toLight: Vec3d,
+                             uv: Vec2d,
+                             outsideIor: Float): Color = {
+    val u = uv.x.toFloat
+    val v = uv.y.toFloat
+    val h = (toEye + toLight).normalize
+    val rough = Math.pow(roughness(u, v), 4).toFloat
+    if (h.dot(surfaceNormal) + 0.0001 < (1 - rough)) {
+      // no specular because half-vector doesn't match surface roughness
+      return albedo(u, v) * surfaceNormal.dot(toLight).toFloat
+    } else {
+      val r = (-toEye).refractance(h, outsideIor, ior).toFloat
+      return Color.White * r + albedo(u, v) * (1 - r) * surfaceNormal.dot(toLight).toFloat
+    }
   }
 }
 
@@ -62,22 +72,27 @@ class MetalMaterial(
                               surfaceNormal: Vec3d,
                               uv: Vec2d,
                               outsideIor: Float,
-                              random: DoubleSupplier): Array[Scattering] = {
+                              random: DoubleSupplier): Array[Vec3d] = {
     val u = uv.x.toFloat
     val v = uv.y.toFloat
     val rough = Math.pow(roughness(u, v), 4).toFloat
     val axis = surfaceNormal.randomConeSample(Vec2d.random(random), rough, 0)
     val reflected = incomingNormal.reflect(axis)
-    val normal = if (reflected.dot(surfaceNormal) < 0) -reflected else reflected
-    val r = incomingNormal.refractance(surfaceNormal, outsideIor, ior).toFloat
-    val fresnel = r * (1 - rough)
-    val tint = color(u, v) * (1 - fresnel) + Color.White * fresnel
 
-    Array(
-      new Scattering(
-        weight = 1,
-        color = tint,
-        normal = normal))
+    Array(if (reflected.dot(surfaceNormal) < 0) -reflected else reflected)
+  }
+
+  override def evaluateBSDF(
+                             toEye: Vec3d,
+                             surfaceNormal: Vec3d,
+                             toLight: Vec3d,
+                             uv: Vec2d,
+                             outsideIor: Float): Color = {
+    val u = uv.x.toFloat
+    val v = uv.y.toFloat
+    val h = (toEye + toLight).normalize
+    val r = (-toEye).refractance(h, outsideIor, ior).toFloat
+    return Color.White * (1 - r) + color(u, v) * r
   }
 }
 
@@ -96,32 +111,84 @@ class TransparentMaterial(
                               surfaceNormal: Vec3d,
                               uv: Vec2d,
                               outsideIor: Float,
-                              random: DoubleSupplier): Array[Scattering] = {
+                              random: DoubleSupplier): Array[Vec3d] = {
     val u = uv.x.toFloat
     val v = uv.y.toFloat
     val rough = Math.pow(roughness(u, v), 4).toFloat
 
     var ior1 = outsideIor
     var ior2 = ior
-    var axis = surfaceNormal.randomConeSample(Vec2d.random(random), rough, 0)
+    var norm = surfaceNormal
 
     if (surfaceNormal.dot(incomingNormal) > 0) {
       ior1 = ior
       ior2 = outsideIor
-      axis = -axis
+      norm = -surfaceNormal
+    }
+    val axis = norm.randomConeSample(Vec2d.random(random), rough, 0)
+
+    val r = incomingNormal.refractance(axis, ior1, ior2)
+
+    if (ior1 == ior2) {
+      Array(incomingNormal)
+    } else if (r >= 0.99) {
+      Array(incomingNormal.reflect(axis))
+    } else if (r <= 0.01) {
+      Array(incomingNormal.refract(axis, ior1, ior2))
+    } else {
+      Array(incomingNormal.reflect(axis), incomingNormal.refract(axis, ior1, ior2))
+    }
+  }
+
+  override def evaluateBSDF(
+                             toEye: Vec3d,
+                             surfaceNormal: Vec3d,
+                             toLight: Vec3d,
+                             uv: Vec2d,
+                             outsideIor: Float): Color = {
+    val u = uv.x.toFloat
+    val v = uv.y.toFloat
+    val rough = Math.pow(roughness(u, v), 4).toFloat
+
+    val eyeDir = toEye dot surfaceNormal
+    val lightDir = toLight dot surfaceNormal
+
+    var ior1 = outsideIor
+    var ior2 = ior
+
+    if (eyeDir < 0) {
+      ior1 = ior
+      ior2 = outsideIor
     }
 
-    val r = incomingNormal.refractance(axis, ior1, ior2).toFloat * (1 - rough)
+    if (eyeDir * lightDir < 0) {
+      // transmission
+      val h = if (ior1 != ior2) {
+        (-toEye - toLight * ior2 / ior1).normalize
+      } else {
+        surfaceNormal
+      }
+      if (h.dot(surfaceNormal) + 0.0001 < (1 - rough)) {
+        // if the angle of refraction isn't possible with the
+        // surface roughness we throw it away.
+        return Color.Red
+      } else {
+        val r = (-toEye).refractance(h, ior1, ior2).toFloat
+        return surfaceColor(u, v) * (1 - r)
+      }
 
-    Array(
-      new Scattering(
-        weight = r,
-        color = Color.White,
-        normal = incomingNormal.reflect(axis)),
-      new Scattering(
-        weight = 1 - r,
-        color = surfaceColor(u, v),
-        normal = incomingNormal.refract(axis, ior1, ior2)))
+    } else {
+      // reflection
+      val h = (toEye + toLight).normalize
+      if (h.dot(surfaceNormal) + 0.0001 < (1 - rough)) {
+        // direction doesn't fit in reflection code, but wasn't transmitted
+        // this is impossible with this type of material
+        return Color.Black
+      } else {
+        val r = (-toEye).refractance(h, ior1, ior2).toFloat
+        return Color.White * r
+      }
+    }
   }
 }
 
@@ -136,7 +203,14 @@ class EmittingMaterial(
                               surfaceNormal: Vec3d,
                               uv: Vec2d,
                               outsideIor: Float,
-                              random: DoubleSupplier): Array[Scattering] = Array()
+                              random: DoubleSupplier): Array[Vec3d] = Array()
+
+  override def evaluateBSDF(
+                             toEye: Vec3d,
+                             surfaceNormal: Vec3d,
+                             toLight: Vec3d,
+                             uv: Vec2d,
+                             outsideIor: Float): Color = ???
 }
 
 object DiffuseMaterial {
