@@ -15,10 +15,10 @@ import java.util.concurrent.locks.LockSupport
  * until all jobs are done, at which point it will return from the execute
  * method.
  */
-class JobPool {
+class JobPool(numThreads: Int = Runtime.getRuntime.availableProcessors) {
   val jobQueue = new ConcurrentLinkedQueue[Job]
   val waitingWorkers = new ConcurrentLinkedQueue[Worker]
-  private val numberOfWorkers = Runtime.getRuntime.availableProcessors - 1
+  private val numberOfWorkers = numThreads - 1
   private val workers = Array.tabulate(numberOfWorkers) { _ ⇒ new Worker(this) }
   private val mainWorker = new Worker(this)
   private val threads = Array.tabulate(numberOfWorkers) { i ⇒ new Thread(workers(i)) }
