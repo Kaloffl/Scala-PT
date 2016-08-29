@@ -104,8 +104,7 @@ case class Vec3d(x: Double, y: Double, z: Double) {
     }
     val cosT = Math.sqrt(1.0 - sinT2)
     val rOrth = (i1 * cosI - i2 * cosT) / (i1 * cosI + i2 * cosT)
-    val rPar = (i2 * cosI - i1 * cosT) / (i2 * cosI + i1 * cosT)
-    return (rOrth * rOrth + rPar * rPar) / 2.0
+    return rOrth * rOrth
   }
 
   def refract(v: Vec3d, i1: Double, i2: Double): Vec3d = {
