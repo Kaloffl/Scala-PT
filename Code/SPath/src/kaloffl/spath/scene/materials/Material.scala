@@ -92,7 +92,7 @@ class MetalMaterial(
     val v = uv.y.toFloat
     val h = (toEye + toLight).normalize
     val r = (-toEye).refractance(h, outsideIor, ior).toFloat
-    return Color.White * (1 - r) + color(u, v) * r
+    return Color.White * r + color(u, v) * (1 - r)
   }
 }
 
