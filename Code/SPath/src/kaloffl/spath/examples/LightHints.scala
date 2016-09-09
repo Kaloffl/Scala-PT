@@ -33,9 +33,8 @@ object LightHints {
     val up = front.normalize.cross(Vec3d.Right).normalize
 
     RenderEngine.render(
-      bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = RecursivePathTracer,
+      tracer = new RecursivePathTracer(maxBounces = 12),
       view = new Viewpoint(
         position = Vec3d(0, 5, 13),
         forward = front.normalize,

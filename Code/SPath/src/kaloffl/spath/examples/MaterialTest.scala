@@ -25,7 +25,7 @@ object MaterialTest {
           new DielectricMaterial(
             albedo = (u, v) => Color(0.9f, 0.1f, 0.1f),
             roughness = (u, v) => 0.25f * x,
-            reflectivity = (u, v) => 0.25f * y
+            ior = Color.White * (1 + 0.2f * y)
           ))
       }).toArray
     )
@@ -38,7 +38,7 @@ object MaterialTest {
             volumeColor = Color(0.9f, 0.1f, 0.1f),
             roughness = (u, v) => 0.25f * x,
             scatterProbability = 1f * y,
-            ior = 1.42f
+            ior = Color.White * 1.42f
           ))
       }).toArray
     )
@@ -63,15 +63,16 @@ object MaterialTest {
     )
 
     RenderEngine.render(
-      bounces = 10,
       target = new JfxDisplay(1024, 1024),
-      tracer = RecursivePathTracer,
+      tracer = new RecursivePathTracer(maxBounces = 10),
       view = new Viewpoint(
         position = Vec3d(-14, 0, 0),
         forward = Vec3d(1, 0, 0).normalize,
         up = Vec3d.Up),
       scene = new Scene(
-        root = dielectricNodes,
+        //root = dielectricNodes,
+        //root = transparentNodes,
+        root = metalNodes,
         skyMaterial = matSky,
         camera = new PinholeCamera(
           sensorDistance = 0.01f

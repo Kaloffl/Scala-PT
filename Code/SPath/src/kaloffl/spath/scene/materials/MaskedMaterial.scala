@@ -13,10 +13,10 @@ class MaskedMaterial(
                               incomingNormal: Vec3d,
                               surfaceNormal: Vec3d,
                               uv: Vec2d,
-                              outsideIor: Float,
-                              random: DoubleSupplier): Array[Vec3d] = {
+                              outsideIor: Color,
+                              random: DoubleSupplier): (Array[Vec3d], Array[Float]) = {
 
-    val matAResult =
+    val (matANormals, matAWeights) =
       matA.getScattering(
         incomingNormal,
         surfaceNormal,
@@ -24,7 +24,7 @@ class MaskedMaterial(
         outsideIor,
         random)
 
-    val matBResult =
+    val (matBNormals, matBWeights) =
       matB.getScattering(
         incomingNormal,
         surfaceNormal,
@@ -32,11 +32,18 @@ class MaskedMaterial(
         outsideIor,
         random)
 
-    val result = new Array[Vec3d](matAResult.length + matBResult.length)
-    for (i <- matAResult.indices) result(i) = matAResult(i)
-    for (i <- matBResult.indices) result(i + matAResult.length) = matBResult(i)
+    val combinedNormals = new Array[Vec3d](matANormals.length + matBNormals.length)
+    for (i <- matANormals.indices) combinedNormals(i) = matANormals(i)
+    for (i <- matBNormals.indices) combinedNormals(i + matANormals.length) = matBNormals(i)
 
-    return result
+    val weightA = mask.maskAmount(uv)
+    val weightB = 1 - weightA
+
+    val combinedWeights = new Array[Float](matAWeights.length + matBWeights.length)
+    for (i <- matAWeights.indices) combinedWeights(i) = matAWeights(i) * weightA
+    for (i <- matBWeights.indices) combinedWeights(i + matAWeights.length) = matBWeights(i) * weightB
+
+    return (combinedNormals, combinedWeights)
   }
 
   override def evaluateBSDF(
@@ -44,7 +51,7 @@ class MaskedMaterial(
                              surfaceNormal: Vec3d,
                              toLight: Vec3d,
                              uv: Vec2d,
-                             outsideIor: Float): Color = {
+                             outsideIor: Color): Color = {
 
     val weightA = mask.maskAmount(uv)
     val resultA = matA.evaluateBSDF(

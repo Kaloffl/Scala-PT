@@ -5,7 +5,7 @@ import java.util.function.DoubleSupplier
 
 import kaloffl.jobs.{Job, JobPool}
 import kaloffl.spath.scene.{Scene, Viewpoint}
-import kaloffl.spath.tracing.{Tracer, TracingWorker}
+import kaloffl.spath.tracing._
 
 import scala.util.Sorting
 
@@ -40,7 +40,6 @@ object RenderEngine {
    * @param tracer The tracer implementation to use for rendering
    * @param scene The objects and camera for the rendering
    * @param view The location and orientation from where to render
-   * @param bounces Maximal number of bounces that are simulated per pixel per pass (default 8)
    * @param samplesAtOnce the number of samples that should be taken for every pixel before updating the target. Higher values are more efficient but take longer to show up in the preview (default 1)
    * @param cpuSaturation on a scale from 0 (none) to 1 (all) how much cpu time the rendering should try to take (default 1)
    */
@@ -49,7 +48,6 @@ object RenderEngine {
     logger: String => Unit = print(_),
     scene: Scene,
     view: Viewpoint,
-    bounces: Int = 8,
     samplesAtOnce: Int = 1,
     cpuSaturation: Float = 1) {
 
@@ -70,6 +68,13 @@ object RenderEngine {
       val w = if ((i + 1) % cols == 0) target.width - x else width
       val h = if (i >= cols * (rows - 1)) target.height - y else height
       tracingWorkers(i) = new TracingWorker(x, y, w, h, tracer, scene, target, random)
+      /*
+      if (i % 2 == 0) {
+        tracingWorkers(i) = new TracingWorker(x, y, w, h, tracer, scene, target, random)
+      } else {
+        tracingWorkers(i) = new TracingWorker(x, y, w, h, RecursivePathTracer, scene, target, random)
+      }
+      */
     }
 
     var pass = 0
@@ -89,7 +94,7 @@ object RenderEngine {
         pool.submit(new Job {
           override def execute(): Unit = {
             val start = System.nanoTime
-            worker.render(view, bounces, samplesAtOnce, cpuSaturation)
+            worker.render(view, samplesAtOnce, cpuSaturation)
             worker.draw()
             costs(order(i)) += System.nanoTime - start
           }

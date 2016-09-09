@@ -43,9 +43,8 @@ object Hemisphere {
     }).toArray)
 
     RenderEngine.render(
-      bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = PathTracer,
+      tracer = new PathTracer(maxBounces = 12),
       view = new Viewpoint(
         position = Vec3d(0, 0, -2.2),
         forward = Vec3d(0, 0, 1).normalize,

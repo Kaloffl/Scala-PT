@@ -7,7 +7,7 @@ import kaloffl.spath.math.{FastMath, Ray, Vec2d, Vec3d}
 /**
  * A sphere shape consisting of a location and a radius.
  */
-class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projectable with Bounded with Closed {
+class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projectable with Bounded with Closed with Emitter {
 
   val radiusSq = radius * radius
 
@@ -72,5 +72,9 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projecta
     val y = z.cross(x).normalize * Math.sin(angle) * offset
     val normal = (direction + x + y).normalize
     return new Ray(start, normal)
+  }
+
+  override def getRandomPointOfSurface(random: DoubleSupplier): Vec3d = {
+    return Vec3d.randomNormal(Vec2d.random(random)) * radius + position
   }
 }

@@ -12,16 +12,16 @@ object Refraction {
 
   def main(args: Array[String]): Unit = {
 
-    val matWhiteGlass0 = new TransparentMaterial(ior = 1.0f)
-    val matWhiteGlass1 = new TransparentMaterial(ior = 1.1f)
-    val matWhiteGlass2 = new TransparentMaterial(ior = 1.2f)
-    val matWhiteGlass3 = new TransparentMaterial(ior = 1.3f)
-    val matWhiteGlass4 = new TransparentMaterial(ior = 1.4f)
-    val matWhiteGlass5 = new TransparentMaterial(ior = 1.5f)
-    val matWhiteGlass6 = new TransparentMaterial(ior = 1.6f)
-    val matWhiteGlass7 = new TransparentMaterial(ior = 1.7f)
-    val matWhiteGlass8 = new TransparentMaterial(ior = 1.8f)
-    val matWhiteGlass9 = new TransparentMaterial(ior = 1.9f)
+    val matWhiteGlass0 = new TransparentMaterial(ior = Color.White * 1.0f)
+    val matWhiteGlass1 = new TransparentMaterial(ior = Color.White * 1.1f)
+    val matWhiteGlass2 = new TransparentMaterial(ior = Color.White * 1.2f)
+    val matWhiteGlass3 = new TransparentMaterial(ior = Color.White * 1.3f)
+    val matWhiteGlass4 = new TransparentMaterial(ior = Color.White * 1.4f)
+    val matWhiteGlass5 = new TransparentMaterial(ior = Color.White * 1.5f)
+    val matWhiteGlass6 = new TransparentMaterial(ior = Color.White * 1.6f)
+    val matWhiteGlass7 = new TransparentMaterial(ior = Color.White * 1.7f)
+    val matWhiteGlass8 = new TransparentMaterial(ior = Color.White * 1.8f)
+    val matWhiteGlass9 = new TransparentMaterial(ior = Color.White * 1.9f)
 
     val matRedDiffuse = DiffuseMaterial(Color(0.9f, 0.1f, 0.1f))
     val matGreenDiffuse = DiffuseMaterial(Color(0.1f, 0.9f, 0.1f))
@@ -65,9 +65,8 @@ object Refraction {
     val up = front.normalize.cross(Vec3d.Right).normalize
 
     RenderEngine.render(
-      bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = PathTracer,
+      tracer = new PathTracer(maxBounces = 12),
       view = new Viewpoint(
         position = Vec3d(0, 5, 13),
         forward = front.normalize,

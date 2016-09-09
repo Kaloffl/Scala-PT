@@ -34,9 +34,8 @@ object Mirrored {
       SceneNode(AABB(Vec3d(0, 16, 12.5), Vec3d(16, 32, 1)), matMirror)))
 
     RenderEngine.render(
-      bounces = 80,
       target = new JfxDisplay(1280, 720),
-      tracer = PathTracer,
+      tracer = new PathTracer(maxBounces = 80),
       view = new Viewpoint(
         position = Vec3d(0, 2.5, 10),
         forward = Vec3d.Back,

@@ -37,9 +37,8 @@ object Transformed {
     val up = Vec3d(0, 1, 0)
 
     RenderEngine.render(
-      bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = PathTracer,
+      tracer = new PathTracer(maxBounces = 12),
       view = new Viewpoint(
         position = position,
         forward = forward,

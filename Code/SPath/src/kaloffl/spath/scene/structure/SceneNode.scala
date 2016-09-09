@@ -46,6 +46,8 @@ object BoundlessNode {
 
 trait SceneNode extends Intersectable {
 
+  def getShapes: Seq[(Shape, Material)]
+
   def getIntersection(ray: Ray, maxDepth: Double): Intersection
 
   override def getIntersectionDepth(ray: Ray): Double = {

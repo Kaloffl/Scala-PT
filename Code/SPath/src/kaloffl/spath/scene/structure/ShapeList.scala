@@ -7,6 +7,8 @@ import kaloffl.spath.tracing.Intersection
 
 class ShapeList[T <: Shape](val shapes: Array[T], val material: Material) extends SceneNode {
 
+  override def getShapes: Seq[(Shape, Material)] = shapes.map((_, material))
+
   override def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     var closestDist = maxDepth
     var closestShape: Shape = null

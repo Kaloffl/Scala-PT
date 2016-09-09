@@ -1,13 +1,13 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.{JfxDisplay, RenderEngine}
 import kaloffl.spath.math.{Color, Vec3d}
-import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.scene.hints.GlobalHint
 import kaloffl.spath.scene.materials._
 import kaloffl.spath.scene.shapes.{AABB, Plane, Sphere}
 import kaloffl.spath.scene.structure.{BoundlessNode, ClippingNode, SceneNode}
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Scatter5 {
   def main(args: Array[String]): Unit = {
@@ -19,8 +19,8 @@ object Scatter5 {
     val matRedGlass = new TransparentMaterial(
       volumeColor = Color(0.1f, 0.5f, 0.5f),
       scatterProbability = 0.1f,
-      ior  = 1.7f)
-    val matClearGlass = new TransparentMaterial(ior = 1.7f)
+      ior  = Color.White * 1.7f)
+    val matClearGlass = new TransparentMaterial(ior = Color.White * 1.7f)
 
     val matMirror = new MetalMaterial((_, _) => Color.White * 0.0001f)
 
@@ -54,9 +54,8 @@ object Scatter5 {
     val up = Vec3d.Left.cross(front)
 
     RenderEngine.render(
-      bounces = 8,
       target = new JfxDisplay(700, 700),
-      tracer = RecursivePathTracer,
+      tracer = new RecursivePathTracer(maxBounces = 8),
       view = new Viewpoint(
         position = Vec3d(0, 60, 60),
         forward = front,

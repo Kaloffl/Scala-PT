@@ -74,18 +74,16 @@ case class Vec3d(x: Double, y: Double, z: Double) {
   }
 
   def cross(v: Vec3d): Vec3d = {
-    Vec3d(
-      y * v.z - v.y * z,
-      z * v.x - v.z * x,
-      x * v.y - v.x * y)
+    Vec3d(y * v.z - v.y * z,
+          z * v.x - v.z * x,
+          x * v.y - v.x * y)
   }
 
   def reflect(v: Vec3d): Vec3d = {
     val a = (x * v.x + y * v.y + z * v.z) * 2.0
-    Vec3d(
-      x - (v.x * a),
-      y - (v.y * a),
-      z - (v.z * a))
+    Vec3d(x - (v.x * a),
+          y - (v.y * a),
+          z - (v.z * a))
   }
 
   def normalize: Vec3d = {
@@ -116,17 +114,15 @@ case class Vec3d(x: Double, y: Double, z: Double) {
 
     if (sinT2 >= 1.0) {
       val a = cosI * -2.0f
-      return Vec3d(
-        x - (v.x * a),
-        y - (v.y * a),
-        z - (v.z * a))
+      return Vec3d(x - (v.x * a),
+                   y - (v.y * a),
+                   z - (v.z * a))
     }
 
     val a = n * cosI - Math.sqrt(1.0 - sinT2)
-    val nx = x * n + v.x * a
-    val ny = y * n + v.y * a
-    val nz = z * n + v.z * a
-    return Vec3d(nx, ny, nz)
+    return Vec3d(x * n + v.x * a,
+                 y * n + v.y * a,
+                 z * n + v.z * a)
   }
 
   def ortho: Vec3d = {

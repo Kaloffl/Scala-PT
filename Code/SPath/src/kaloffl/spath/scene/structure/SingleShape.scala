@@ -6,6 +6,9 @@ import kaloffl.spath.scene.shapes.{Bounded, Shape}
 import kaloffl.spath.tracing.Intersection
 
 class SingleShape(val shape: Shape, material: Material) extends SceneNode {
+
+  override def getShapes: Seq[(Shape, Material)] = Seq((shape, material))
+
   override def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     val depth = shape.getIntersectionDepth(ray, maxDepth)
     val point = ray.atDistance(depth)

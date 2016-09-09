@@ -18,7 +18,7 @@ object Bunny {
       volumeColor = Color(0.4f, 0.7f, 1.0f),
       absorbtionDepth = mm(1),
       scatterProbability = 4,
-      ior = 1.7f)
+      ior = Color.White * 1.7f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
     val matBunny = DiffuseMaterial(Color(0.8f, 0.4f, 0.2f))
 
@@ -38,12 +38,11 @@ object Bunny {
     val up = Vec3d(0, -forward.z, forward.y).normalize
 
     val window = new JfxDisplay(1280, 720)
-    
+
     RtApplication.run(
-      bounces = 12,
       target = window,
       events = window.events,
-      tracer = PathTracer,
+      tracer = new PathTracer(maxBounces = 12),
       initialView = new Viewpoint(
         position = camPosition,
         forward = forward,

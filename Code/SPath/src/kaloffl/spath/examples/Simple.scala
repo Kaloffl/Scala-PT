@@ -22,7 +22,7 @@ object Simple {
     val matMirror = new MetalMaterial((_, _) => Color.White)
     val matGlass = new TransparentMaterial(
       volumeColor = Color(0.09f, 0.09f, 0.09f),
-      ior = 2.0f)
+      ior = Color.White * 2.0f)
     val matLight = new EmittingMaterial(Color.White, 8f)
 
     val light1 = new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f)
@@ -48,9 +48,8 @@ object Simple {
     val up = Vec3d(1, 0, -1).normalize.cross(forward).normalize
 
     RenderEngine.render(
-      bounces = 5,
       target = new JfxDisplay(1280, 720),
-      tracer = RecursivePathTracer,
+      tracer = new RecursivePathTracer(maxBounces = 5),
       view = new Viewpoint(
         position = position,
         forward = forward,

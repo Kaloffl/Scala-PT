@@ -24,7 +24,12 @@ object RtApplication {
     stopped = true
   }
 
-  def run(target: RenderTarget, events: Iterator[InputEvent], tracer: Tracer, scene: Scene, initialView: Viewpoint, bounces: Int = 8) {
+  def run(
+           target: RenderTarget,
+           events: Iterator[InputEvent],
+           tracer: Tracer,
+           scene: Scene,
+           initialView: Viewpoint) {
 
     val tracingWorkers = new Array[TracingWorker](numberOfWorkers)
 
@@ -119,7 +124,7 @@ object RtApplication {
         val worker = tracingWorkers(i)
         pool.submit(new Job {
           override def execute(): Unit = {
-            worker.render(view, bounces)
+            worker.render(view)
             worker.draw()
           }
         })

@@ -91,9 +91,8 @@ object CornellBox {
         cmatRed)))
 
     RenderEngine.render(
-      bounces = 8,
       target = new JfxDisplay(512, 512),
-      tracer = RecursivePathTracer,
+      tracer = new RecursivePathTracer(maxBounces = 8),
       view = new Viewpoint(
         position = Vec3d(278, 273, -800),
         forward = Vec3d.Front,

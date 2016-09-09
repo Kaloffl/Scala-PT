@@ -1,11 +1,14 @@
 package kaloffl.spath.scene.structure
 
 import kaloffl.spath.math.{Ray, Transformation}
-import kaloffl.spath.scene.shapes.{AABB, Bounded}
+import kaloffl.spath.scene.materials.Material
+import kaloffl.spath.scene.shapes.{AABB, Bounded, Shape}
 import kaloffl.spath.tracing.Intersection
 
 class TransformationNode(val transformation: Transformation,
                          val childNode: SceneNode) extends SceneNode {
+
+  override def getShapes: Seq[(Shape, Material)] = childNode.getShapes
 
   override def getIntersection(ray: Ray, maxDepth: Double): Intersection = {
     val childIntersection = childNode.getIntersection(

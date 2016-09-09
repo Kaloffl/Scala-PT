@@ -36,16 +36,15 @@ object Refraction4 {
         new TransparentMaterial(
           volumeColor = Color.randomColor(Vec2d.random(rng), 0.5f),
           absorbtionDepth = 0.125f,
-          ior = 1.8f))
+          ior = Color.White * 1.8f))
     }).toArray
 
     val front = Vec3d(0, -11, 9)
     val up = front.cross(Vec3d.Left).normalize
 
     RenderEngine.render(
-      bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = PathTracer,
+      tracer = new PathTracer(maxBounces = 12),
       view = new Viewpoint(
         position = Vec3d(0, 14, -14),
         forward = front.normalize,

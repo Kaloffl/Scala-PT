@@ -86,11 +86,10 @@ object Textured {
     //    val position = Vec3d(0.5, 0, 1).normalize * (earthRadius * 2)
     val position = Vec3d(0, 1, 0).normalize * (earthRadius * 1.8) + Vec3d(1, 0, 1) * (earthRadius * 0.2)
     RenderEngine.render(
-      bounces = 20,
       target = display,
 //      target = new BloomFilter(display, 10, 0.5f),
 //      target = new ScaleFilter(new DitherFilter(display), 4, 4),
-      tracer = RecursivePathTracer,
+      tracer = new RecursivePathTracer(maxBounces = 20),
       view = new Viewpoint(
         position = position,
         forward = Vec3d.Down,

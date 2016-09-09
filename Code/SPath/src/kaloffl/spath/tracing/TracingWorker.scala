@@ -32,7 +32,7 @@ class TracingWorker(
   /**
    * Renders a pass and adds the color to the samples array
    */
-  def render(view: Viewpoint, maxBounces: Int, passes: Int = 1, cpuSaturation: Float = 1): Unit = {
+  def render(view: Viewpoint, passes: Int = 1, cpuSaturation: Float = 1): Unit = {
     val dWidth = target.width
     val dHeight = target.height
     val displayOffsetX = left + (random.getAsDouble - 0.5).toFloat
@@ -52,7 +52,6 @@ class TracingWorker(
         val color = tracer.trace(
           ray = ray,
           scene = scene,
-          maxBounces = maxBounces,
           random = random)
 
         sampleStorage.addSample(x, y, color, 1)

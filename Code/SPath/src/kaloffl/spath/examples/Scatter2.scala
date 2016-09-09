@@ -41,16 +41,15 @@ object Scatter2 {
           volumeColor = Color.randomColor(rnd, 0.5f),
           absorbtionDepth = 0.1f / (x * x + 1),
           scatterProbability = y * x + 4,
-          ior = 1.1f))
+          ior = Color.White * 1.1f))
     }).toArray
 
     val front = Vec3d(0, -11, 9)
     val up = front.cross(Vec3d.Left).normalize
 
     RenderEngine.render(
-      bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = PathTracer,
+      tracer = new PathTracer(maxBounces = 12),
       view = new Viewpoint(
         position = Vec3d(0, 14, -14),
         forward = front.normalize,

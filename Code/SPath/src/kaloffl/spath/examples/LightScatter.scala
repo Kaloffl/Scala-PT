@@ -32,9 +32,8 @@ object LightScatter {
       SceneNode(AABB(Vec3d(0, 0, -1.05), Vec3d(1.5, 1.5, 0.1)), matBlackDiffuse)))
 
     RenderEngine.render(
-      bounces = 4,
       target = new BloomFilter(new JfxDisplay(1280, 720), 10, 1.5f),
-      tracer = RecursivePathTracer,
+      tracer = new RecursivePathTracer(maxBounces = 4),
       view = new Viewpoint(
         position = Vec3d(0, 0, 13),
         forward = Vec3d.Back,

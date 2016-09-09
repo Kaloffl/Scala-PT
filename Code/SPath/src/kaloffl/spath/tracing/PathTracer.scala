@@ -6,11 +6,10 @@ import kaloffl.spath.math.{Color, Ray, Vec2d, Vec3d}
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.Material
 
-object PathTracer extends Tracer {
+class PathTracer(maxBounces: Int) extends Tracer {
 
   override def trace(initialRay: Ray,
                      scene: Scene,
-                     maxBounces: Int,
                      random: DoubleSupplier): Color = {
     var ray = initialRay
     var color = Color.White
@@ -81,28 +80,25 @@ object PathTracer extends Tracer {
         val point = ray.atDistance(depth)
     		val surfaceNormal = intersection.normal()
         val uv = intersection.textureCoordinate()
-    		val scatterings = intersection.material.getScattering(
+    		val (scatterings, weights) = intersection.material.getScattering(
     				incomingNormal = ray.normal,
     				surfaceNormal = surfaceNormal,
     				uv = uv,
     				outsideIor = media(mediaIndex).ior,
     				random = random)
 
-        val weights = scatterings.map { v =>
-          intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, v, uv, media(mediaIndex).ior)
+        val newDir = {
+          val rand = random.getAsDouble
+          var i = 1
+          var weightSum = weights(0)
+          while(rand > weightSum && i < weights.length) {
+            weightSum += weights(i)
+            i += 1
+          }
+          scatterings(i - 1)
         }
 
-        val max = weights.map(c => c.r2 + c.g2 + c.b2).sum
-
-        val rnd = random.getAsDouble * max
-        var sum = weights(0)
-        var i = 1
-        while (i < weights.length && rnd > sum.r2 + sum.g2 + sum.b2) {
-          sum += weights(i)
-          i += 1
-        }
-        val newDir = scatterings(i - 1)
-
+        val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, newDir, uv, media(mediaIndex).ior)
         if (newDir.dot(surfaceNormal) < 0) {
           // if the new ray has entered a surface
           mediaIndex += 1
@@ -117,7 +113,6 @@ object PathTracer extends Tracer {
           // the exiting detection.
           mediaIndex = Math.max(0, mediaIndex - 1)
         }
-        val bsdf = weights(i - 1)
         ray = new Ray(point, newDir)
         color *= bsdf * absorbed
       }

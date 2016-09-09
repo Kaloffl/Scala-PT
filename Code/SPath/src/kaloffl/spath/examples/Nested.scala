@@ -28,9 +28,8 @@ object Nested {
     val boxBlue = SceneNode(AABB(Vec3d(0, 0, 0), Vec3d(1, 3, 1)), matGlassBlue)
 
     RenderEngine.render(
-      bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = PathTracer,
+      tracer = new PathTracer(maxBounces = 12),
       view = new Viewpoint(
         position = Vec3d(0, 0, 9),
         forward = Vec3d.Back,

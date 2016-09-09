@@ -5,13 +5,11 @@ import java.util.function.DoubleSupplier
 import kaloffl.spath.math.{Color, Ray}
 import kaloffl.spath.scene.Scene
 
-object RayTracer extends Tracer {
+class RayTracer(maxBounces: Int) extends Tracer {
 
   override def trace(ray: Ray,
                      scene: Scene,
-                     maxBounces: Int,
                      random: DoubleSupplier): Color = {
-    if (0 == maxBounces) return Color.Black
 
     val intersection = scene.getIntersection(ray, Double.PositiveInfinity)
     if (!intersection.hitObject) {
@@ -32,7 +30,7 @@ object RayTracer extends Tracer {
         incomingNormal = ray.normal,
         surfaceNormal = surfaceNormal,
         uv = uv,
-        outsideIor = 1,
+        outsideIor = Color.White,
         random = random)
 
       var color = Color.Black
@@ -44,7 +42,7 @@ object RayTracer extends Tracer {
           val lightRay = hint.target.createRandomRay(point, random)
           val contribution = surfaceNormal.dot(lightRay.normal).toFloat
           if (contribution > 0) {
-            val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, lightRay.normal, uv, 1.0f)
+            val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, lightRay.normal, uv, Color.White)
             val angle = hint.target.getSolidAngle(point).toFloat
             val lightIntersection = scene.getIntersection(lightRay, Double.PositiveInfinity)
             color += lightIntersection.material.emission * angle * contribution * bsdf

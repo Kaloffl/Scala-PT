@@ -90,9 +90,8 @@ object MazeCube {
     val window = new JfxDisplay(1280, 720)
 
     RenderEngine.render(
-      bounces = 16,
       target = window,
-      tracer = RecursivePathTracer,
+      tracer = new RecursivePathTracer(maxBounces = 16),
       view = new Viewpoint(
         position = Vec3d(20, 20, 20),
         forward = Vec3d(-1, -1, -1).normalize,

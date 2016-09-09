@@ -1,14 +1,14 @@
 package kaloffl.spath.examples
 
-import kaloffl.spath.{JfxDisplay, RenderEngine}
 import kaloffl.spath.bvh.BvhBuilder
 import kaloffl.spath.importer.PlyImporter
 import kaloffl.spath.math.{Color, Vec3d}
-import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, TransparentMaterial}
 import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
+import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object VisualBvh {
 
@@ -18,9 +18,9 @@ object VisualBvh {
       volumeColor = Color.Black,
       scatterProbability = 0.0625f)
     val matSky = new EmittingMaterial(Color(1.0f, 0.95f, 0.9f), 2)
-    val matGlassRed = new TransparentMaterial(volumeColor = Color(0.7f, 4, 4), absorbtionDepth = 20, ior = 1.7f)
-    val matGlassGreen = new TransparentMaterial(volumeColor = Color(4, 0.7f, 4), absorbtionDepth = 20, ior = 1.7f)
-    val matGlassBlue = new TransparentMaterial(volumeColor = Color(4, 4, 0.7f), absorbtionDepth = 20, ior = 1.7f)
+    val matGlassRed = new TransparentMaterial(volumeColor = Color(0.7f, 4, 4), absorbtionDepth = 20, ior = Color.White * 1.7f)
+    val matGlassGreen = new TransparentMaterial(volumeColor = Color(4, 0.7f, 4), absorbtionDepth = 20, ior = Color.White * 1.7f)
+    val matGlassBlue = new TransparentMaterial(volumeColor = Color(4, 4, 0.7f), absorbtionDepth = 20, ior = Color.White * 1.7f)
     val matFloor = DiffuseMaterial(Color(0.7f, 0.75f, 0.9f))
 
     val bunny = BvhBuilder.buildTree(
@@ -45,9 +45,8 @@ object VisualBvh {
     val bunnyTop = bunnyForward.cross(Vec3d.Front).normalize
 
     RenderEngine.render(
-      bounces = 12,
       target = new JfxDisplay(1280, 720),
-      tracer = PathTracer,
+      tracer = new PathTracer(maxBounces = 12),
       view = new Viewpoint(
         position = Vec3d(0.5, 2.5, 0.4),
         forward = bunnyForward.normalize,
