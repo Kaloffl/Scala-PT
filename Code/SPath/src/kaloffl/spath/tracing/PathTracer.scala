@@ -20,7 +20,7 @@ class PathTracer(maxBounces: Int) extends Tracer {
       initialValues = scene.initialMediaStack)
 
     while (i < maxBounces) {
-      // russian roulett ray termination
+      // russian roulette ray termination
       val survivability = Math.max(color.r2, Math.max(color.g2, color.b2)) * (maxBounces - i)
       if (survivability < 1) {
         if (random.getAsDouble > survivability) {

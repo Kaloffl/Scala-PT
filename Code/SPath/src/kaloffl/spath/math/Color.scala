@@ -69,8 +69,8 @@ class Color(val r2: Float, val g2: Float, val b2: Float) {
 
   override def equals(obj: Any): Boolean = {
     obj match {
-      case Color(r2, g2, b2) ⇒ this.r2 == r2 && this.g2 == g2 && this.b2 == b2
-      case _                 ⇒ false
+      case c : Color ⇒ c.r2 == r2 && c.g2 == g2 && c.b2 == b2
+      case _         ⇒ false
     }
   }
 
