@@ -68,13 +68,6 @@ object RenderEngine {
       val w = if ((i + 1) % cols == 0) target.width - x else width
       val h = if (i >= cols * (rows - 1)) target.height - y else height
       tracingWorkers(i) = new TracingWorker(x, y, w, h, tracer, scene, target, random)
-      /*
-      if (i % 2 == 0) {
-        tracingWorkers(i) = new TracingWorker(x, y, w, h, tracer, scene, target, random)
-      } else {
-        tracingWorkers(i) = new TracingWorker(x, y, w, h, RecursivePathTracer, scene, target, random)
-      }
-      */
     }
 
     var pass = 0

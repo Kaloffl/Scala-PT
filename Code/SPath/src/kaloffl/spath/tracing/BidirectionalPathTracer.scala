@@ -18,9 +18,9 @@ class BidirectionalPathTracer(
                       scene: Scene,
                       random: DoubleSupplier): Color = {
 
-    val cameraMediaStack = new Array[Material](maxCameraBounces + scene.initialMediaStack.length)
-    for (i <- scene.initialMediaStack.indices) cameraMediaStack(i) = scene.initialMediaStack(i)
-    var cameraMediaStackHead = scene.initialMediaStack.length - 1
+    val cameraMediaStack = new MediaStack(
+      size = maxCameraBounces + scene.initialMediaStack.length,
+      initialValues = scene.initialMediaStack)
 
     class PathVertex(
                  val toEye: Vec3d,
@@ -47,7 +47,7 @@ class BidirectionalPathTracer(
         return firstIntersection.material.emission
       }
       edges(0) = new PathEdge(
-        medium = cameraMediaStack(cameraMediaStackHead),
+        medium = cameraMediaStack.head,
         length = firstIntersection.depth)
 
       points(0) = new PathVertex(
@@ -68,7 +68,7 @@ class BidirectionalPathTracer(
         incomingNormal = -lastPoint.toEye,
         surfaceNormal = lastPoint.normal,
         uv = lastPoint.uv,
-        outsideIor = cameraMediaStack(cameraMediaStackHead).ior,
+        outsideIor = cameraMediaStack.head.ior,
         random = random)
 
       val newDir = {
@@ -87,14 +87,14 @@ class BidirectionalPathTracer(
         surfaceNormal = lastPoint.normal,
         toLight = newDir,
         uv = lastPoint.uv,
-        outsideIor = cameraMediaStack(cameraMediaStackHead).ior)
+        outsideIor = cameraMediaStack.head.ior)
 
-      if (lastPoint.toEye.dot(lastPoint.normal) > 0 && lastPoint.normal.dot(newDir) < 0) {
-        cameraMediaStackHead += 1
-        cameraMediaStack(cameraMediaStackHead) = lastPoint.material
-      } else if (lastPoint.toEye.dot(lastPoint.normal) < 0 && lastPoint.normal.dot(newDir) > 0) {
-        // TODO fix the problem where this is triggered without actually exiting a medium
-        cameraMediaStackHead = Math.max(0, cameraMediaStackHead - 1)
+      val inDir = lastPoint.toEye.dot(lastPoint.normal)
+      val outDir = newDir.dot(lastPoint.normal)
+      if (inDir > 0 && outDir < 0) {
+        cameraMediaStack.add(lastPoint.material)
+      } else if (inDir < 0 && outDir > 0) {
+        cameraMediaStack.remove(lastPoint.material)
       }
 
       val ray = new Ray(lastPoint.pos, newDir)
@@ -103,7 +103,7 @@ class BidirectionalPathTracer(
         val material = intersection.material
         if (Color.Black == material.emission) {
           edges(importanceLength) = new PathEdge(
-            medium = cameraMediaStack(cameraMediaStackHead),
+            medium = cameraMediaStack.head,
             length = intersection.depth)
 
           points(importanceLength) = new PathVertex(

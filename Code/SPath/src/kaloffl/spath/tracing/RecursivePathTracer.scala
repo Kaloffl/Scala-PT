@@ -105,29 +105,51 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
         val newDir = scatterings(d)
         val weight = weights(d)
         val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, newDir, uv, media(mediaHead).ior)
-        //if (weight > minWeight) {
+        val survivalChance = 1.0f / Math.max(1, i - maxBounces / 4) * Math.min(weight * 2, 1)
+        if (survivalChance > random.getAsDouble) {
           val newRay = new Ray(point, newDir)
-          val lightAngle = newDir.dot(surfaceNormal)
-          if (lightAngle < 0) {
+          val inDir = ray.normal.dot(surfaceNormal)
+          val outDir = newDir.dot(surfaceNormal)
+          if (inDir < 0 && outDir < 0) {
             // if the new ray has entered a surface
             val newHead = mediaHead + 1
             val newMedia = new Array[Material](newHead + 1)
             System.arraycopy(media, 0, newMedia, 0, newHead)
             newMedia(newHead) = intersection.material
             val c = trace(newRay, scene, newMedia, mediaHead + 1, i + 1, maxBounces, random)
-            color += c * bsdf * weight// * Math.abs(lightAngle).toFloat
-          } else if (ray.normal.dot(surfaceNormal) >= 0 && mediaHead > 0) {
+            color += c * bsdf * weight
+          } else if (inDir > 0 && outDir > 0 && mediaHead > 0) {
             // if the ray is exiting a surface
-            val c = trace(newRay, scene, media, mediaHead - 1, i + 1, maxBounces, random)
-            color += c * bsdf * weight// * Math.abs(lightAngle).toFloat
+            var mediaIndex = -1
+            var i = mediaHead
+            while (i > 0) {
+              if (media(i) == intersection.material) {
+                mediaIndex = i
+                i = 0
+              }
+              i -= 1
+            }
+            if (-1 == i) {
+              // if the exited medium wasn't on the stack we just ignore it
+              val c = trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random)
+              color += c * bsdf * weight
+            } else if (i == mediaHead) {
+              // if the medium was the head we can just decrease the head index
+              val c = trace(newRay, scene, media, mediaHead - 1, i + 1, maxBounces, random)
+              color += c * bsdf * weight
+            } else {
+              // if the medium was somewhere in the middle, we need to build a new stack
+              val newStack = new Array[Material](mediaHead)
+              System.arraycopy(media, 0, newStack, 0, i)
+              System.arraycopy(media, i + 1, newStack, i, mediaHead - i)
+              val c = trace(newRay, scene, newStack, mediaHead - 1, i + 1, maxBounces, random)
+              color += c * bsdf * weight
+            }
           } else {
             var angleSum = 0f
             var direct = Color.Black
             if (i < maxBounces / 2) {
               val hints = scene.lightHints
-              //var h = 0
-              //while (h < hints.length) {
-                //val hint = hints(h)
               if (0 < hints.length) {
                 val hint = hints((random.getAsDouble * hints.length).toInt)
                 if (hint.applicableFor(point)) {
@@ -135,7 +157,12 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
                     val lightRay = hint.target.createRandomRay(point, random)
                     val lightAngle = surfaceNormal.dot(lightRay.normal)
                     if (0 < lightAngle) {
-                      val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, lightRay.normal, uv, media(mediaHead).ior)
+                      val bsdf = intersection.material.evaluateBSDF(
+                        toEye = -ray.normal,
+                        surfaceNormal = surfaceNormal,
+                        toLight = lightRay.normal,
+                        uv = uv,
+                        outsideIor = media(mediaHead).ior)
                       if (bsdf != Color.Black) {
                         val angle = hint.target.getSolidAngle(point).toFloat
                         angleSum += angle
@@ -145,19 +172,19 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
                     }
                   }
                 }
-                //h += 1
               }
             }
 
             val indirect = if (angleSum < 0.99f) {
-              trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf// * weight * Math.abs(lightAngle).toFloat
+              trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight
             } else {
               Color.Black
             }
 
             color += (indirect * (1 - angleSum) + direct)
           }
-        //}
+          color /= survivalChance
+        }
         d += 1
       }
       return absorbed * color

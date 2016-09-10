@@ -4,7 +4,6 @@ import java.util.function.DoubleSupplier
 
 import kaloffl.spath.math.{Color, Ray, Vec2d, Vec3d}
 import kaloffl.spath.scene.Scene
-import kaloffl.spath.scene.materials.Material
 
 class PathTracer(maxBounces: Int) extends Tracer {
 
@@ -16,9 +15,9 @@ class PathTracer(maxBounces: Int) extends Tracer {
     var i = 0
 
     // list of materials in which the rays entered
-    var mediaIndex = scene.initialMediaStack.length - 1
-    val media = new Array[Material](maxBounces + 1)
-    System.arraycopy(scene.initialMediaStack, 0, media, 0, scene.initialMediaStack.length)
+    val media = new MediaStack(
+      size = maxBounces + scene.initialMediaStack.length,
+      initialValues = scene.initialMediaStack)
 
     while (i < maxBounces) {
       // russian roulett ray termination
@@ -35,7 +34,7 @@ class PathTracer(maxBounces: Int) extends Tracer {
       // particle and be scattered. If the current air has a scatter probability 
       // of 0, the distance will be infinity.
       val scatterChance = random.getAsDouble
-      val scatterDist = -Math.log(1 - scatterChance) / media(mediaIndex).scatterProbability
+      val scatterDist = -Math.log(1 - scatterChance) / media.head.scatterProbability
 
       // Now try to find an object in the scene that is closer than the determined 
       // scatter depth. If none is found and the scatter depth is not infinity, 
@@ -49,26 +48,25 @@ class PathTracer(maxBounces: Int) extends Tracer {
         // scatter probability is 0.
         if (java.lang.Double.isInfinite(scatterDist)) {
           val dist = scene.skyDistance
-          val point = ray.atDistance(dist)
           val emitted = scene.skyMaterial.getEmittance(ray.normal)
           val absorbed =
             if (java.lang.Double.isInfinite(dist)) {
               Color.White
             } else {
-              (media(mediaIndex).absorbtion * -dist.toFloat).exp
+              (media.head.absorbtion * -dist.toFloat).exp
             }
           return color * emitted * absorbed
         }
 
         val point = ray.atDistance(scatterDist)
-        val absorbed = (media(mediaIndex).absorbtion * -scatterDist.toFloat).exp
+        val absorbed = (media.head.absorbtion * -scatterDist.toFloat).exp
         ray = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
         color *= absorbed
       } else {
         val depth = intersection.depth
 
-        val absorbed = if(media(mediaIndex).absorbtion != Color.Black) {
-        	  (media(mediaIndex).absorbtion * -depth.toFloat).exp
+        val absorbed = if(media.head.absorbtion != Color.Black) {
+        	  (media.head.absorbtion * -depth.toFloat).exp
         } else {
           Color.White
         }
@@ -84,7 +82,7 @@ class PathTracer(maxBounces: Int) extends Tracer {
     				incomingNormal = ray.normal,
     				surfaceNormal = surfaceNormal,
     				uv = uv,
-    				outsideIor = media(mediaIndex).ior,
+    				outsideIor = media.head.ior,
     				random = random)
 
         val newDir = {
@@ -98,20 +96,15 @@ class PathTracer(maxBounces: Int) extends Tracer {
           scatterings(i - 1)
         }
 
-        val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, newDir, uv, media(mediaIndex).ior)
-        if (newDir.dot(surfaceNormal) < 0) {
+        val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, newDir, uv, media.head.ior)
+        val inDir = ray.normal dot surfaceNormal
+        val outDir = newDir dot surfaceNormal
+        if (inDir < 0 && outDir < 0) {
           // if the new ray has entered a surface
-          mediaIndex += 1
-          media(mediaIndex) = intersection.material
-        } else if (ray.normal.dot(surfaceNormal) >= 0) {
+          media.add(intersection.material)
+        } else if (inDir > 0 && outDir > 0) {
           // if the ray is exiting a surface
-          // TODO unfortunately in some edge cases the tracer thinks the ray
-          // exited an object and pops the media stack early. So when the real
-          // medium is exited it tries to exit again, leaving an empty stack
-          // behind. So the solution for now is to ignore those cases because
-          // they contribute almost nothing. A better solution will be to fix
-          // the exiting detection.
-          mediaIndex = Math.max(0, mediaIndex - 1)
+          media.remove(intersection.material)
         }
         ray = new Ray(point, newDir)
         color *= bsdf * absorbed
