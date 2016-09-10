@@ -11,7 +11,7 @@ class BloomFilter(override val target: RenderTarget, val fallFactor: Float, val 
 
   override def setPixel(x: Int, y: Int, color: Color): Unit = {
     val rgb = Array(color.r2, color.g2, color.b2)
-    for (c ← 0 until 3) {
+    for (c <- 0 until 3) {
       val cval = rgb(c)
       val range = Math.pow(cval, power).toInt
       if (range < 1) {
@@ -21,7 +21,7 @@ class BloomFilter(override val target: RenderTarget, val fallFactor: Float, val 
         val startY = Math.max(0, y - range)
         val endX = Math.min(width - 1, x + range)
         val endY = Math.min(height - 1, y + range)
-        for (rx ← startX to endX; ry ← startY to endY) {
+        for (rx <- startX to endX; ry <- startY to endY) {
           val dx = rx - x
           val dy = ry - y
           val dist = Math.sqrt(dx * dx + dy * dy)

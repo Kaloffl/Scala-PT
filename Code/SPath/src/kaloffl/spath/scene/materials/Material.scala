@@ -282,14 +282,14 @@ class EmittingMaterial(
                               surfaceNormal: Vec3d,
                               uv: Vec2d,
                               outsideIor: Color,
-                              random: DoubleSupplier): (Array[Vec3d], Array[Float]) = ???
+                              random: DoubleSupplier): (Array[Vec3d], Array[Float]) = _
 
   override def evaluateBSDF(
                              toEye: Vec3d,
                              surfaceNormal: Vec3d,
                              toLight: Vec3d,
                              uv: Vec2d,
-                             outsideIor: Color): Color = ???
+                             outsideIor: Color): Color = _
 }
 
 object DiffuseMaterial {

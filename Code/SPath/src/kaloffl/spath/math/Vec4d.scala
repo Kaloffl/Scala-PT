@@ -1,13 +1,5 @@
 package kaloffl.spath.math
 
-/**
- * A 3 dimensional mathematical vector of double precision floating point
- * numbers. It implements the usual operations like addition and scaling but
- * also reflection, refraction and generation of random normal vectors centered
- * around the original vector.
- * These vectors are immutable and each operation creates a new instance with
- * the new values.
- */
 case class Vec4d(x: Double, y: Double, z: Double, w: Double) {
 
   def +(v: Vec4d): Vec4d = Vec4d(x + v.x, y + v.y, z + v.z, w + v.w)

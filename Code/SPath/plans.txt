@@ -7,6 +7,7 @@ pathtracer TODOs
 	- lenses
 
 - UI
+    - build an UI where the user can do stuff
 	- settable sample count
 	- settable max bounce
 	- exportable image
@@ -41,6 +42,8 @@ pathtracer TODOs
 
 - post processing
 	- color correction
+	- noise reduction
+	- tone mapping
 
 - scene
 	- scene file format (so trees are saved and don't need to be build every time)
@@ -55,19 +58,15 @@ pathtracer TODOs
 	- Interpolate triangle normals for smoother model surfaces
 
 - maybe
-	- spectral tracing
-	- bidirectional tracing
-		- or maybe the light hint system is good enough?
+    - replace the concept of rgb-color with a more realistic one
 	- photon mapping
 	- selective splitting (find out where more rays are the most helpful)
-	- single scatter optimization for air/fog scattering
-		- hard to get right and might never be as good as the real thing
 
 - code
 	- Extract air scattering code
-	- Extract russian roulett code
 	- Allow Jobs in the jobpool to park if no executable jobs are available
 	- figure out how to efficiently use Units of Measurement in the code
+	- get the usage of floats and doubles more consistend
 
 - misc
 	- Better random sampler
@@ -82,6 +81,8 @@ pathtracer TODOs
 	- Triable Projectable implementation
 	- Fix corners of transparent AABBs
 	- create a light hint manager that calculates the importance of a hint for any place in the scene
+	- add support for participating media to bidirectional path tracer
+	- add back check for areas that don't change and stop rendering them
 	
 
 - done
@@ -106,25 +107,25 @@ pathtracer TODOs
 				- Mandelbulb
 	- UI
 		- live preview window of render progress
-		- movable and turnable camera
+		- movable and rotatable camera
 		- copy shortcut to get the currently rendered image
 	- materials
-		- fully diffuse material
-		- diffuse textured material
-		- light material
-		- mask based material combinator
-		- reflective material with glossiness parameter
-		- refractive material with glossiness parameter
+	    - all materials use the index of refraction to determine reflectiveness
+	    - ior can be set for the red, green and blue spectrum independently
+		- pbr dielectric material
+		    - diffuse + specular reflection
+		- pbr metal material
+		    - metal reflection + specular reflection
+		- transparent material
+		    - specular reflection + refraction + subsurface scattering
 		- participating media (fog material)
 	- render modes
 		- non-splitting path tracer
 		- splitting path tracer
+		- bidirectional path tracer
 	- post processing
 		- white balance
 		- bloom
-		- surface normal display
-		- texture coordinate display
 	- misc
 		- custom thread pool for more consistent performance
 		- mostly gamma correct color calculations
-		- check for areas that don't change and stop rendering them

@@ -33,8 +33,8 @@ class MaskedMaterial(
         random)
 
     val combinedNormals = new Array[Vec3d](matANormals.length + matBNormals.length)
-    for (i <- matANormals.indices) combinedNormals(i) = matANormals(i)
-    for (i <- matBNormals.indices) combinedNormals(i + matANormals.length) = matBNormals(i)
+    System.arraycopy(matANormals, 0, combinedNormals, 0, matANormals.length)
+    System.arraycopy(matBNormals, 0, combinedNormals, matANormals.length, matBNormals.length)
 
     val weightA = mask.maskAmount(uv)
     val weightB = 1 - weightA
@@ -72,12 +72,11 @@ class MaskedMaterial(
 }
 
 trait Mask {
-  def maskAmount(textureCoord: ⇒ Vec2d): Float
+  def maskAmount(textureCoord: Vec2d): Float
 }
 
 class TextureMask(val texture: Texture) extends Mask {
-  override def maskAmount(textureCoord: ⇒ Vec2d): Float = {
-    val tc = textureCoord
-    return texture(tc.x.toFloat, tc.y.toFloat).r
+  override def maskAmount(textureCoord: Vec2d): Float = {
+    return texture(textureCoord.x.toFloat, textureCoord.y.toFloat).r
   }
 }

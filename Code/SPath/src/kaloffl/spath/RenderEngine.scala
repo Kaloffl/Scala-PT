@@ -10,23 +10,22 @@ import kaloffl.spath.tracing._
 import scala.util.Sorting
 
 /**
- * The Engine that can render an image of a given scene. This object handles
+ * The Engine that can render a still image of a given scene. This object handles
  * the distribution of work on multiple workers that can do the rendering in
  * parallel.
  */
 object RenderEngine {
 
-  // The squaring of workers here is arbitrary. There probably is a better way 
-  // of finding the number of workers. However you definitely want more workers 
-  // than cores on the machine (except on single-core machines) because the 
-  // chunks of work can take very different amounts of time to render, so if 
-  // there is only one chunk per core, all but one workers might finish and then
-  // wait on the last one. By having more chunks, workers that finish faster can
-  // work on more chunks than the slow workers.
   val processors = Runtime.getRuntime.availableProcessors
-  val numberOfWorkers = if (1 == processors) 1 else processors * processors * 4
-  val rows = Math.sqrt(numberOfWorkers).toInt
-  val cols = numberOfWorkers / rows
+  // The squaring of jobs here is arbitrary. There probably is a better way
+  // of finding the number of jobs. However you definitely want more jobs
+  // than cores on the machine (except on single-core machines) because the
+  // chunks of work can take very different amounts of time to render, so if
+  // there is only one chunk per core, the whole programm has to wait for the
+  // slowest one to finish.
+  val numberOfJobs = if (1 == processors) 1 else processors * processors * 4
+  val rows = Math.sqrt(numberOfJobs).toInt
+  val cols = numberOfJobs / rows
 
   /**
    * Renders the scene with the given number of passes onto the display. In each
@@ -38,23 +37,30 @@ object RenderEngine {
    *
    * @param target Target to render the resulting pixels onto
    * @param tracer The tracer implementation to use for rendering
+   * @param logger optional logger for status reports
    * @param scene The objects and camera for the rendering
    * @param view The location and orientation from where to render
-   * @param samplesAtOnce the number of samples that should be taken for every pixel before updating the target. Higher values are more efficient but take longer to show up in the preview (default 1)
-   * @param cpuSaturation on a scale from 0 (none) to 1 (all) how much cpu time the rendering should try to take (default 1)
+   * @param samplesAtOnce the number of samples that should be taken for every
+   *                      pixel before updating the target. Higher values are
+   *                      more efficient but take longer to show up in the
+   *                      preview (default 1)
+   * @param cpuSaturation on a scale from 0 (none) to 1 (all) how much cpu
+   *                      utilization the rendering should aim for (default 1)
    */
-  def render(target: RenderTarget,
-    tracer: Tracer,
-    logger: String => Unit = print(_),
-    scene: Scene,
-    view: Viewpoint,
-    samplesAtOnce: Int = 1,
-    cpuSaturation: Float = 1) {
+  def render(
+              target: RenderTarget,
+              tracer: Tracer,
+              logger: String => Unit = print(_),
+              scene: Scene,
+              view: Viewpoint,
+              samplesAtOnce: Int = 1,
+              cpuSaturation: Float = 1
+            ): Unit = {
 
-    logger("number of chunks: " + numberOfWorkers + '\n')
+    logger("number of chunks: " + numberOfJobs + '\n')
     logger("target cpu saturation: " + cpuSaturation + '\n')
 
-    val tracingWorkers = new Array[TracingWorker](numberOfWorkers)
+    val tracingJobs = new Array[TracingJob](numberOfJobs)
     val width = target.width / cols
     val height = target.height / rows
 
@@ -62,18 +68,18 @@ object RenderEngine {
       override def getAsDouble = ThreadLocalRandom.current.nextDouble
     }
 
-    for (i ← 0 until numberOfWorkers) {
+    for (i <- 0 until numberOfJobs) {
       val x = i % cols * width
       val y = i / cols * height
       val w = if ((i + 1) % cols == 0) target.width - x else width
       val h = if (i >= cols * (rows - 1)) target.height - y else height
-      tracingWorkers(i) = new TracingWorker(x, y, w, h, tracer, scene, target, random)
+      tracingJobs(i) = new TracingJob(x, y, w, h, tracer, scene, target, random)
     }
 
     var pass = 0
     val pool = new JobPool
-    val order = Array.tabulate(numberOfWorkers)(identity)
-    val costs = new Array[Long](numberOfWorkers)
+    val order = Array.tabulate(numberOfJobs)(identity) // fills the array cells with their own index
+    val costs = new Array[Long](numberOfJobs)
     while (true) {
       if (1 == samplesAtOnce) {
         logger("Starting pass #" + pass + '\n')
@@ -82,13 +88,13 @@ object RenderEngine {
       }
 
       val before = System.nanoTime
-      for (i ← 0 until numberOfWorkers) {
-        val worker = tracingWorkers(order(i))
+      for (i <- 0 until numberOfJobs) {
+        val job = tracingJobs(order(i))
         pool.submit(new Job {
           override def execute(): Unit = {
             val start = System.nanoTime
-            worker.render(view, samplesAtOnce, cpuSaturation)
-            worker.draw()
+            job.render(view, samplesAtOnce, cpuSaturation)
+            job.draw()
             costs(order(i)) += System.nanoTime - start
           }
         })
@@ -101,8 +107,8 @@ object RenderEngine {
       // This way we get the best saturation for all working threads.
       if (pass == 10) {
         // On the tenth pass the numbers should have stabilized enough to 
-        // determine which parts are the most expensive and should be done first
-        Sorting.stableSort(order, (o1: Int, o2: Int) ⇒ costs(o1) > costs(o2))
+        // determine which parts are the most expensive to render.
+        Sorting.stableSort(order, (o1: Int, o2: Int) => costs(order(o1)) > costs(order(o2)))
       }
 
       val after = System.nanoTime

@@ -7,16 +7,19 @@ import kaloffl.jobs.{Job, JobPool}
 import kaloffl.spath.filter.ScaleFilter
 import kaloffl.spath.math.{Quaternion, Vec3d}
 import kaloffl.spath.scene.{Scene, Viewpoint}
-import kaloffl.spath.tracing.{Tracer, TracingWorker}
+import kaloffl.spath.tracing.{Tracer, TracingJob}
 
+/**
+  * An interactive renderer that allows the user to move and rotate the camera.
+  */
 object RtApplication {
 
   val processors = Runtime.getRuntime.availableProcessors
-  val numberOfWorkers = if (1 == processors) 1 else processors * processors * 4
-  val rows = Math.sqrt(numberOfWorkers).toInt
-  val cols = numberOfWorkers / rows
+  val numberOfJobs = if (1 == processors) 1 else processors * processors * 4
+  val rows = Math.sqrt(numberOfJobs).toInt
+  val cols = numberOfJobs / rows
 
-  println("worker threads: " + numberOfWorkers)
+  println("worker threads: " + numberOfJobs)
 
   private var stopped = false
 
@@ -31,7 +34,7 @@ object RtApplication {
            scene: Scene,
            initialView: Viewpoint) {
 
-    val tracingWorkers = new Array[TracingWorker](numberOfWorkers)
+    val tracingJobs = new Array[TracingJob](numberOfJobs)
 
     val random = new DoubleSupplier {
       override def getAsDouble = ThreadLocalRandom.current.nextDouble
@@ -111,21 +114,21 @@ object RtApplication {
         }
         val tileWidth = actualTarget.width / cols
         val tileHeight = actualTarget.height / rows
-        for (i ← 0 until numberOfWorkers) {
+        for (i <- 0 until numberOfJobs) {
           val x = i % cols * tileWidth
           val y = i / cols * tileHeight
           val w = if ((i + 1) % cols == 0) actualTarget.width - x else tileWidth
           val h = if (i >= cols * (rows - 1)) actualTarget.height - y else tileHeight
-          tracingWorkers(i) = new TracingWorker(x, y, w, h, tracer, scene, actualTarget, random)
+          tracingJobs(i) = new TracingJob(x, y, w, h, tracer, scene, actualTarget, random)
         }
       }
       val before = System.nanoTime
-      for (i ← 0 until numberOfWorkers) {
-        val worker = tracingWorkers(i)
+      for (i <- 0 until numberOfJobs) {
+        val job = tracingJobs(i)
         pool.submit(new Job {
           override def execute(): Unit = {
-            worker.render(view)
-            worker.draw()
+            job.render(view)
+            job.draw()
           }
         })
       }
