@@ -120,6 +120,7 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
             uv = uv,
             outsideIor = otherIor)
 
+          var scatteredColor = Color.Black
           val newRay = new Ray(point, newDir)
           val outDir = newDir.dot(surfaceNormal)
           if (inDir < 0 && outDir < 0) {
@@ -129,7 +130,7 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
             System.arraycopy(media, 0, newMedia, 0, newHead)
             newMedia(newHead) = intersection.material
             val c = trace(newRay, scene, newMedia, mediaHead + 1, i + 1, maxBounces, random)
-            color += c * bsdf * weight
+            scatteredColor += c * bsdf * weight
           } else if (inDir > 0 && outDir > 0 && mediaHead > 0) {
             // if the ray is exiting a surface
             var mediaIndex = -1
@@ -162,7 +163,7 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
               newHead = mediaHead - 1
             }
             val c = trace(newRay, scene, newStack, newHead, i + 1, maxBounces, random)
-            color += c * bsdf * weight
+            scatteredColor += c * bsdf * weight
 
           } else if (0 < scene.lightHints.length) {
             var angleSum = 0f
@@ -192,12 +193,12 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
               }
             }
             if (angleSum < 0.99f) {
-              color += trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight * (1 - angleSum) + direct
+              scatteredColor += trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight * (1 - angleSum) + direct
             }
           } else {
-            color += trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight
+            scatteredColor += trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight
           }
-          color /= survivalChance
+          color += scatteredColor / survivalChance
         }
         d += 1
       }

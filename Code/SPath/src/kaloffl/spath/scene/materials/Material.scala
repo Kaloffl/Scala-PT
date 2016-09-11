@@ -238,8 +238,9 @@ class TransparentMaterial(
         return surfaceColor(u, v)
       }
     }
-
-
+    if (Math.abs(toEye.dot(surfaceNormal)) > rmin) {
+      return surfaceColor(u, v)
+    }
 
     val eyeDir = Math.signum(toEye dot surfaceNormal)
     val lightDir = Math.signum(toLight dot surfaceNormal)
@@ -260,23 +261,27 @@ class TransparentMaterial(
       val hR = -(toEye * ior1.r2 + toLight * ior2.r2).normalize
       val hG = -(toEye * ior1.g2 + toLight * ior2.g2).normalize
       val hB = -(toEye * ior1.b2 + toLight * ior2.b2).normalize
+      var scale = 4
       val rR = if (hR.dot(surfaceNormal) < rmin) {
         0
       } else {
+        scale -= 1
         1 - fromEye.refractance(hR * eyeDir, ior1.r2, ior2.r2).toFloat
       }
       val rG = if (hG.dot(surfaceNormal) < rmin) {
         0
       } else {
+        scale -= 1
         1 - fromEye.refractance(hG * eyeDir, ior1.g2, ior2.g2).toFloat
       }
       val rB = if (hB.dot(surfaceNormal) < rmin) {
         0
       } else {
+        scale -= 1
         1 - fromEye.refractance(hB * eyeDir, ior1.b2, ior2.b2).toFloat
       }
       val sc = surfaceColor(u, v)
-      return new Color(sc.r2 * rR, sc.g2 * rG, sc.b2 * rB)
+      return new Color(sc.r2 * rR * scale, sc.g2 * rG * scale, sc.b2 * rB * scale)
     } else {
       // reflection
       val h = (toEye + toLight).normalize
