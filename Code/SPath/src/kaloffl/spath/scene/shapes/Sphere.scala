@@ -2,7 +2,7 @@ package kaloffl.spath.scene.shapes
 
 import java.util.function.DoubleSupplier
 
-import kaloffl.spath.math.{FastMath, Ray, Vec2d, Vec3d}
+import kaloffl.spath.math.{Ray, Vec2d, Vec3d}
 
 /**
  * A sphere shape consisting of a location and a radius.
@@ -21,8 +21,8 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projecta
   override def getTextureCoordinate(point: Vec3d): Vec2d = {
     val normal = getNormal(point)
     return Vec2d(
-      FastMath.atan2(normal.x, normal.z) / (2 * Math.PI) + 0.5,
-      FastMath.asin(-normal.y) / Math.PI + 0.5)
+      Math.atan2(normal.x, normal.z) / (2 * Math.PI) + 0.5,
+      Math.asin(-normal.y) / Math.PI + 0.5)
   }
 
   override def getIntersectionDepth(ray: Ray): Double = {

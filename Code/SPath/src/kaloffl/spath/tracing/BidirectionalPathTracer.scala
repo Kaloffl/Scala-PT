@@ -64,11 +64,20 @@ class BidirectionalPathTracer(
     var continueGatherWalk = true
     while (importanceLength < maxCameraBounces && continueGatherWalk) {
       val lastPoint = points(importanceLength - 1)
+      val inDir = lastPoint.toEye.dot(lastPoint.normal)
+      val otherIor =
+        if (inDir > 0) {
+          cameraMediaStack.head.ior
+        } else if (cameraMediaStack.head == lastPoint.material) {
+          cameraMediaStack.media(cameraMediaStack.mediaIndex - 1).ior
+        } else {
+          cameraMediaStack.head.ior
+        }
       val (scatterings, weights) = lastPoint.material.getScattering(
         incomingNormal = -lastPoint.toEye,
         surfaceNormal = lastPoint.normal,
         uv = lastPoint.uv,
-        outsideIor = cameraMediaStack.head.ior,
+        outsideIor = otherIor,
         random = random)
 
       val newDir = {
@@ -87,9 +96,8 @@ class BidirectionalPathTracer(
         surfaceNormal = lastPoint.normal,
         toLight = newDir,
         uv = lastPoint.uv,
-        outsideIor = cameraMediaStack.head.ior)
+        outsideIor = otherIor)
 
-      val inDir = lastPoint.toEye.dot(lastPoint.normal)
       val outDir = newDir.dot(lastPoint.normal)
       if (inDir > 0 && outDir < 0) {
         cameraMediaStack.add(lastPoint.material)

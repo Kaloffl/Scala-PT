@@ -45,7 +45,6 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
       // scatter probability is 0.
       if (java.lang.Double.isInfinite(scatterDist)) {
         val dist = scene.skyDistance
-        val point = ray.atDistance(dist)
         val emitted = scene.skyMaterial.getEmittance(ray.normal)
           if (java.lang.Double.isInfinite(dist)) {
             return emitted
@@ -87,28 +86,41 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
       if (intersection.material.emission != Color.Black) {
         return intersection.material.emission * absorbed
       }
-
       val point = ray.atDistance(depth)
+
       val surfaceNormal = intersection.normal()
+      val inDir = ray.normal.dot(surfaceNormal)
       val uv = intersection.textureCoordinate()
+      val otherIor =
+        if (inDir < 0) {
+          media(mediaHead).ior
+        } else if (media(mediaHead) == intersection.material) {
+          media(mediaHead - 1).ior
+        } else {
+          media(mediaHead).ior
+        }
+
       val (scatterings, weights) = intersection.material.getScattering(
         incomingNormal = ray.normal,
         surfaceNormal = surfaceNormal,
         uv = uv,
-        outsideIor = media(mediaHead).ior,
+        outsideIor = otherIor,
         random = random)
-
       var color = Color.Black
       var d = 0
-      val minWeight = i.toFloat / maxBounces
       while (d < scatterings.length) {
         val newDir = scatterings(d)
         val weight = weights(d)
-        val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, newDir, uv, media(mediaHead).ior)
         val survivalChance = 1.0f / Math.max(1, i - maxBounces / 4) * Math.min(weight * 2, 1)
         if (survivalChance > random.getAsDouble) {
+          val bsdf = intersection.material.evaluateBSDF(
+            toEye = -ray.normal,
+            surfaceNormal = surfaceNormal,
+            toLight = newDir,
+            uv = uv,
+            outsideIor = otherIor)
+
           val newRay = new Ray(point, newDir)
-          val inDir = ray.normal.dot(surfaceNormal)
           val outDir = newDir.dot(surfaceNormal)
           if (inDir < 0 && outDir < 0) {
             // if the new ray has entered a surface
@@ -121,67 +133,69 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
           } else if (inDir > 0 && outDir > 0 && mediaHead > 0) {
             // if the ray is exiting a surface
             var mediaIndex = -1
-            var i = mediaHead
-            while (i > 0) {
-              if (media(i) == intersection.material) {
-                mediaIndex = i
-                i = 0
+
+            {
+              var i = mediaHead
+              while (i > 0) {
+                if (media(i) == intersection.material) {
+                  mediaIndex = i
+                  i = 0
+                }
+                i -= 1
               }
-              i -= 1
             }
-            if (-1 == i) {
+            var newStack: Array[Material] = null
+            var newHead: Int = 0
+            if (-1 == mediaIndex) {
               // if the exited medium wasn't on the stack we just ignore it
-              val c = trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random)
-              color += c * bsdf * weight
-            } else if (i == mediaHead) {
+              newStack = media
+              newHead = mediaHead
+            } else if (mediaIndex == mediaHead) {
               // if the medium was the head we can just decrease the head index
-              val c = trace(newRay, scene, media, mediaHead - 1, i + 1, maxBounces, random)
-              color += c * bsdf * weight
+              newStack = media
+              newHead = mediaHead - 1
             } else {
               // if the medium was somewhere in the middle, we need to build a new stack
-              val newStack = new Array[Material](mediaHead)
+              newStack = new Array[Material](mediaHead)
               System.arraycopy(media, 0, newStack, 0, i)
               System.arraycopy(media, i + 1, newStack, i, mediaHead - i)
-              val c = trace(newRay, scene, newStack, mediaHead - 1, i + 1, maxBounces, random)
-              color += c * bsdf * weight
+              newHead = mediaHead - 1
             }
-          } else {
+            val c = trace(newRay, scene, newStack, newHead, i + 1, maxBounces, random)
+            color += c * bsdf * weight
+
+          } else if (0 < scene.lightHints.length) {
             var angleSum = 0f
             var direct = Color.Black
             if (i < maxBounces / 2) {
               val hints = scene.lightHints
-              if (0 < hints.length) {
-                val hint = hints((random.getAsDouble * hints.length).toInt)
-                if (hint.applicableFor(point)) {
-                  if (hint.target.asInstanceOf[Shape].getIntersectionDepth(newRay).isInfinite) {
-                    val lightRay = hint.target.createRandomRay(point, random)
-                    val lightAngle = surfaceNormal.dot(lightRay.normal)
-                    if (0 < lightAngle) {
-                      val bsdf = intersection.material.evaluateBSDF(
-                        toEye = -ray.normal,
-                        surfaceNormal = surfaceNormal,
-                        toLight = lightRay.normal,
-                        uv = uv,
-                        outsideIor = media(mediaHead).ior)
-                      if (bsdf != Color.Black) {
-                        val angle = hint.target.getSolidAngle(point).toFloat
-                        angleSum += angle
-                        val c = trace(lightRay, scene, media, mediaHead, i + 1, maxBounces / 2, random)
-                        direct += c * angle * bsdf * weight * Math.abs(lightAngle).toFloat
-                      }
+              val hint = hints((random.getAsDouble * hints.length).toInt)
+              if (hint.applicableFor(point)) {
+                if (hint.target.asInstanceOf[Shape].getIntersectionDepth(newRay).isInfinite) {
+                  val lightRay = hint.target.createRandomRay(point, random)
+                  val lightAngle = surfaceNormal.dot(lightRay.normal)
+                  if (0 < lightAngle) {
+                    val bsdf = intersection.material.evaluateBSDF(
+                      toEye = -ray.normal,
+                      surfaceNormal = surfaceNormal,
+                      toLight = lightRay.normal,
+                      uv = uv,
+                      outsideIor = otherIor)
+                    if (bsdf != Color.Black) {
+                      val angle = hint.target.getSolidAngle(point).toFloat
+                      angleSum += angle
+                      val c = trace(lightRay, scene, media, mediaHead, i + 1, maxBounces / 2, random)
+                      direct += c * angle * bsdf * weight * Math.abs(lightAngle).toFloat
                     }
                   }
                 }
               }
             }
-
-            val indirect = if (angleSum < 0.99f) {
-              trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight
-            } else {
-              Color.Black
+            if (angleSum < 0.99f) {
+              color += trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight * (1 - angleSum) + direct
             }
-
-            color += (indirect * (1 - angleSum) + direct)
+          } else {
+            color += trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight
           }
           color /= survivalChance
         }

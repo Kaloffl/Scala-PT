@@ -78,11 +78,21 @@ class PathTracer(maxBounces: Int) extends Tracer {
         val point = ray.atDistance(depth)
     		val surfaceNormal = intersection.normal()
         val uv = intersection.textureCoordinate()
+        val inDir = ray.normal dot surfaceNormal
+        val otherIor =
+          if (inDir < 0) {
+            media.head.ior
+          } else if (media.head == intersection.material) {
+            media.media(media.mediaIndex - 1).ior
+          } else {
+            media.head.ior
+          }
+
     		val (scatterings, weights) = intersection.material.getScattering(
     				incomingNormal = ray.normal,
     				surfaceNormal = surfaceNormal,
     				uv = uv,
-    				outsideIor = media.head.ior,
+    				outsideIor = otherIor,
     				random = random)
 
         val newDir = {
@@ -96,8 +106,6 @@ class PathTracer(maxBounces: Int) extends Tracer {
           scatterings(i - 1)
         }
 
-        val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, newDir, uv, media.head.ior)
-        val inDir = ray.normal dot surfaceNormal
         val outDir = newDir dot surfaceNormal
         if (inDir < 0 && outDir < 0) {
           // if the new ray has entered a surface
@@ -106,8 +114,9 @@ class PathTracer(maxBounces: Int) extends Tracer {
           // if the ray is exiting a surface
           media.remove(intersection.material)
         }
-        ray = new Ray(point, newDir)
+        val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, newDir, uv, otherIor)
         color *= bsdf * absorbed
+        ray = new Ray(point, newDir)
       }
       i += 1
     }
