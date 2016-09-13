@@ -57,7 +57,7 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projecta
 
   override def getSolidAngle(point: Vec3d): Double = {
     val dsq = (point - position).lengthSq
-    val asq = radius * radius / dsq
+    val asq = radiusSq / dsq
     val h = 1 - Math.sqrt(1 - asq)
     return (asq + h * h) / 2
   }
