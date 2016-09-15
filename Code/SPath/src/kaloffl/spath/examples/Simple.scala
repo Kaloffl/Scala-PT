@@ -1,11 +1,11 @@
 package kaloffl.spath.examples
 
 import kaloffl.spath.math.{Color, Vec3d}
-import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.sampler.SphereSampler
 import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, MetalMaterial, TransparentMaterial}
 import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
+import kaloffl.spath.scene.{GlobalHint, PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.{JfxDisplay, RenderEngine}
 
@@ -22,7 +22,7 @@ object Simple {
     val matMirror = new MetalMaterial((_, _) => Color.White)
     val matGlass = new TransparentMaterial(
       volumeColor = Color(0.09f, 0.09f, 0.09f),
-      ior = Color.White * 2.0f)
+      ior = 2.0f)
     val matLight = new EmittingMaterial(Color.White, 8f)
 
     val light1 = new Sphere(Vec3d(-3.5f, 5.0f, -1.0f), 1f)
@@ -56,7 +56,9 @@ object Simple {
         up = up),
       scene = new Scene(
         root = coloredSpheres,
-        lightHints = Array(GlobalHint(light1), GlobalHint(light2)),
+        lightHints = Array(
+          GlobalHint(new SphereSampler(light1)),
+          GlobalHint(new SphereSampler(light2))),
         camera = new PinholeCamera))
   }
 }

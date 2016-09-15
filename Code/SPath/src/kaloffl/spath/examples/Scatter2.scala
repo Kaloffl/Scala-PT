@@ -41,7 +41,7 @@ object Scatter2 {
           volumeColor = Color.randomColor(rnd, 0.5f),
           absorbtionDepth = 0.1f / (x * x + 1),
           scatterProbability = y * x + 4,
-          ior = Color.White * 1.1f))
+          ior = 1.1f))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

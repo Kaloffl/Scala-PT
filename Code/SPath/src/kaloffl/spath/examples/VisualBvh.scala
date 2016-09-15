@@ -18,9 +18,9 @@ object VisualBvh {
       volumeColor = Color.Black,
       scatterProbability = 0.0625f)
     val matSky = new EmittingMaterial(Color(1.0f, 0.95f, 0.9f), 2)
-    val matGlassRed = new TransparentMaterial(volumeColor = Color(0.7f, 4, 4), absorbtionDepth = 20, ior = Color.White * 1.7f)
-    val matGlassGreen = new TransparentMaterial(volumeColor = Color(4, 0.7f, 4), absorbtionDepth = 20, ior = Color.White * 1.7f)
-    val matGlassBlue = new TransparentMaterial(volumeColor = Color(4, 4, 0.7f), absorbtionDepth = 20, ior = Color.White * 1.7f)
+    val matGlassRed = new TransparentMaterial(volumeColor = Color(0.7f, 4, 4), absorbtionDepth = 20, ior = 1.7f)
+    val matGlassGreen = new TransparentMaterial(volumeColor = Color(4, 0.7f, 4), absorbtionDepth = 20, ior = 1.7f)
+    val matGlassBlue = new TransparentMaterial(volumeColor = Color(4, 4, 0.7f), absorbtionDepth = 20, ior = 1.7f)
     val matFloor = DiffuseMaterial(Color(0.7f, 0.75f, 0.9f))
 
     val bunny = BvhBuilder.buildTree(

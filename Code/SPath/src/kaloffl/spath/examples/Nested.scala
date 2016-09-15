@@ -5,7 +5,7 @@ import kaloffl.spath.scene.materials.{DiffuseMaterial, TransparentMaterial, Unif
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
-import kaloffl.spath.tracing.PathTracer
+import kaloffl.spath.tracing.{BidirectionalPathTracer, PathTracer, RecursivePathTracer}
 import kaloffl.spath.{JfxDisplay, RenderEngine}
 
 object Nested {
@@ -29,9 +29,9 @@ object Nested {
 
     RenderEngine.render(
       target = new JfxDisplay(1280, 720),
-      tracer = new PathTracer(maxBounces = 12),
+      tracer = new RecursivePathTracer(12),
       view = new Viewpoint(
-        position = Vec3d(0, 0, 9),
+        position = Vec3d(0, 0, 6),
         forward = Vec3d.Back,
         up = Vec3d.Up),
       scene = new Scene(

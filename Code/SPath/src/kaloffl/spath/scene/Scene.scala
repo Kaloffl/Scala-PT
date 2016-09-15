@@ -1,7 +1,6 @@
 package kaloffl.spath.scene
 
 import kaloffl.spath.math.{Color, Ray}
-import kaloffl.spath.scene.hints.LightHint
 import kaloffl.spath.scene.materials.{BlackSky, Material, SkyMaterial, TransparentMaterial}
 import kaloffl.spath.scene.shapes.{Emitter, Shape}
 import kaloffl.spath.scene.structure.SceneNode

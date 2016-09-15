@@ -3,9 +3,9 @@ package kaloffl.spath.tracing
 import java.util.function.DoubleSupplier
 
 import kaloffl.spath.math.{Color, Ray, Vec2d, Vec3d}
+import kaloffl.spath.sampler.Sampler
 import kaloffl.spath.scene.Scene
 import kaloffl.spath.scene.materials.Material
-import kaloffl.spath.scene.shapes.Shape
 
 class RecursivePathTracer(maxBounces: Int) extends Tracer {
 
@@ -18,30 +18,32 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
   }
 
   def trace(
-    ray: Ray,
-    scene: Scene,
-    media: Array[Material],
-    mediaHead: Int,
-    i: Int,
-    maxBounces: Int,
-    random: DoubleSupplier): Color = {
-    if (i >= maxBounces) return Color.Black
+              ray: Ray,
+              scene: Scene,
+              media: Array[Material],
+              mediaHead: Int,
+              bounce: Int,
+              maxBounces: Int,
+              random: DoubleSupplier
+           ): Color = {
 
-    // First we determine the distance it will take the ray to hit an air 
-    // particle and be scattered. If the current air has a scatter probability 
+    if (bounce >= maxBounces) return Color.Black
+
+    // First we determine the distance it will take the ray to hit an air
+    // particle and be scattered. If the current air has a scatter probability
     // of 0, the distance will be infinity.
     val scatterChance = random.getAsDouble
     val scatterDist = -Math.log(1 - scatterChance) / media(mediaHead).scatterProbability
 
-    // Now try to find an object in the scene that is closer than the determined 
-    // scatter depth. If none is found and the scatter depth is not infinity, 
+    // Now try to find an object in the scene that is closer than the determined
+    // scatter depth. If none is found and the scatter depth is not infinity,
     // the ray will be scattered.
-    // The added epsilon value will help prevent rays scattering close to a 
+    // The added epsilon value will help prevent rays scattering close to a
     // surface and no properly intersecting with it afterwards.
     val intersection = scene.getIntersection(ray, scatterDist /* + 0.0001*/ )
     if (!intersection.hitObject) {
-      // if no object was hit, the ray will either scatter or hit the sky. At 
-      // the moment the sky will only really work if the air is clear and the 
+      // if no object was hit, the ray will either scatter or hit the sky. At
+      // the moment the sky will only really work if the air is clear and the
       // scatter probability is 0.
       if (java.lang.Double.isInfinite(scatterDist)) {
         val dist = scene.skyDistance
@@ -56,25 +58,8 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
       val point = ray.atDistance(scatterDist)
       val absorbed = (media(mediaHead).absorbtion * -scatterDist.toFloat).exp
       val randomRay = new Ray(point, Vec3d.randomNormal(Vec2d.random(random)))
-      val indirect = trace(randomRay, scene, media, mediaHead, i + 1, maxBounces, random)
-      var angleSum = 0f
-      var direct = Color.Black
-      if (i < maxBounces / 2) {
-        var h = 0
-        val hints = scene.lightHints
-        while (h < hints.length) {
-          val hint = hints(h)
-          if (hint.applicableFor(point)) {
-            val lightRay = hint.target.createRandomRay(point, random)
-            val angle = hint.target.getSolidAngle(point).toFloat
-            angleSum += angle
-            val c = trace(lightRay, scene, media, mediaHead, i + 1, maxBounces / 2, random)
-            direct += c * angle
-          }
-          h += 1
-        }
-      }
-      return absorbed * (indirect * (1 - angleSum) + direct)
+      val indirect = trace(randomRay, scene, media, mediaHead, bounce + 1, maxBounces, random)
+      return absorbed * indirect
     } else {
       val depth = intersection.depth
       val absorbed = if (media(mediaHead).absorbtion != Color.Black) {
@@ -100,37 +85,65 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
           media(mediaHead).ior
         }
 
-      val (scatterings, weights) = intersection.material.getScattering(
-        incomingNormal = ray.normal,
-        surfaceNormal = surfaceNormal,
-        uv = uv,
-        outsideIor = otherIor,
-        random = random)
-      var color = Color.Black
-      var d = 0
-      while (d < scatterings.length) {
-        val newDir = scatterings(d)
-        val weight = weights(d)
-        val survivalChance = 1.0f / Math.max(1, i - maxBounces / 4) * Math.min(weight * 2, 1)
-        if (survivalChance > random.getAsDouble) {
-          val bsdf = intersection.material.evaluateBSDF(
-            toEye = -ray.normal,
-            surfaceNormal = surfaceNormal,
-            toLight = newDir,
-            uv = uv,
-            outsideIor = otherIor)
+      val matSamplers = intersection.material.getSamplers
+      val hints = scene.lightHints.filter(_.applicableFor(point))
 
-          var scatteredColor = Color.Black
+      val numSamplers = matSamplers.length + hints.length
+      val samplers = new Array[Sampler](numSamplers)
+
+      System.arraycopy(matSamplers, 0, samplers, 0, matSamplers.length)
+
+      for (i <- hints.indices) {
+        val hint = hints(i)
+        samplers(matSamplers.length + i) = hint.sampler
+      }
+
+      var color = Color.Black
+      var samplerIndex = 0
+      while (samplerIndex < numSamplers) {
+        val newDir = samplers(samplerIndex).getDirection(
+          position = point,
+          incomingNormal = ray.normal,
+          surfaceNormal = surfaceNormal,
+          uv = uv,
+          outsideIor = otherIor,
+          random = random)
+
+        var propSum = 0.0f
+        var otherSampler = 0
+        while (otherSampler < numSamplers) {
+            propSum +=
+              samplers(otherSampler).getPropability(
+                position = point,
+                incomingNormal = ray.normal,
+                surfaceNormal = surfaceNormal,
+                outgoingNormal = newDir,
+                uv = uv,
+                outsideIor = otherIor)
+          otherSampler += 1
+        }
+
+        val bsdf = intersection.material.evaluateBSDF(
+          toEye = -ray.normal,
+          surfaceNormal = surfaceNormal,
+          toLight = newDir,
+          uv = uv,
+          outsideIor = otherIor)
+        val bsdfMax = Math.max(bsdf.r2, Math.max(bsdf.g2, bsdf.b2))
+        val survivalChance = Math.min(1, (propSum * bsdfMax) / Math.max(1, bounce - maxBounces / 8))
+        if (propSum > 0 && survivalChance > random.getAsDouble) {
+
           val newRay = new Ray(point, newDir)
           val outDir = newDir.dot(surfaceNormal)
+
+          var newMedia = media
+          var newHead = mediaHead
           if (inDir < 0 && outDir < 0) {
             // if the new ray has entered a surface
-            val newHead = mediaHead + 1
-            val newMedia = new Array[Material](newHead + 1)
+            newHead = mediaHead + 1
+            newMedia = new Array[Material](newHead + 1)
             System.arraycopy(media, 0, newMedia, 0, newHead)
             newMedia(newHead) = intersection.material
-            val c = trace(newRay, scene, newMedia, mediaHead + 1, i + 1, maxBounces, random)
-            scatteredColor += c * bsdf * weight
           } else if (inDir > 0 && outDir > 0 && mediaHead > 0) {
             // if the ray is exiting a surface
             var mediaIndex = -1
@@ -145,62 +158,33 @@ class RecursivePathTracer(maxBounces: Int) extends Tracer {
                 i -= 1
               }
             }
-            var newStack: Array[Material] = null
-            var newHead: Int = 0
             if (-1 == mediaIndex) {
               // if the exited medium wasn't on the stack we just ignore it
-              newStack = media
+              newMedia = media
               newHead = mediaHead
             } else if (mediaIndex == mediaHead) {
               // if the medium was the head we can just decrease the head index
-              newStack = media
+              newMedia = media
               newHead = mediaHead - 1
             } else {
               // if the medium was somewhere in the middle, we need to build a new stack
-              newStack = new Array[Material](mediaHead)
-              System.arraycopy(media, 0, newStack, 0, i)
-              System.arraycopy(media, i + 1, newStack, i, mediaHead - i)
+              newMedia = new Array[Material](mediaHead)
+              System.arraycopy(media, 0, newMedia, 0, mediaIndex)
+              System.arraycopy(media, mediaIndex + 1, newMedia, mediaIndex, mediaHead - mediaIndex)
               newHead = mediaHead - 1
             }
-            val c = trace(newRay, scene, newStack, newHead, i + 1, maxBounces, random)
-            scatteredColor += c * bsdf * weight
-
-          } else if (0 < scene.lightHints.length) {
-            var angleSum = 0f
-            var direct = Color.Black
-            if (i < maxBounces / 2) {
-              val hints = scene.lightHints
-              val hint = hints((random.getAsDouble * hints.length).toInt)
-              if (hint.applicableFor(point)) {
-                if (hint.target.asInstanceOf[Shape].getIntersectionDepth(newRay).isInfinite) {
-                  val lightRay = hint.target.createRandomRay(point, random)
-                  val lightAngle = surfaceNormal.dot(lightRay.normal)
-                  if (0 < lightAngle) {
-                    val bsdf = intersection.material.evaluateBSDF(
-                      toEye = -ray.normal,
-                      surfaceNormal = surfaceNormal,
-                      toLight = lightRay.normal,
-                      uv = uv,
-                      outsideIor = otherIor)
-                    if (bsdf != Color.Black) {
-                      val angle = hint.target.getSolidAngle(point).toFloat
-                      angleSum += angle
-                      val c = trace(lightRay, scene, media, mediaHead, i + 1, maxBounces / 2, random)
-                      direct += c * angle * bsdf * weight * Math.abs(lightAngle).toFloat
-                    }
-                  }
-                }
-              }
-            }
-            if (angleSum < 0.99f) {
-              scatteredColor += trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight * (1 - angleSum) + direct
-            }
-          } else {
-            scatteredColor += trace(newRay, scene, media, mediaHead, i + 1, maxBounces, random) * bsdf * weight
           }
-          color += scatteredColor / survivalChance
+          val c = trace(newRay, scene, newMedia, newHead, bounce + 1, maxBounces, random)
+          val cosine =
+            if (outDir < 0) {
+              1
+            } else {
+              outDir.toFloat
+            }
+
+          color += c * bsdf * 2 * cosine / (survivalChance * propSum)
         }
-        d += 1
+        samplerIndex += 1
       }
       return absorbed * color
     }

@@ -13,8 +13,6 @@ class RayTracer(maxBounces: Int) extends Tracer {
 
     val intersection = scene.getIntersection(ray, Double.PositiveInfinity)
     if (!intersection.hitObject) {
-      val dist = scene.skyDistance
-      val point = ray.atDistance(dist)
       return scene.skyMaterial.getEmittance(ray.normal)
     } else {
       val depth = intersection.depth
@@ -26,12 +24,6 @@ class RayTracer(maxBounces: Int) extends Tracer {
       val point = ray.atDistance(depth)
       val surfaceNormal = intersection.normal()
       val uv = intersection.textureCoordinate()
-      val scatterings = intersection.material.getScattering(
-        incomingNormal = ray.normal,
-        surfaceNormal = surfaceNormal,
-        uv = uv,
-        outsideIor = Color.White,
-        random = random)
 
       var color = Color.Black
       val hints = scene.lightHints
@@ -39,11 +31,24 @@ class RayTracer(maxBounces: Int) extends Tracer {
       while (h < hints.length) {
         val hint = hints(h)
         if (hint.applicableFor(point)) {
-          val lightRay = hint.target.createRandomRay(point, random)
-          val contribution = surfaceNormal.dot(lightRay.normal).toFloat
+          val lightDir = hint.sampler.getDirection(
+            position = point,
+            incomingNormal = ray.normal,
+            surfaceNormal = surfaceNormal,
+            uv = uv,
+            outsideIor = 1.0f,
+            random = random)
+          val contribution = surfaceNormal.dot(lightDir).toFloat
           if (contribution > 0) {
-            val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, lightRay.normal, uv, Color.White)
-            val angle = hint.target.getSolidAngle(point).toFloat
+            val bsdf = intersection.material.evaluateBSDF(-ray.normal, surfaceNormal, lightDir, uv, 1.0f)
+            val angle = hint.sampler.getPropability(
+              position = point,
+              incomingNormal = ray.normal,
+              surfaceNormal = surfaceNormal,
+              outgoingNormal = lightDir,
+              uv = uv,
+              outsideIor = 1.0f)
+            val lightRay = new Ray(point, lightDir)
             val lightIntersection = scene.getIntersection(lightRay, Double.PositiveInfinity)
             color += lightIntersection.material.emission * angle * contribution * bsdf
           }

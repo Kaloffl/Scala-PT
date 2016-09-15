@@ -32,7 +32,7 @@ object Refraction3 {
         new TransparentMaterial(
           volumeColor = glassColor,
           absorbtionDepth = x * x / 200f + 0.01f,
-          ior = Color.White * (1 + y / 10.0f)))
+          ior = 1 + y / 10.0f))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

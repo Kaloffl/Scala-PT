@@ -2,11 +2,11 @@ package kaloffl.spath.examples
 
 import kaloffl.spath.filter.BloomFilter
 import kaloffl.spath.math.{Color, Vec3d}
-import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.sampler.SphereSampler
 import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, TransparentMaterial}
 import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
+import kaloffl.spath.scene.{GlobalHint, PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.{JfxDisplay, RenderEngine}
 
@@ -41,7 +41,7 @@ object LightScatter {
       scene = new Scene(
         root = hazeObjects,
         initialMediaStack = Array(matAir),
-        lightHints = Array(GlobalHint(lightSphere)),
+        lightHints = Array(GlobalHint(new SphereSampler(lightSphere))),
         camera = new PinholeCamera))
   }
 }

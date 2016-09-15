@@ -4,11 +4,11 @@ import java.util.concurrent.ThreadLocalRandom
 import java.util.function.DoubleSupplier
 
 import kaloffl.spath.math.{Color, Vec3d}
-import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.sampler.SphereSampler
 import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial, TransparentMaterial, UniformSky}
 import kaloffl.spath.scene.shapes.{AABB, Sphere}
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
+import kaloffl.spath.scene.{GlobalHint, PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.{JfxDisplay, RenderEngine}
 
@@ -99,7 +99,7 @@ object MazeCube {
       scene = new Scene(
         root = hemisphere,
 //        initialMediaStack = Array(airMaterial),
-        lightHints = Array(GlobalHint(lightSource)),
+        lightHints = Array(GlobalHint(new SphereSampler(lightSource))),
         skyMaterial = new UniformSky(Color.White),
         camera = new PinholeCamera))
   }

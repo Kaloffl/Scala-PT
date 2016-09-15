@@ -1,11 +1,11 @@
 package kaloffl.spath.examples
 
 import kaloffl.spath.math.{Color, Vec3d}
-import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.sampler.{SphereSampler, TriangleSampler}
 import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial}
 import kaloffl.spath.scene.shapes.{AABB, Plane, Sphere, Triangle}
 import kaloffl.spath.scene.structure.{BoundlessNode, SceneNode}
-import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
+import kaloffl.spath.scene.{GlobalHint, PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.{JfxDisplay, RenderEngine}
 
@@ -34,14 +34,17 @@ object LightHints {
 
     RenderEngine.render(
       target = new JfxDisplay(1280, 720),
-      tracer = new RecursivePathTracer(maxBounces = 12),
+      tracer = new RecursivePathTracer(maxBounces = 4),
+      cpuSaturation = 0.25f,
       view = new Viewpoint(
         position = Vec3d(0, 5, 13),
         forward = front.normalize,
         up = up),
       scene = new Scene(
         root = objects,
-        lightHints = Array(GlobalHint(tri1), GlobalHint(sphere)),
+        lightHints = Array(
+          GlobalHint(new TriangleSampler(tri1)),
+          GlobalHint(new SphereSampler(sphere))),
         camera = new PinholeCamera))
   }
 }

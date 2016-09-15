@@ -1,18 +1,16 @@
 package kaloffl.spath.scene.shapes
 
-import java.util.function.DoubleSupplier
-
 import kaloffl.spath.math.{Mat4d, Ray, Vec2d, Vec3d}
 
 /**
  * @author Lars
  */
-class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape with Bounded with Projectable {
+class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape with Bounded {
 
   val edgeA = vertB - vertA
   val edgeB = vertC - vertA
 
-  val normal = (edgeA cross edgeB) normalize
+  val normal = (edgeA cross edgeB).normalize
 
   val mat = {
     val m = Mat4d(
@@ -69,29 +67,6 @@ class Triangle(val vertA: Vec3d, vertB: Vec3d, vertC: Vec3d) extends Shape with 
     if (u >= 0 && v >= 0 && (u + v) < 1) t
     else Double.PositiveInfinity
   }
-  
+
   override def getNormal(point: Vec3d): Vec3d = normal
-
-  override def getSolidAngle(point: Vec3d): Double = {
-    val a = vertA - point
-    val b = a + edgeA
-    val c = a + edgeB
-    val na = c cross b
-    val nb = a cross c
-    val nc = b cross a
-    val la = na length
-    val lb = nb length
-    val lc = nc length
-    val aa = Math.acos((nb dot nc) / (lb * lc))
-    val ab = Math.acos((nc dot na) / (lc * la))
-    val ac = Math.acos((na dot nb) / (la * lb))
-    return 1 - (aa + ab + ac) / (Math.PI * 2)
-  }
-
-  override def createRandomRay(start: Vec3d, random: DoubleSupplier): Ray = {
-    val r1 = random.getAsDouble
-    val t = random.getAsDouble
-    val r2 = if (r1 + t > 1) 1 - t else t
-    return new Ray(start, (vertA - start + edgeA * r1 + edgeB * r2).normalize)
-  }
 }

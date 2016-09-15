@@ -25,7 +25,7 @@ object MaterialTest {
           new DielectricMaterial(
             albedo = (u, v) => Color(0.9f, 0.1f, 0.1f),
             roughness = (u, v) => 0.25f * x,
-            ior = Color.White * (1 + 0.2f * y)
+            ior = 1 + 0.2f * y
           ))
       }).toArray
     )
@@ -37,8 +37,8 @@ object MaterialTest {
           new TransparentMaterial(
             volumeColor = Color(0.9f, 0.1f, 0.1f),
             roughness = (u, v) => 0.25f * x,
-            scatterProbability = 1f * y,
-            ior = Color.White * 1.42f
+            //scatterProbability = 1f * y,
+            ior = 1 + 0.2f * y
           ))
       }).toArray
     )
@@ -70,9 +70,9 @@ object MaterialTest {
         forward = Vec3d(1, 0, 0).normalize,
         up = Vec3d.Up),
       scene = new Scene(
-        //root = dielectricNodes,
+        root = dielectricNodes,
         //root = transparentNodes,
-        root = metalNodes,
+        //root = metalNodes,
         skyMaterial = matSky,
         camera = new PinholeCamera(
           sensorDistance = 0.01f

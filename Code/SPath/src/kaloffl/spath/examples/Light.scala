@@ -14,7 +14,7 @@ object Light {
 
     val matWhiteDiffuse = DiffuseMaterial(Color(0.9f, 0.9f, 0.9f))
 
-    val matWhiteGlass8 = new TransparentMaterial(ior = Color.White * 1.8f)
+    val matWhiteGlass8 = new TransparentMaterial(ior = 1.8f)
 
     val coloredLights = BoundlessNode(Array(
       SceneNode(new Sphere(Vec3d(-5.0f, 2.0f, 2.5f), 2.0f), matWhiteGlass8),

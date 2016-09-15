@@ -88,14 +88,17 @@ class PathTracer(maxBounces: Int) extends Tracer {
             media.head.ior
           }
 
-    		val (scatterings, weights) = intersection.material.getScattering(
+        /*
+    		val scatterings = intersection.material.getScattering(
     				incomingNormal = ray.normal,
     				surfaceNormal = surfaceNormal,
     				uv = uv,
     				outsideIor = otherIor,
     				random = random)
+    		*/
 
-        val newDir = {
+        val newDir = surfaceNormal.randomHemisphere(Vec2d.random(random))
+        /*{
           val rand = random.getAsDouble
           var i = 1
           var weightSum = weights(0)
@@ -104,7 +107,7 @@ class PathTracer(maxBounces: Int) extends Tracer {
             i += 1
           }
           scatterings(i - 1)
-        }
+        }*/
 
         val outDir = newDir dot surfaceNormal
         if (inDir < 0 && outDir < 0) {

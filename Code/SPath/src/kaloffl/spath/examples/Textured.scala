@@ -5,8 +5,8 @@ import javax.imageio.ImageIO
 
 import kaloffl.spath.{JfxDisplay, RenderEngine}
 import kaloffl.spath.math.{Color, Vec3d}
-import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
-import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.sampler.SphereSampler
+import kaloffl.spath.scene.{GlobalHint, PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.scene.materials._
 import kaloffl.spath.scene.shapes.Sphere
 import kaloffl.spath.scene.structure.SceneNode
@@ -98,7 +98,7 @@ object Textured {
         root = world,
         initialMediaStack = Array(matVoid),
         lightHints = Array(
-          GlobalHint(sunSphere)),
+          GlobalHint(new SphereSampler(sunSphere))),
         skyMaterial = BlackSky,
         camera = new PinholeCamera))
   }

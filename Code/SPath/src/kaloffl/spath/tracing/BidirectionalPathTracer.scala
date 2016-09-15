@@ -73,14 +73,18 @@ class BidirectionalPathTracer(
         } else {
           cameraMediaStack.head.ior
         }
-      val (scatterings, weights) = lastPoint.material.getScattering(
+
+      /*
+      val scatterings = lastPoint.material.getScattering(
         incomingNormal = -lastPoint.toEye,
         surfaceNormal = lastPoint.normal,
         uv = lastPoint.uv,
         outsideIor = otherIor,
         random = random)
+      */
 
-      val newDir = {
+      val newDir = lastPoint.normal.randomHemisphere(Vec2d.random(random))
+      /*{
         val rand = random.getAsDouble
         var i = 1
         var weightSum = weights(0)
@@ -89,7 +93,7 @@ class BidirectionalPathTracer(
           i += 1
         }
         scatterings(i - 1)
-      }
+      }*/
 
       val importance = lastPoint.importance * lastPoint.material.evaluateBSDF(
         toEye = lastPoint.toEye,
@@ -167,7 +171,7 @@ class BidirectionalPathTracer(
               surfaceNormal = p.normal,
               toLight = -dir,
               uv = p.uv,
-              outsideIor = Color.White)
+              outsideIor = 1.0f)
             if (bsdf != Color.Black) {
               pendingConnections -= 1
               isConnected(j) = true
@@ -187,14 +191,17 @@ class BidirectionalPathTracer(
           val uv = intersection.textureCoordinate()
 
           val point = lightRay.atDistance(intersection.depth)
-          val (scatterings, weights) = intersection.material.getScattering(
+          /*
+          val scatterings = intersection.material.getScattering(
             incomingNormal = lightRay.normal,
             surfaceNormal = surfaceNormal,
             uv = uv,
-            outsideIor = Color.White,
+            outsideIor = 1.0f,
             random = random)
+          */
 
-          val newDir = {
+          val newDir = surfaceNormal.randomHemisphere(Vec2d.random(random))
+          /*{
             val rand = random.getAsDouble
             var i = 1
             var weightSum = weights(0)
@@ -203,14 +210,14 @@ class BidirectionalPathTracer(
               i += 1
             }
             scatterings(i - 1)
-          }
+          }*/
 
           val bsdf = intersection.material.evaluateBSDF(
             toEye = newDir,
             surfaceNormal = surfaceNormal,
             toLight = -lightRay.normal,
             uv = uv,
-            outsideIor = Color.White)
+            outsideIor = 1.0f)
 
           lightRay = new Ray(point, newDir)
 
@@ -228,7 +235,7 @@ class BidirectionalPathTracer(
                     surfaceNormal = p.normal,
                     toLight = -dir,
                     uv = p.uv,
-                    outsideIor = Color.White)
+                    outsideIor = 1.0f)
                   if (bsdf != Color.Black) {
                     if (!isConnected(j)) {
                       pendingConnections -= 1

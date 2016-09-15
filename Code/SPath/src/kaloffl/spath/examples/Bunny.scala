@@ -7,18 +7,18 @@ import kaloffl.spath.scene.materials.{DiffuseMaterial, TransparentMaterial, Unif
 import kaloffl.spath.scene.shapes.AABB
 import kaloffl.spath.scene.structure.SceneNode
 import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
-import kaloffl.spath.tracing.PathTracer
-import kaloffl.spath.{JfxDisplay, RtApplication}
+import kaloffl.spath.tracing.{PathTracer, RecursivePathTracer}
+import kaloffl.spath.{JfxDisplay, RenderEngine, RtApplication}
 
 object Bunny {
 
   def main(args: Array[String]): Unit = {
 
     val matGlass = new TransparentMaterial(
-      volumeColor = Color(0.4f, 0.7f, 1.0f),
-      absorbtionDepth = mm(1),
-      scatterProbability = 4,
-      ior = Color.White * 1.7f)
+      //volumeColor = Color(0.4f, 0.7f, 1.0f),
+      //absorbtionDepth = mm(1),
+      //scatterProbability = 4,
+      ior = 2.4f)
     val matFloor = DiffuseMaterial(Color(0.6f, 0.65f, 0.7f))
     val matBunny = DiffuseMaterial(Color(0.8f, 0.4f, 0.2f))
 
@@ -27,23 +27,24 @@ object Bunny {
         file = "C:/dev/bunny_flipped.ply",
         scale = Vec3d(3),
         offset = Vec3d(0, -0.1319496 / 2, 0)),
-      matBunny)
+      matGlass)
 
     val floor = SceneNode(AABB(Vec3d(0, mm(-1), 0), Vec3d(cm(5), mm(2), cm(5))), matFloor)
 
-    val camPosition = Vec3d(cm(-1), cm(2), cm(5))
-    val focusPoint = Vec3d(cm(-2), cm(1.5f), cm(1))
+    val camPosition = Vec3d(mm(0), cm(3), cm(5))
+    val focusPoint = Vec3d(cm(-1), cm(2), cm(1))
     val distance = focusPoint - camPosition
     val forward = distance.normalize
-    val up = Vec3d(0, -forward.z, forward.y).normalize
+    val right = Vec3d.Up.cross(forward).normalize
+    val up = forward.cross(right).normalize
 
     val window = new JfxDisplay(1280, 720)
 
-    RtApplication.run(
+    RenderEngine.render(
       target = window,
-      events = window.events,
-      tracer = new PathTracer(maxBounces = 12),
-      initialView = new Viewpoint(
+      tracer = new RecursivePathTracer(maxBounces = 12),
+      cpuSaturation = 0.5f,
+      view = new Viewpoint(
         position = camPosition,
         forward = forward,
         up = up),

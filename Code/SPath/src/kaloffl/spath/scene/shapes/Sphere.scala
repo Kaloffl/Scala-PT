@@ -7,7 +7,7 @@ import kaloffl.spath.math.{Ray, Vec2d, Vec3d}
 /**
  * A sphere shape consisting of a location and a radius.
  */
-class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projectable with Bounded with Closed with Emitter {
+class Sphere(val position: Vec3d, val radius: Float) extends Shape with Bounded with Closed with Emitter {
 
   val radiusSq = radius * radius
 
@@ -50,30 +50,11 @@ class Sphere(val position: Vec3d, val radius: Float) extends Shape with Projecta
   override def getBounds: AABB = {
     AABB(position, Vec3d(radius * 2))
   }
-  
+
   override def contains(point: Vec3d): Boolean = {
     (position - point).lengthSq < radiusSq
   }
-
-  override def getSolidAngle(point: Vec3d): Double = {
-    val dsq = (point - position).lengthSq
-    val asq = radiusSq / dsq
-    val h = 1 - Math.sqrt(1 - asq)
-    return (asq + h * h) / 2
-  }
   
-  override def createRandomRay(start: Vec3d, random: DoubleSupplier): Ray = {
-    val direction = position - start
-    val maxOffset = radius * Math.sqrt(1 - radius * radius / direction.lengthSq)
-    val angle = random.getAsDouble * Math.PI * 2
-    val offset = Math.sqrt(random.getAsDouble) * maxOffset
-    val z = direction.normalize
-    val x = z.ortho.normalize * Math.cos(angle) * offset
-    val y = z.cross(x).normalize * Math.sin(angle) * offset
-    val normal = (direction + x + y).normalize
-    return new Ray(start, normal)
-  }
-
   override def getRandomPointOfSurface(random: DoubleSupplier): Vec3d = {
     return Vec3d.randomNormal(Vec2d.random(random)) * radius + position
   }

@@ -1,11 +1,11 @@
 package kaloffl.spath.examples
 
 import kaloffl.spath.math.{Color, Vec3d}
-import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.sampler.SphereSampler
 import kaloffl.spath.scene.materials.{DiffuseMaterial, EmittingMaterial}
 import kaloffl.spath.scene.shapes.{AABB, Sphere, Triangle}
 import kaloffl.spath.scene.structure.SceneNode
-import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
+import kaloffl.spath.scene.{GlobalHint, PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.{JfxDisplay, RenderEngine}
 
@@ -99,7 +99,7 @@ object CornellBox {
         up = Vec3d.Up),
       scene = new Scene(
         root = cornellBox,
-        lightHints = Array(GlobalHint(lightHint)),
+        lightHints = Array(GlobalHint(new SphereSampler(lightHint))),
         camera = new PinholeCamera(sensorDistance = 0.014f)))
   }
 }

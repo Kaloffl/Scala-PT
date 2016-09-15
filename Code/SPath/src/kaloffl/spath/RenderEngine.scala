@@ -106,7 +106,7 @@ object RenderEngine {
       // parts left to easily fill time for threads that are done early.
       // This way we get the best saturation for all working threads.
       if (pass == 10) {
-        // On the tenth pass the numbers should have stabilized enough to 
+        // On the tenth pass the numbers should have stabilized enough to
         // determine which parts are the most expensive to render.
         Sorting.stableSort(order, (o1: Int, o2: Int) => costs(order(o1)) > costs(order(o2)))
       }
@@ -129,7 +129,7 @@ object RenderEngine {
       logger("\n")
 
       // After each rendering pass, the workers will have written their results
-      // into the target and all that's left is calling commit to signal that 
+      // into the target and all that's left is calling commit to signal that
       // the pass is done.
       target.commit()
       pass += samplesAtOnce

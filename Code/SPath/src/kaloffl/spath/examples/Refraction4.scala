@@ -36,7 +36,7 @@ object Refraction4 {
         new TransparentMaterial(
           volumeColor = Color.randomColor(Vec2d.random(rng), 0.5f),
           absorbtionDepth = 0.125f,
-          ior = Color.White * 1.8f))
+          ior = 1.8f))
     }).toArray
 
     val front = Vec3d(0, -11, 9)

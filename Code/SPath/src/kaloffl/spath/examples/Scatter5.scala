@@ -1,11 +1,11 @@
 package kaloffl.spath.examples
 
 import kaloffl.spath.math.{Color, Vec3d}
-import kaloffl.spath.scene.hints.GlobalHint
+import kaloffl.spath.sampler.SphereSampler
 import kaloffl.spath.scene.materials._
 import kaloffl.spath.scene.shapes.{AABB, Plane, Sphere}
 import kaloffl.spath.scene.structure.{BoundlessNode, ClippingNode, SceneNode}
-import kaloffl.spath.scene.{PinholeCamera, Scene, Viewpoint}
+import kaloffl.spath.scene.{GlobalHint, PinholeCamera, Scene, Viewpoint}
 import kaloffl.spath.tracing.RecursivePathTracer
 import kaloffl.spath.{JfxDisplay, RenderEngine}
 
@@ -19,8 +19,8 @@ object Scatter5 {
     val matRedGlass = new TransparentMaterial(
       volumeColor = Color(0.1f, 0.5f, 0.5f),
       scatterProbability = 0.1f,
-      ior  = Color.White * 1.7f)
-    val matClearGlass = new TransparentMaterial(ior = Color.White * 1.7f)
+      ior  = 1.7f)
+    val matClearGlass = new TransparentMaterial(ior = 1.7f)
 
     val matMirror = new MetalMaterial((_, _) => Color.White * 0.0001f)
 
@@ -62,7 +62,7 @@ object Scatter5 {
         up = up),
       scene = new Scene(
         root = glassTest,
-        lightHints = Array(GlobalHint(lightShape)),
+        lightHints = Array(GlobalHint(new SphereSampler(lightShape))),
         skyMaterial = new UniformSky(Color(0.9f, 0.95f, 0.975f) * 0.5f),
         camera = new PinholeCamera))
   }
